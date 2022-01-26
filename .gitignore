@@ -1,0 +1,14 @@
+*.csv
+*.xlsx
+*.png
+
+*.npy
+
+*.qgz
+
+__pycache__/
+.idea
+
+easy_mpl.egg-info
+dist
+build
