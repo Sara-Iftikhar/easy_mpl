@@ -8,7 +8,7 @@ setup(
 
     name='easy_mpl',
 
-    version="0.16.0",
+    version="0.1.0",
 
     description='one stop shop for matplotlib plots',
     long_description=long_desc,

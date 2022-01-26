@@ -12,4 +12,4 @@ from ._main import dumbbell_plot
 from .utils import process_axis
 
 
-__version__ = "0.15.2"
+__version__ = "0.1.0"
