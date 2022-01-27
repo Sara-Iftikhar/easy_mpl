@@ -158,6 +158,7 @@ class TestPlot(unittest.TestCase):
         assert isinstance(ax, plt.Axes)
         return
 
+
 class TestImshow(unittest.TestCase):
     show = False
     def test_imshow(self):
@@ -177,6 +178,13 @@ class TestImshow(unittest.TestCase):
                         annotate=True, show=self.show)
         assert isinstance(ax, plt.Axes)
         return
+
+    def test_df(self):
+        df = pd.DataFrame(np.random.random((10, 2)), columns=['a', 'b'])
+        ax, img = imshow(df, colorbar=True, show=self.show, title="df")
+        assert isinstance(ax, plt.Axes)
+        return
+
 
 class Testhist(unittest.TestCase):
     show = False
@@ -307,6 +315,13 @@ class TestDumbbell(unittest.TestCase):
     def test_with_end_kws(self):
         ax = dumbbell_plot(self.st, self.en, show=self.show,
                            title="with_end_kws", end_kws={'color': 'red'})
+        assert isinstance(ax, plt.Axes)
+        return
+
+    def test_with_labels(self):
+        ax = dumbbell_plot(self.st, self.en, show=self.show,
+                           title="with labels",
+                           labels=[f'Feature {i}' for i in range(10)])
         assert isinstance(ax, plt.Axes)
         return
 

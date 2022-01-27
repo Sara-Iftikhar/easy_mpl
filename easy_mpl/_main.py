@@ -19,6 +19,7 @@ import pandas as pd
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import matplotlib.lines as mlines
+from mpl_toolkits.axes_grid1 import make_axes_locatable
 
 from .utils import to_1d_array, get_cmap, _regplot, process_axis
 from .utils import BAR_CMAPS, regplot_combs
@@ -415,6 +416,13 @@ def imshow(
 
     im = ax.imshow(values, **kwargs)
 
+    if isinstance(values, pd.DataFrame):
+        if not xticklabels:
+            xticklabels = values.columns.to_list()
+        if not yticklabels:
+            yticklabels = values.index.tolist()
+        values = values.values
+
     if annotate:
         annotate_kws = annotate_kws or {"color": "w", "ha":"center", "va":"center"}
         for i in range(values.shape[0]):
@@ -433,8 +441,12 @@ def imshow(
     process_axis(ax, xlabel=xlabel, ylabel=ylabel, title=title)
 
     if colorbar:
+        # https://stackoverflow.com/a/18195921/5982232
+        divider = make_axes_locatable(ax)
+        cax = divider.append_axes("right", size="5%", pad=0.2)
         fig: plt.Figure = plt.gcf()
-        fig.colorbar(im, orientation=colorbar_orientation, pad=0.2)
+        fig.colorbar(im, orientation=colorbar_orientation, pad=0.2, cax=cax)
+
 
     if show:
         plt.show()
