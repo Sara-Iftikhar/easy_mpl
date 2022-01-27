@@ -2,10 +2,20 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
+from scipy.stats import gaussian_kde
 
 
 BAR_CMAPS = ['Blues', 'BuGn', 'gist_earth_r',
              'GnBu', 'PuBu', 'PuBuGn', 'summer_r']
+
+# colormaps for ridge plot
+RIDGE_CMAPS = [
+    "afmhot", "afmhot_r", "Blues", "bone",
+    "BrBG", "BuGn", "coolwarm", "cubehelix",
+    "gist_earth", "GnBu", "Greens", "magma",
+    "ocean", "Pastel1", "pink", "PuBu", "PuBuGn",
+    "RdBu", "Spectral",
+]
 
 regplot_combs = [
     ['cadetblue', 'slateblue', 'darkslateblue'],
@@ -228,3 +238,17 @@ def to_1d_array(array_like) -> np.ndarray:
         return array_like.values.reshape(-1,)
     else:
         raise ValueError(f'cannot convert object array {array_like.__class__.__name__}  to 1d ')
+
+
+def kde(y):
+    """Generate Kernel Density Estimate plot using Gaussian kernels."""
+    gkde = gaussian_kde(y, bw_method='scott')
+
+    sample_range = np.nanmax(y) - np.nanmin(y)
+    ind = np.linspace(
+        np.nanmin(y) - 0.5 * sample_range,
+        np.nanmax(y) + 0.5 * sample_range,
+        1000,
+    )
+
+    return ind, gkde.evaluate(ind)

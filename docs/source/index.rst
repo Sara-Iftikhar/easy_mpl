@@ -51,6 +51,11 @@ dumbbell
 .. automodule:: easy_mpl
    :members: dumbbell_plot
 
+ridge
+==================
+.. automodule:: easy_mpl
+   :members: ridge
+
 
 Indices and tables
 ==================

@@ -8,8 +8,9 @@ from ._main import hist
 from ._main import scatter
 from ._main import contour
 from ._main import dumbbell_plot
+from ._main import ridge
 
 from .utils import process_axis
 
 
-__version__ = "0.1.1"
+__version__ = "0.11.0"
