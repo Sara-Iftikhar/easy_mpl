@@ -376,6 +376,8 @@ def imshow(
     Parameters
     ----------
         values: 2d array
+            the image/data to show. It must bt 2 dimensional. It can also
+            be dataframe.
         xlabel:  str, optional
         ylabel : str, optional
         title : str, optional
@@ -387,8 +389,10 @@ def imshow(
             whether to draw colorbar or not
         colorbar_orientation : str, optional
             either "vertical" or "horizontal"
-        xticklabels : optional
-        yticklabels :  optional
+        xticklabels : list, optional
+            tick labels for x-axis. For DataFrames, column names are used by default.
+        yticklabels :  list, optional
+            tick labels for y-axis. For DataFrames, index is used by default
         ax : plt.Axes, optional
             if not given, current available axes will be used
         **kwargs : optional
