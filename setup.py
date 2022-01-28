@@ -1,17 +1,14 @@
 
 from setuptools import setup
 
-with open("README.md", "r") as fd:
-    long_desc = fd.read()
-
 setup(
 
     name='easy_mpl',
 
-    version="0.12.0",
+    version="0.13",
 
     description='one stop shop for matplotlib plots',
-    long_description=long_desc,
+    long_description="",
     long_description_content_type="text/markdown",
 
     url='https://github.com/Sara-Iftikhar/easy_mpl',

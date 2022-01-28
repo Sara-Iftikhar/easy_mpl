@@ -13,4 +13,4 @@ from ._main import ridge
 from .utils import process_axis
 
 
-__version__ = "0.12.0"
+__version__ = "0.13"
