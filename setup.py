@@ -8,16 +8,16 @@ setup(
 
     name='easy_mpl',
 
-    version="0.11.0",
+    version="0.12.0",
 
     description='one stop shop for matplotlib plots',
     long_description=long_desc,
     long_description_content_type="text/markdown",
 
-    url='https://github.com/AtrCheema/easy_mpl',
+    url='https://github.com/Sara-Iftikhar/easy_mpl',
 
-    author='Ather Abbas',
-    author_email='ather_abbas786@yahoo.com',
+    author='Sara Iftikhar',
+    author_email='sara.rwpk@gmail.com',
 
     classifiers=[
         'Development Status :: 4 - Beta',

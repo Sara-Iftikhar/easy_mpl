@@ -183,7 +183,7 @@ def plot(
     """
 
     plot_kwargs = ('linewidth', 'linestyle', 'marker', 'fillstyle', 'ms', 'color',
-                   'drawstyle', 'y_data', 'url', 'mfc', 'mec', 'snap'
+                   'drawstyle', 'y_data', 'url', 'mfc', 'mec', 'snap', 'markersize',
                    'lw', 'ls', 'ds'
                    )
     _plot_kwargs = {}

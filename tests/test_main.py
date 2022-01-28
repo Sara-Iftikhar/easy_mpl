@@ -78,7 +78,7 @@ class TestRegplot(unittest.TestCase):
 
 
 class TestPlot(unittest.TestCase):
-    show = False
+    show = True
 
     def test_vanilla(self):
         ax = plot(np.random.random(100), title="vanilla", show=self.show)
@@ -155,6 +155,17 @@ class TestPlot(unittest.TestCase):
                          columns=[f"col_{i}" for i in range(2)],
                       index=pd.date_range("20100101", periods=100, freq="D"))
         ax = plot(x, '-', title="df_ncol", show=self.show)
+        assert isinstance(ax, plt.Axes)
+        return
+
+    def test_lw(self):
+        ax = plot(np.random.random(10), marker=".", lw=2, title="lw", show=self.show)
+        assert isinstance(ax, plt.Axes)
+        return
+
+    def test_markersize(self):
+        ax = plot(np.random.random(10), marker=".", markersize=10,
+                  title="markersize", show=self.show)
         assert isinstance(ax, plt.Axes)
         return
 
