@@ -142,6 +142,7 @@ dumbbell_plot(st, en, line_kws={'color':"black"})
 
 
 ## ridge
+
 ```python
 import numpy as np
 from easy_mpl import ridge
@@ -152,4 +153,45 @@ ridge(data_, cmap="Blues")
 # using pandas DataFrame
 import pandas as pd
 ridge(pd.DataFrame(data_))
+```
+
+
+## parallel_coordinates
+
+```python
+import random
+import numpy as np
+import pandas as pd
+from easy_mpl import parallel_coordinates
+ynames = ['P1', 'P2', 'P3', 'P4', 'P5']
+
+N1, N2, N3 = 10, 5, 8
+N = N1 + N2 + N3
+categories = ['a', 'b', 'c', 'd', 'e', 'f']
+y1 = np.random.uniform(0, 10, N) + 7
+y2 = np.sin(np.random.uniform(0, np.pi, N))
+y3 = np.random.binomial(300, 1 / 10, N)
+y4 = np.random.binomial(200, 1 / 3, N)
+y5 = np.random.uniform(0, 800, N)
+
+data = np.column_stack((y1, y2, y3, y4, y5))
+data = pd.DataFrame(data, columns=ynames)
+# using DataFrame
+parallel_coordinates(data, names=ynames)
+# using continuous values for categories
+parallel_coordinates(data, names=ynames, categories=np.random.randint(0, 5, N))
+# using categorical classes
+parallel_coordinates(data, names=ynames, categories=random.choices(categories, k=N))
+# using numpy array
+parallel_coordinates(data.values, names=ynames)
+# with customized tick labels
+parallel_coordinates(data.values, ticklabel_kws={"fontsize": 8, "color": "red"})
+# using straight lines instead of breziers
+parallel_coordinates(data, linestyle="straight")
+# with categorical class labels
+data['P5'] = random.choices(categories, k=N)
+parallel_coordinates(data, names=ynames)
+# with categorical class labels and customized ticklabels
+data['P5'] = random.choices(categories, k=N)
+parallel_coordinates(data,  ticklabel_kws={"fontsize": 8, "color": "red"})
 ```

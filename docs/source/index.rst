@@ -8,6 +8,8 @@ Welcome to easy_mpl's documentation!
    :maxdepth: 2
    :caption: Contents:
 
+plot
+==================
 .. automodule:: easy_mpl
    :members: plot
 
@@ -55,6 +57,12 @@ ridge
 ==================
 .. automodule:: easy_mpl
    :members: ridge
+
+
+parallel_coordinates
+==================
+.. automodule:: easy_mpl
+   :members: parallel_coordinates
 
 
 Indices and tables

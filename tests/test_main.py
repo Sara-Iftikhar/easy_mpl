@@ -10,6 +10,7 @@ from easy_mpl import bar_chart, imshow, hist, pie, plot
 from easy_mpl import regplot, scatter, contour
 from easy_mpl.utils import BAR_CMAPS, get_cmap
 from easy_mpl import dumbbell_plot, ridge
+from easy_mpl import parallel_coordinates
 
 
 def get_chart_data(n):
@@ -78,7 +79,7 @@ class TestRegplot(unittest.TestCase):
 
 
 class TestPlot(unittest.TestCase):
-    show = True
+    show = False
 
     def test_vanilla(self):
         ax = plot(np.random.random(100), title="vanilla", show=self.show)
@@ -371,6 +372,91 @@ class TestRidge(unittest.TestCase):
         axis = ridge(np.random.random(100,), title="nparray_1d", show=self.show)
         for ax in axis:
             assert isinstance(ax, plt.Axes)
+        return
+
+
+class TestParallelPlot(unittest.TestCase):
+    show = False
+    ynames = ['P1', 'P2', 'P3', 'P4', 'P5']
+
+    N1, N2, N3 = 10, 5, 8
+    N = N1 + N2 + N3
+
+    y1 = np.random.uniform(0, 10, N) + 7
+    y2 = np.sin(np.random.uniform(0, np.pi, N))
+    y3 = np.random.binomial(300, 1 / 10, N)
+    y4 = np.random.binomial(200, 1 / 3, N)
+    y5 = np.random.uniform(0, 800, N)
+
+    data = np.column_stack((y1, y2, y3, y4, y5))
+    data = pd.DataFrame(data, columns=ynames)
+
+    def test_catfeatures(self):
+        data = self.data.copy()
+        data['P5'] = random.choices(['a', 'b', 'c', 'd', 'e', 'f'], k=self.N)
+        ax = parallel_coordinates(data, names=self.ynames, title="cat feature",
+                             show=self.show)
+        assert isinstance(ax, plt.Axes)
+        return
+
+    def test_customticklabelscatfeatures(self):
+        data = self.data.copy()
+        data['P5'] = random.choices(['a', 'b', 'c', 'd', 'e', 'f'], k=self.N)
+        ax = parallel_coordinates(data, title="custom ticklabels cat feat",
+                                  ticklabel_kws={"fontsize": 8, "color": "red"},
+                                  show=self.show)
+        assert isinstance(ax, plt.Axes)
+        return
+
+    def test_allcontinuous(self):
+        data = self.data.copy()
+        ax = parallel_coordinates(data, names=self.ynames, title="all continuous",
+                             show=self.show)
+        assert isinstance(ax, plt.Axes)
+        return
+
+    def test_continuoustarget(self):
+        data = self.data.copy()
+        ax = parallel_coordinates(data, names=self.ynames,
+                                  categories=np.random.randint(0, 5, self.N),
+                                  title="target continuous",
+                                  show=self.show)
+        assert isinstance(ax, plt.Axes)
+        return
+
+    def test_targetcategory(self):
+        category = ['a', 'b', 'c', 'd', 'e']
+        data = self.data.copy()
+        ax = parallel_coordinates(data, names=self.ynames,
+                                  categories=random.choices(category, k=len(data)),
+                                  show=self.show,
+                         title="target category")
+        assert isinstance(ax, plt.Axes)
+        return
+
+    def test_nparray(self):
+        data = self.data.copy()
+        ax = parallel_coordinates(data.values, names=self.ynames,
+                             title="np array",
+                             show=self.show)
+        assert isinstance(ax, plt.Axes)
+        return
+
+    def test_customticklabels(self):
+        data = self.data.copy()
+        ax = parallel_coordinates(data.values,
+                             title="custom ticklabels",
+                             ticklabel_kws={"fontsize": 8, "color": "red"},
+                             show=self.show)
+        assert isinstance(ax, plt.Axes)
+        return
+
+    def test_straightlines(self):
+        data = self.data.copy()
+        ax = parallel_coordinates(data, linestyle="straight",
+                             title="straight lines",
+                             show=self.show)
+        assert isinstance(ax, plt.Axes)
         return
 
 
