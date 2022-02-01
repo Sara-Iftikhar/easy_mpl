@@ -10,8 +10,9 @@ from ._main import contour
 from ._main import dumbbell_plot
 from ._main import ridge
 from ._main import parallel_coordinates
+from ._taylor_plot import taylor_plot
 
 from .utils import process_axis
 
 
-__version__ = "0.18"
+__version__ = "0.19"

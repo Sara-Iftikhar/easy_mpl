@@ -8,6 +8,7 @@
 
 __pycache__/
 .idea
+.vscode
 
 easy_mpl.egg-info
 dist

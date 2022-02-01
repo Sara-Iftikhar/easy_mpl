@@ -418,7 +418,7 @@ def imshow(
         >>> from easy_mpl import imshow
         >>> x = np.random.random((10, 5))
         >>> imshow(x, annotate=True)
-        # show colorbar
+        ... # show colorbar
         >>> imshow(x, colorbar=True)
 
     .. _axes.imshow:
@@ -562,7 +562,7 @@ def pie(
         >>> pie(np.random.randint(0, 3, 100))
         or by directly providing fractions
         >>> pie([0.2, 0.3, 0.1, 0.4])
-        # to explode 0.3
+        ... # to explode 0.3
         >>> explode = (0, 0.1, 0, 0, 0)
         >>> pie(fractions=[0.2, 0.3, 0.15, 0.25, 0.1], explode=explode)
 
@@ -641,9 +641,9 @@ def scatter(
         >>> x_ = np.random.random(100)
         >>> y_ = np.random.random(100)
         >>> scatter(x_, y_, show=False)
-        show colorbar
+        ... show colorbar
         >>> scatter(x_, y_, colorbar=True, show=False)
-        retrieve axes for further processing
+        ... retrieve axes for further processing
         >>> axes, _ = scatter(x_, y_, show=False)
         >>> assert isinstance(axes, plt.Axes)
 
@@ -735,7 +735,7 @@ def contour(
         >>> _y = np.random.uniform(-2, 2, 200)
         >>> _z = _x * np.exp(-_x**2 - _y**2)
         >>> contour(_x, _y, _z, fill_between=True, show_points=True)
-        show contour labels
+        ... show contour labels
         >>> contour(_x, _y, _z, label_contours=True, show_points=True)
 
     Note
@@ -843,14 +843,14 @@ def dumbbell_plot(
         >>> st = np.random.randint(1, 5, 10)
         >>> en = np.random.randint(11, 20, 10)
         >>> dumbbell_plot(st, en)
-         modify line color
+        ... # modify line color
         >>> dumbbell_plot(st, en, line_kws={'color':"black"})
 
 
     .. _axes.scatter:
         https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.scatter.html
-
-    .. _axes.scatter:
+    
+    .. _lines.Line2D:
         https://matplotlib.org/stable/api/_as_gen/matplotlib.lines.Line2D.html
 
     """

@@ -60,10 +60,15 @@ ridge
 
 
 parallel_coordinates
-==================
+====================
 .. automodule:: easy_mpl
    :members: parallel_coordinates
 
+
+taylor_plot
+===========
+.. automodule:: easy_mpl
+   :members: taylor_plot
 
 Indices and tables
 ==================
