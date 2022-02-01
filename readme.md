@@ -163,8 +163,8 @@ import random
 import numpy as np
 import pandas as pd
 from easy_mpl import parallel_coordinates
-ynames = ['P1', 'P2', 'P3', 'P4', 'P5']
 
+ynames = ['P1', 'P2', 'P3', 'P4', 'P5']
 N1, N2, N3 = 10, 5, 8
 N = N1 + N2 + N3
 categories = ['a', 'b', 'c', 'd', 'e', 'f']
@@ -173,7 +173,7 @@ y2 = np.sin(np.random.uniform(0, np.pi, N))
 y3 = np.random.binomial(300, 1 / 10, N)
 y4 = np.random.binomial(200, 1 / 3, N)
 y5 = np.random.uniform(0, 800, N)
-
+# combine all arrays into a pandas DataFrame
 data = np.column_stack((y1, y2, y3, y4, y5))
 data = pd.DataFrame(data, columns=ynames)
 # using DataFrame
