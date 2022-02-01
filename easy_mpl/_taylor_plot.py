@@ -1,6 +1,7 @@
 
 __all__ = ['taylor_plot']
 
+from typing import Union
 import pprint
 
 import numpy as np
@@ -231,7 +232,7 @@ class TaylorDiagram(object):
 
 def taylor_plot(
         observations: dict,
-        simulations: dict,
+        simulations: Union[dict, np.ndarray],
         axis_locs: dict = None,
         cont_kws: dict = None,
         grid_kws: dict = None,
@@ -242,25 +243,26 @@ def taylor_plot(
         **kwargs
 ) -> plt.Figure:
     """
-    Helper function to plot `Taylor`_'s plot.
+    Helper function to plot `Taylor`_'s plot. A taylor plot is useful to compare
+    results of different simulations.
 
     Arguments:
-        observations:
+        observations : dict, optional
             a dictionary of length > 1, whose keys are scenarios and values
             represent true/observations at that scenarios. The values can also
             be a dictionary containing `std`, which stands for standard deviation.
-        simulations:
+        simulations : dict, optional
             A dictionary of length > 1 whose keys are scenarios and whose values
             are also dictionary. Each sub-dictionary i.e. dictionary of scenario
             consist of models/simulations.
-        axis_locs:
+        axis_locs :
             dictionary defining axis orientation of figure. For example with two
             scenarios named 'scenario1' and 'scenario2', if we want to plot two
             plots in one column, then this argument will be
             >>>          {'scenario1': 211,
             >>>           'scenario2': 212}.
             Default is None.
-        cont_kws:
+        cont_kws : dict, optional
             keyword arguments related to `contours`_. Following args can be used:
 
                 - levels level of contours
@@ -270,7 +272,7 @@ def taylor_plot(
                 - linewidths float or sequence of floats
                 - linestyles {None, 'solid', 'dashed', 'dashdot', 'dotted'}
 
-        grid_kws:
+        grid_kws : dict, optional
             keyword arguments related to grid. Following args can be used.
             Following keyword arguments are allowed
 
@@ -279,18 +281,20 @@ def taylor_plot(
                 - axis {'both', 'x', 'y'},
             any kwargs from `axes.grid`_ are allowed.
 
-        leg_kws:
+        leg_kws : dict, optional
             keyword arguments related to legends:
 
                 - position defaults to `center`
-                - fontsize int or {'xx-small', 'x-small', 'small', 'medium', 'large', 'x-large', 'xx-large'}
+                - fontsize int or {'xx-small', 'x-small', 'small', 'medium', 'large',
+                                   'x-large', 'xx-large'}
                 - numpoints int, default: rcParams["legend.numpoints"] (default: 1)
                 - markerscale float, default: rcParams["legend.markerscale"] (default: 1.0)
             see `axes.legend`_ for more details.
 
-            >>> example leg_kws = {'loc': 'upper right', 'numpoints': 1, 'fontsize': 15, 'markerscale': 1}
+            >>> example leg_kws = {'loc': 'upper right', 'numpoints': 1, 'fontsize': 15,
+            ...                    'markerscale': 1}
 
-        axis_fontdict:
+        axis_fontdict : dict, optional
             dictionary defining propertiies of left, bottom and top axis labels
 
             >>> axis_fontdict = {'left': {'fontsize': 20, 'color': 'k', 'ticklabel_fs': 14},
@@ -299,14 +303,15 @@ def taylor_plot(
 
             The user can define properties of either one or all axis.
 
-        axis_kws:
+        axis_kws : dict, optional
             dictionary containing general parameters related to axis such as title.
         
         marker_kws : dict, optional
             dictionary containing marker properties. All of these keywords are passed to
             `matplotlib.axes.Axes.plot`. 
 
-        kwargs dict : Following keyword arguments are optional:
+        **kwargs : 
+            Following keyword arguments are optional:
 
             - add_ith_interval : bool
 

@@ -203,9 +203,9 @@ from easy_mpl import taylor_plot
 np.random.seed(313)
 observations =  np.random.normal(20, 40, 10)
 simulations =  {"LSTM": np.random.normal(20, 40, 10),
-            "CNN": np.random.normal(20, 40, 10),
-            "TCN": np.random.normal(20, 40, 10),
-            "CNN-LSTM": np.random.normal(20, 40, 10)}
+                "CNN": np.random.normal(20, 40, 10),
+                "TCN": np.random.normal(20, 40, 10),
+                "CNN-LSTM": np.random.normal(20, 40, 10)}
 taylor_plot(observations=observations,
             simulations=simulations,
             title="Taylor Plot")
@@ -221,19 +221,19 @@ observations = {
 
 simulations = {
     "site1": {"LSTM": np.random.normal(20, 40, 10),
-                "CNN": np.random.normal(20, 40, 10),
-                "TCN": np.random.normal(20, 40, 10),
-                "CNN-LSTM": np.random.normal(20, 40, 10)},
+              "CNN": np.random.normal(20, 40, 10),
+              "TCN": np.random.normal(20, 40, 10),
+              "CNN-LSTM": np.random.normal(20, 40, 10)},
 
     "site2": {"LSTM": np.random.normal(20, 40, 10),
-                "CNN": np.random.normal(20, 40, 10),
-                "TCN": np.random.normal(20, 40, 10),
-                "CNN-LSTM": np.random.normal(20, 40, 10)},
+              "CNN": np.random.normal(20, 40, 10),
+              "TCN": np.random.normal(20, 40, 10),
+              "CNN-LSTM": np.random.normal(20, 40, 10)},
 
     "site3": {"LSTM": np.random.normal(20, 40, 10),
-                "CNN": np.random.normal(20, 40, 10),
-                "TCN": np.random.normal(20, 40, 10),
-                "CNN-LSTM": np.random.normal(20, 40, 10)},
+              "CNN": np.random.normal(20, 40, 10),
+              "TCN": np.random.normal(20, 40, 10),
+              "CNN-LSTM": np.random.normal(20, 40, 10)},
 
     "site4": {"LSTM": np.random.normal(20, 40, 10),
                 "CNN": np.random.normal(20, 40, 10),
@@ -258,11 +258,11 @@ observations = {
 'Scenario 1': {'std': 4.916}}
 predictions = {
     'Scenario 1': {
-'Model 1': {'std': 2.80068, 'corr_coeff': 0.49172, 'pbias': -8.85},
-'Model 2': {'std': 3.47, 'corr_coeff': 0.67, 'pbias': -19.76},
-'Model 3': {'std': 3.53, 'corr_coeff': 0.596, 'pbias': 7.81},
-'Model 4': {'std': 2.36, 'corr_coeff': 0.27, 'pbias': -22.78},
-'Model 5': {'std': 2.97, 'corr_coeff': 0.452, 'pbias': -7.99}}}
+        'Model 1': {'std': 2.80068, 'corr_coeff': 0.49172, 'pbias': -8.85},
+        'Model 2': {'std': 3.47, 'corr_coeff': 0.67, 'pbias': -19.76},
+        'Model 3': {'std': 3.53, 'corr_coeff': 0.596, 'pbias': 7.81},
+        'Model 4': {'std': 2.36, 'corr_coeff': 0.27, 'pbias': -22.78},
+        'Model 5': {'std': 2.97, 'corr_coeff': 0.452, 'pbias': -7.99}}}
 
 taylor_plot(observations,
     predictions,
@@ -280,18 +280,18 @@ taylor_plot(observations=observations,
             simulations=simulations,
             title="customized markers",
             marker_kws={'markersize': 10, 'markeredgewidth': 1.5,
-                'markeredgecolor': 'black'})
+                        'markeredgecolor': 'black'})
 
 # with customizing bbox
 np.random.seed(313)
 observations =  np.random.normal(20, 40, 10)
 simulations =  {"LSTMBasedRegressionModel": np.random.normal(20, 40, 10),
-        "CNNBasedRegressionModel": np.random.normal(20, 40, 10),
-        "TCNBasedRegressionModel": np.random.normal(20, 40, 10),
-        "CNN-LSTMBasedRegressionModel": np.random.normal(20, 40, 10)}
+                "CNNBasedRegressionModel": np.random.normal(20, 40, 10),
+                "TCNBasedRegressionModel": np.random.normal(20, 40, 10),
+                "CNN-LSTMBasedRegressionModel": np.random.normal(20, 40, 10)}
 taylor_plot(observations=observations,
             simulations=simulations,
             title="custom_legend",
             leg_kws={'facecolor': 'white',
-                'edgecolor': 'black','bbox_to_anchor':(1.1, 1.05)})
+                     'edgecolor': 'black','bbox_to_anchor':(1.1, 1.05)})
 ```
