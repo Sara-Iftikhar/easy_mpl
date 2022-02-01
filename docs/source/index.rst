@@ -70,6 +70,13 @@ taylor_plot
 .. automodule:: easy_mpl
    :members: taylor_plot
 
+
+lollipop_plot
+=============
+.. automodule:: easy_mpl
+   :members: lollipop_plot
+
+
 Indices and tables
 ==================
 

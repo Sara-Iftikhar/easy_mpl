@@ -260,8 +260,10 @@ def taylor_plot(
             dictionary defining axis orientation of figure. For example with two
             scenarios named 'scenario1' and 'scenario2', if we want to plot two
             plots in one column, then this argument will be
+
             >>>          {'scenario1': 211,
             >>>           'scenario2': 212}.
+
             Default is None.
         cont_kws : dict, optional
             keyword arguments related to `contours`_. Following args can be used:
@@ -275,7 +277,7 @@ def taylor_plot(
 
         grid_kws : dict, optional
             keyword arguments related to grid. Following args can be used.
-            Following keyword arguments are allowed
+            Following keyword arguments are allowed:
 
                 - title_fontsize: int, fontsize of the axis title
                 - which {'major', 'minor', 'both'}
