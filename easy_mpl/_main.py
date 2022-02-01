@@ -971,7 +971,7 @@ def ridge(
 
     ax_objs = []
 
-    for idx, col in enumerate(reversed(ymaxes)):
+    for idx, col in enumerate(reversed(list(ymaxes.keys()))):
 
         # creating new axes object
         ax_objs.append(fig.add_subplot(gs[idx:idx+1, 0:]))

@@ -247,15 +247,16 @@ def taylor_plot(
     results of different simulations.
 
     Arguments:
-        observations : dict, optional
-            a dictionary of length > 1, whose keys are scenarios and values
+        observations : dict, array
+            If it is an array then it means we have only one scenario. If it is
+            a dictionary of length > 1, then its keys are scenarios and values
             represent true/observations at that scenarios. The values can also
             be a dictionary containing `std`, which stands for standard deviation.
-        simulations : dict, optional
+        simulations : dict
             A dictionary of length > 1 whose keys are scenarios and whose values
             are also dictionary. Each sub-dictionary i.e. dictionary of scenario
             consist of models/simulations.
-        axis_locs :
+        axis_locs : dict, optional
             dictionary defining axis orientation of figure. For example with two
             scenarios named 'scenario1' and 'scenario2', if we want to plot two
             plots in one column, then this argument will be
@@ -400,22 +401,19 @@ def taylor_plot(
         ...             title="mutiple subplots")
         ... 
         ... # Sometimes we don't have actual true and simulation values as arrays. We can
-        ... # still make Taylor plot using by providing only standard deviation and coefficient
-        ... # of correlation (R) values.
-        >>> observations = {
-        ... 'Scenario 1': {'std': 4.916}}
-        >>> predictions = {
-        ...     'Scenario 1': {
+        ... # still make Taylor plot by providing only standard deviation and coefficient
+        ... # of correlation (R) values of simulations and observations.
+        >>> observations = {'std': 4.916}
+        >>> predictions = {   # pbias is optional
         ...         'Model 1': {'std': 2.80068, 'corr_coeff': 0.49172, 'pbias': -8.85},
         ...         'Model 2': {'std': 3.47, 'corr_coeff': 0.67, 'pbias': -19.76},
         ...         'Model 3': {'std': 3.53, 'corr_coeff': 0.596, 'pbias': 7.81},
         ...         'Model 4': {'std': 2.36, 'corr_coeff': 0.27, 'pbias': -22.78},
-        ...         'Model 5': {'std': 2.97, 'corr_coeff': 0.452, 'pbias': -7.99}}}
+        ...         'Model 5': {'std': 2.97, 'corr_coeff': 0.452, 'pbias': -7.99}}
         ... 
         >>> taylor_plot(observations,
         ...     predictions,
-        ...     title="with statistical parameters",
-        ...     plot_bias=True)
+        ...     title="with statistical parameters")
         ... 
         ... # with customized markers
         >>> np.random.seed(313)
@@ -460,6 +458,10 @@ def taylor_plot(
     values = False
 
     if isinstance(observations, np.ndarray): 
+        observations = {'Reference': observations}
+        simulations = {'Reference': simulations}
+
+    if isinstance(observations, dict) and len(observations) == 1 and 'std' in observations.keys():
         observations = {'Reference': observations}
         simulations = {'Reference': simulations}
 
