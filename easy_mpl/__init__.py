@@ -12,6 +12,7 @@ from ._main import ridge
 from ._main import parallel_coordinates
 from ._taylor_plot import taylor_plot
 from ._main import lollipop_plot
+from ._main import circular_bar_plot
 
 from .utils import process_axis
 

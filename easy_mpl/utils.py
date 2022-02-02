@@ -103,10 +103,10 @@ def process_axis(
         ylabel_kws:dict=None,  # ylabel kwargs
         ytick_kws:dict = None, # for axes.tick_params(  such as which, labelsize, colors etc
         show_xaxis=True,
-        top_spine=True,
-        bottom_spine=True,
-        right_spine=True,
-        left_spine=True,
+        top_spine=None,
+        bottom_spine=None,
+        right_spine=None,
+        left_spine=None,
         invert_yaxis=False,
         max_xticks=None,
         min_xticks=None,

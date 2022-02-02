@@ -77,6 +77,11 @@ lollipop_plot
    :members: lollipop_plot
 
 
+circular_bar_plot
+=================
+.. automodule:: easy_mpl
+   :members: circular_bar_plot
+
 Indices and tables
 ==================
 
