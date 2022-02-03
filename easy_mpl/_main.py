@@ -1143,6 +1143,8 @@ def parallel_coordinates(
 
     _is_categorical = False
     cat_encoded = categories
+    num_cols = data.shape[1]
+    num_lines = len(data)
 
     if not np.issubdtype(categories.dtype, np.number):
         # category contains categorical/non-numeri values
@@ -1162,6 +1164,7 @@ def parallel_coordinates(
             cols[idx] = {'cat': False}
 
     # organize the data
+    enc_data = enc_data.astype(float)
     ymins = np.min(enc_data.values, axis=0)  #ys.min(axis=0)
     ymaxs = np.max(enc_data.values, axis=0)  # ys.max(axis=0)
     dys = ymaxs - ymins
@@ -1176,7 +1179,7 @@ def parallel_coordinates(
 
     fig, host = plt.subplots(figsize=figsize)
 
-    axes = [host] + [host.twinx() for _ in range(enc_data.shape[1] - 1)]
+    axes = [host] + [host.twinx() for _ in range(num_cols - 1)]
     for i, ax in enumerate(axes):
         ax.set_ylim(ymins[i], ymaxs[i])
         ax.spines['top'].set_visible(False)
@@ -1184,12 +1187,11 @@ def parallel_coordinates(
         if ax != host:
             ax.spines['left'].set_visible(False)
             ax.yaxis.set_ticks_position('right')
-            ax.spines["right"].set_position(("axes", i / (enc_data.shape[1] - 1)))
+            ax.spines["right"].set_position(("axes", i / (num_cols - 1)))
 
         if cols[i]['cat']:
-            categories = np.unique(cols[i]['original'])
-            ticks = ax.get_yticks()
-            new_ticks = np.linspace(ticks[0], ticks[-1], len(categories))
+            categories = np.unique(cols[i]['original']) 
+            new_ticks = np.unique(enc_data.iloc[:, i]).astype("float32")
             ax.set_yticks(new_ticks)
             ax.set_yticklabels(categories)
 
@@ -1202,8 +1204,8 @@ def parallel_coordinates(
             ax.set_yticks(ax.get_yticks().tolist())
             ax.set_yticklabels([label_format(x) for x in ticks_loc], **ticklabel_kws)
 
-    host.set_xlim(0, enc_data.shape[1] - 1)
-    host.set_xticks(range(enc_data.shape[1]))
+    host.set_xlim(0, num_cols - 1)
+    host.set_xticks(range(num_cols))
     host.set_xticklabels(names, fontsize=names_fontsize)
     host.tick_params(axis='x', which='major', pad=7)
     host.spines['right'].set_visible(False)
@@ -1211,24 +1213,25 @@ def parallel_coordinates(
     if title:
         host.set_title(title, fontsize=18)
 
-    # category between 0,1 to map colors to their values
-    cat_norm = _rescale(cat_encoded)
+    # category between 0.2,1 to map colors to their values
+    cat_norm = _rescale(cat_encoded, 0.2)
 
-    for j in range(len(enc_data)):
+    for j in range(num_lines):
         # color of each line is based upon corresponding value in category
         colors = getattr(cm, cmap)(cat_norm[j])
 
         if linestyle == "straight":
             # to just draw straight lines between the axes:
-            host.plot(range(enc_data.shape[1]), zs[j,:], c=colors)
+            host.plot(range(num_cols), zs[j,:], c=colors)
         else:
             # create bezier curves
             # for each axis, there will a control vertex at the point itself, one at 1/3rd towards the previous and one
             #   at one third towards the next axis; the first and last axis have one less control vertex
             # x-coordinate of the control vertices: at each integer (for the axes) and two inbetween
             # y-coordinate: repeat every point three times, except the first and last only twice
-            verts = list(zip([x for x in np.linspace(0, len(data) - 1, len(data) * 3 - 2, endpoint=True)],
-                             np.repeat(zs[j, :], 3)[1:-1]))
+            x_coords = [x for x in np.linspace(0, len(data) - 1, len(data) * 3 - 2, endpoint=True)]
+            y_coords = np.repeat(zs[j, :], 3)[1:-1]
+            verts = list(zip(x_coords, y_coords))
             # for x,y in verts: host.plot(x, y, 'go') # to show the control points of the beziers
             codes = [Path.MOVETO] + [Path.CURVE4 for _ in range(len(verts) - 1)]
             path = Path(verts, codes)
@@ -1271,7 +1274,7 @@ def is_categorical(array)->bool:
 
 def _rescale(y, _min=0.0, _max=1.0):
 
-    y_std = (y - np.min(y)) / (np.max(y) - np.min(y))
+    y_std = (y - np.min(y, axis=0)) / (np.max(y, axis=0) - np.min(y, axis=0))
 
     return y_std * (_max - _min) + _min
 
@@ -1502,7 +1505,7 @@ def circular_bar_plot(
 
     min_max_range = min_max_range or (30, 100)
     lower_limit = min_max_range[0]
-    heights = _rescale(values, lower_limit, min_max_range[1])
+    heights = _rescale(values.reshape(-1, 1), lower_limit, min_max_range[1]).reshape(-1,)
 
     if sort:
         sort_idx = np.argsort(heights)

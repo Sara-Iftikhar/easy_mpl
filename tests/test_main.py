@@ -384,7 +384,7 @@ class TestRidge(unittest.TestCase):
         return
 
 
-class TestParallelPlot(unittest.TestCase):
+class TestParallelCoord(unittest.TestCase):
     show = False
     ynames = ['P1', 'P2', 'P3', 'P4', 'P5']
 
@@ -467,7 +467,37 @@ class TestParallelPlot(unittest.TestCase):
                              show=self.show)
         assert isinstance(ax, plt.Axes)
         return
+    
+    def test_all_cat(self):
+        data = {
+            'tide': ['yeo', 'scale', 'log', 'minmax', 'robust'],
+            'wat': ['scale', 'log', 'sqrt', 'quantile', 'log'],
+            'estimator': ['log', 'zscore', 'log', 'robust', 'zscore'],
+            'P4': ['lr', 'lasso', 'lr', 'lr', 'lasso'],
+        }
+        cat = [3.10e14, 1.15e14, 1.20e14, 1.25e14, 1.50e14]
 
+        data = pd.DataFrame.from_dict(data)
+
+        ax = parallel_coordinates(data, cat, show=self.show, title="all cat")
+        assert isinstance(ax, plt.Axes)
+        return
+    
+    def test_all_cat_but_one(self):
+        data = {
+            'tide': ['yeo', 'scale', 'log', 'minmax', 'robust'],
+            'wat': ['scale', 'log', 'sqrt', 'quantile', 'log'],
+            'estimator': ['log', 'zscore', 'log', 'robust', 'zscore'],
+            'P3': [11,2,33,4, 5],
+            'P4': ['lr', 'lasso', 'lr', 'lr', 'lasso'],
+        }
+        cat = [3.10e14, 1.15e14, 1.20e14, 1.25e14, 1.50e14]
+
+        data = pd.DataFrame.from_dict(data)
+
+        ax = parallel_coordinates(data, cat, show=self.show, title="all cat but one")
+        assert isinstance(ax, plt.Axes)
+        return
 
 class TestLollipopPlot(unittest.TestCase):
     show = False

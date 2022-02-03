@@ -17,4 +17,4 @@ from ._main import circular_bar_plot
 from .utils import process_axis
 
 
-__version__ = "0.20"
+__version__ = "0.20.1"
