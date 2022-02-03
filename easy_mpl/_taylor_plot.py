@@ -597,8 +597,10 @@ def taylor_plot(
                     _ = list(model.keys())[2]
                     third_val = list(model.values())[2]
             else:
+                assert model.size == len(model)
+                assert observations[season].size == len(observations[season])
                 stddev = np.std(model)
-                corrcoef = corr_coeff(observations[season], model)
+                corrcoef = corr_coeff(observations[season].reshape(-1,), model.reshape(-1,))
                 third_val = None
                 if plot_bias:
                     third_val = pbias(observations[season], model)

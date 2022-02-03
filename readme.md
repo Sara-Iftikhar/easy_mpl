@@ -20,8 +20,37 @@ This package can be installed using pip from pypi using following command
 
     pip install easy_mpl
 
-# Usage
+# API
 
+[plot](#plot)
+
+[bar_chart](#bar_chart)
+
+[regplot](#regplot)
+
+[imshow](#imshow)
+
+[hist](#hist)
+
+[pie](#pie)
+
+[scatter](#scatter)
+
+[contour](#contour)
+
+[dumbbell_plot](#dumbbell_plot)
+
+[ridge](#ridge)
+
+[parallel_coordinates](#parallel_coordinates)
+
+[taylor_plot](#taylor_plot)
+
+[lollipop_plot](#lollipop_plot)
+
+[circular_bar_plot](#circular_bar_plot)
+
+# Usage
 
 ## plot
 
@@ -43,7 +72,6 @@ plot(np.random.random(100), '--*', label='label')
 plot(np.random.random(100), '--*', logy=True, label='label')
 ```
 
-
 ## bar_chart
 
 ```python
@@ -55,7 +83,6 @@ bar_chart([3,4,2,5,10], ['a', 'b', 'c', 'd', 'e'])
 bar_chart([1,2,3,4,4,5,3,2,5], sort=True)
 ```
 
-
 ## regplot
 
 ```python
@@ -64,7 +91,6 @@ from easy_mpl import regplot
 x_, y_ = np.random.random(100), np.random.random(100)
 regplot(x_, y_)
 ```
-
 
 ## imshow
 
@@ -77,7 +103,6 @@ imshow(x, annotate=True)
 imshow(x, colorbar=True)
 ```
 
-
 ## hist
 
 ```python
@@ -85,7 +110,6 @@ from easy_mpl import hist
 import numpy as np
 hist(np.random.random((10, 1)))
 ```
-
 
 ## pie
 
@@ -113,7 +137,6 @@ ax, _ = scatter(x, y, show=False)
 assert isinstance(ax, plt.Axes)
 ```
 
-
 ## contour
 
 ```python
@@ -127,7 +150,6 @@ contour(x, y, z, fill_between=True, show_points=True)
 contour(x, y, z, label_contours=True, show_points=True)
 ```
 
-
 ## dumbbell_plot
 
 ```python
@@ -139,7 +161,6 @@ dumbbell_plot(st, en)
 # modify line color
 dumbbell_plot(st, en, line_kws={'color':"black"})
 ```
-
 
 ## ridge
 
@@ -154,7 +175,6 @@ ridge(data_, cmap="Blues")
 import pandas as pd
 ridge(pd.DataFrame(data_))
 ```
-
 
 ## parallel_coordinates
 
@@ -197,6 +217,7 @@ parallel_coordinates(data,  ticklabel_kws={"fontsize": 8, "color": "red"})
 ```
 
 ## taylor_plot
+
 ```python
 import numpy as np
 from easy_mpl import taylor_plot
@@ -297,6 +318,7 @@ taylor_plot(observations=observations,
 ```
 
 ## lollipop_plot
+
 ```python
 import numpy as np
 from easy_mpl import lollipop_plot
@@ -317,6 +339,7 @@ lollipop_plot(y, orientation="horizontal", title="horizontal")
 ```
 
 ## circular_bar_plot
+
 ```python
 import numpy as np
 from easy_mpl import circular_bar_plot
