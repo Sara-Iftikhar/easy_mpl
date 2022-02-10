@@ -22,6 +22,7 @@ from easy_mpl import lollipop_plot
 from easy_mpl import circular_bar_plot
 
 
+
 def get_chart_data(n):
     d = np.random.randint(2, 50, n)
     return d, [f'feature_{i}' for i in d]
@@ -61,6 +62,12 @@ class TestBarChart(unittest.TestCase):
         d = np.random.randint(2, 50, 10)
         bar_chart(values=d, sort=True, show=self.show)
         return
+    
+    def test_with_nan_vals(self):
+        ax = bar_chart(values=[1, 2, np.nan, 4, 5], show=self.show,
+            title='test_with_nan_vals')
+        assert isinstance(ax, plt.Axes)
+        return
 
 
 class TestRegplot(unittest.TestCase):
@@ -84,6 +91,22 @@ class TestRegplot(unittest.TestCase):
     def test_with_list_as_inputs(self):
         regplot(self.x.tolist(), self.y.tolist(),
                 show=self.show)
+        return
+    
+    def test_with_nan_vals(self):
+        x = np.random.random(100)
+        x[10] = np.nan
+        y = np.random.random(100)
+        y[5] = np.nan
+        ax = regplot(x, y, show=self.show, title='test_with_nan_vals')
+        assert isinstance(ax, plt.Axes)
+        return
+    
+    def test_nan_in_x(self):
+        x = np.append(self.x, np.nan)
+        y = np.append(self.y, 0.5)
+        ax = regplot(x, y, show=self.show, title='test_with_nan_vals')
+        assert isinstance(ax, plt.Axes)
         return
 
 
@@ -177,11 +200,17 @@ class TestPlot(unittest.TestCase):
         ax = plot(np.random.random(10), marker=".", markersize=10,
                   title="markersize", show=self.show)
         assert isinstance(ax, plt.Axes)
+        
+    def test_with_nan_vals(self):
+        x = np.append(np.random.random(100), np.nan)
+        ax = plot(x, '.', title="with_nan_vals", show=self.show)
+        assert isinstance(ax, plt.Axes)
         return
 
 
 class TestImshow(unittest.TestCase):
     show = False
+
     def test_imshow(self):
         ax, _ = imshow(np.random.random((10, 10)), colorbar=True, title="vanilla",
                        show=self.show)
@@ -205,6 +234,13 @@ class TestImshow(unittest.TestCase):
         ax, img = imshow(df, colorbar=True, show=self.show, title="df")
         assert isinstance(ax, plt.Axes)
         return
+    
+    def test_with_nan_vals(self):
+        x = np.random.random((10, 10))
+        x.ravel()[np.random.choice(x.size, 5, replace=False)] = np.nan
+        ax, img = imshow(x, colorbar=True, show=self.show, title="with_nan_vals")
+        assert isinstance(ax, plt.Axes)
+        return
 
 
 class Testhist(unittest.TestCase):
@@ -217,27 +253,49 @@ class Testhist(unittest.TestCase):
         _, ax = plt.subplots()
         hist(np.random.random((10, 1)), ax=ax, show=self.show)
         return
+    
+    def test_with_nan_vals(self):
+        x = np.random.random((10, 1))
+        x.ravel()[np.random.choice(x.size, 5, replace=False)] = np.nan
+        ax = hist(x, show=self.show, title="with_nan_vals")
+        assert isinstance(ax, plt.Axes)
+        return
 
 
 class TestPie(unittest.TestCase):
     show = False
+    save = False
+
     def test_binary(self):
-        ax = pie(np.random.randint(0, 2, 100), show=self.show, save=self.show)
+        ax = pie(np.random.randint(0, 2, 100), show=self.show, save=self.save)
         assert isinstance(ax, plt.Axes)
         return
 
     def test_multiclass(self):
-        ax = pie(np.random.randint(0, 5, 100), show=self.show, save=self.show)
+        ax = pie(np.random.randint(0, 5, 100), show=self.show, save=self.save)
         assert isinstance(ax, plt.Axes)
         return
 
     def test_string(self):
-        ax = pie(['a'] * 60 + ['b'] * 50, show=self.show, save=self.show)
+        ax = pie(['a'] * 60 + ['b'] * 50, show=self.show, save=self.save)
         assert isinstance(ax, plt.Axes)
         return
 
     def test_fraction(self):
-        ax = pie([0.1, 0.2, 0.5, 0.2], show=self.show, save=self.show)
+        ax = pie([0.1, 0.2, 0.5, 0.2], show=self.show, save=self.save)
+        assert isinstance(ax, plt.Axes)
+        return
+    
+    def test_nan_in_fraction(self):
+        ax = pie([0.1, 0.2, np.nan, 0.2], show=self.show, save=self.save,
+                 title="nan_in_fraction")
+        assert isinstance(ax, plt.Axes)
+        return
+    
+    def test_nan_in_vals(self):
+        vals = np.random.randint(0, 5, 100).astype("float32")
+        vals[np.random.choice(vals.size, 5, replace=False)] = np.nan
+        ax = pie(vals, show=self.show, save=self.save, title="nan_in_vals")
         assert isinstance(ax, plt.Axes)
         return
 
@@ -261,6 +319,35 @@ class TestScatter(unittest.TestCase):
         x = np.random.random(100)
         y = np.random.random(100)
         scatter(x, y, colorbar=True, show=self.show)
+        return
+    
+    def test_with_nan_in_x(self):
+        x = np.random.random(100)
+        # 5 random values are nan
+        x[np.random.choice(x.size, 5, replace=False)] = np.nan
+        y = np.random.random(100)
+        ax, _ = scatter(x, y, show=self.show)
+        assert isinstance(ax, plt.Axes)
+        return
+    
+    def test_with_nan_in_y(self):
+        x = np.random.random(100)
+        y = np.random.random(100)
+        # 5 random values are nan
+        y[np.random.choice(y.size, 5, replace=False)] = np.nan
+        ax, _ = scatter(x, y, show=self.show)
+        assert isinstance(ax, plt.Axes)
+        return
+
+    def test_with_nan_in_x_and_y(self):
+        x = np.random.random(100)
+        # 5 random values are nan
+        x[np.random.choice(x.size, 5, replace=False)] = np.nan
+        y = np.random.random(100)
+        # 5 random values are nan
+        y[np.random.choice(y.size, 5, replace=False)] = np.nan
+        ax, _ = scatter(x, y, show=self.show)
+        assert isinstance(ax, plt.Axes)
         return
 
 
@@ -345,6 +432,32 @@ class TestDumbbell(unittest.TestCase):
                            labels=[f'Feature {i}' for i in range(10)])
         assert isinstance(ax, plt.Axes)
         return
+    
+    def test_nan_in_st(self):
+        st = self.st.copy().astype("float32")
+        st[0] = np.nan
+        ax = dumbbell_plot(st, self.en, show=self.show,
+                            title="with labels")
+        assert isinstance(ax, plt.Axes)
+        return
+    
+    def test_nan_in_en(self):
+        en = self.en.copy().astype("float32")
+        en[0] = np.nan
+        ax = dumbbell_plot(self.st, en, show=self.show,
+                            title="with labels")
+        assert isinstance(ax, plt.Axes)
+        return
+    
+    def test_nan_in_st_and_en(self):
+        st = self.st.copy().astype("float32")
+        en = self.en.copy().astype("float32")
+        st[0] = np.nan
+        en[4] = np.nan
+        ax = dumbbell_plot(st, en, show=self.show,
+                            title="with labels")
+        assert isinstance(ax, plt.Axes)
+        return
 
 
 class TestRidge(unittest.TestCase):
@@ -379,6 +492,14 @@ class TestRidge(unittest.TestCase):
 
     def test_nparray_1d(self):
         axis = ridge(np.random.random(100,), title="nparray_1d", show=self.show)
+        for ax in axis:
+            assert isinstance(ax, plt.Axes)
+        return
+    
+    def test_array_with_nan_vals(self):
+        x = np.random.random(100,).astype("float32")
+        x[np.random.randint(0, 100, 10)] = np.nan
+        axis = ridge(x, title="array_with_nan_vals", show=self.show)
         for ax in axis:
             assert isinstance(ax, plt.Axes)
         return
@@ -498,6 +619,43 @@ class TestParallelCoord(unittest.TestCase):
         ax = parallel_coordinates(data, cat, show=self.show, title="all cat but one")
         assert isinstance(ax, plt.Axes)
         return
+    
+    def test_nan_in_data(self):
+        data = self.data.copy()
+        data.iloc[4, 4] = np.nan
+        data.iloc[3, 3] = np.nan
+        ax = parallel_coordinates(data, names=self.ynames,
+                                  title="nan in data",
+                                  show=self.show)
+        assert isinstance(ax, plt.Axes)
+        return
+    
+    def test_nan_in_categories(self):
+        
+        data = self.data.copy()
+        categories = np.arange(len(data)).astype("float32")
+        categories[4] = np.nan
+
+        ax = parallel_coordinates(data, names=self.ynames,
+                                  categories=categories,
+                                  title="nan in categories",
+                                  show=self.show)
+        assert isinstance(ax, plt.Axes)
+        return
+    
+    def test_nan_in_data_and_categroes(self):
+        data = self.data.copy()
+        data.iloc[4, 4] = np.nan
+        data.iloc[3, 3] = np.nan
+        categories = np.arange(len(data)).astype("float32")
+        categories[6] = np.nan
+        ax = parallel_coordinates(data, names=self.ynames,
+                                  categories=categories,
+                                  title="nan in data and categories",
+                                  show=self.show)
+        assert isinstance(ax, plt.Axes)
+        return
+
 
 class TestLollipopPlot(unittest.TestCase):
     show = False
@@ -538,6 +696,13 @@ class TestLollipopPlot(unittest.TestCase):
     def test_horizontal(self):
         y = np.random.randint(0, 20, size=10)
         ax = lollipop_plot(y, title="horizontal", orientation="horizontal", show=self.show)
+        assert isinstance(ax, plt.Axes)
+        return
+    
+    def test_with_nan_vals(self):
+        y = np.random.randint(0, 20, size=10).astype("float32")
+        y[3] = np.nan
+        ax = lollipop_plot(y, title="with nan vals", show=self.show)
         assert isinstance(ax, plt.Axes)
         return
 
@@ -593,6 +758,15 @@ class TestCircularBarPlot(unittest.TestCase):
         # circular_bar_plot(data, names)
         # assert isinstance(ax, plt.Axes)
         return
+    
+    def test_with_nan_vals(self):
+        data = np.random.random(50)
+        data[10] = np.nan
+        names = [f"{i}" for i in range(50)]
+        ax = circular_bar_plot(data, names, show=self.show, title="with nan vals")
+        assert isinstance(ax, plt.Axes)
+        return
+
 
 if __name__ == "__main__":
     unittest.main()

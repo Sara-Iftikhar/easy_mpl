@@ -49,7 +49,7 @@ def bar_chart(
         show=True,
         ax=None,
         **kwargs
-):
+)->plt.Axes:
     """
     plots bar chart
 
@@ -79,6 +79,10 @@ def bar_chart(
         **kwargs :
             any additional keyword arguments for `axes.bar`_ or `axes.barh`_
 
+    Returns
+    --------
+        matplotlib Axes
+
     Example
     --------
         >>> from easy_mpl import bar_chart
@@ -97,7 +101,7 @@ def bar_chart(
         https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.barh.html
     """
 
-    values = np.array(values)
+    values = to_1d_array(values)
 
     cm = get_cmap(random.choice(BAR_CMAPS), len(values), 0.2)
     color = color if color is not None else cm
@@ -329,9 +333,27 @@ def regplot(
         >>> x_, y_ = np.random.random(100), np.random.random(100)
         >>> regplot(x_, y_)
 
+    Note
+    ----
+        If nans are present in x or y, they will be removed.
+
     """
     x = to_1d_array(x)
     y = to_1d_array(y)
+
+    # remvoing nans based upon nans in x
+    x_nan_idx = np.isnan(x)
+    if x_nan_idx.sum()>0:
+        x = x[~x_nan_idx]
+        y = y[~x_nan_idx]
+    
+    # remvoing nans based upon nans in y
+    y_nan_idx = np.isnan(y)
+    if y_nan_idx.sum()>0:
+        x = x[~y_nan_idx]
+        y = y[~y_nan_idx]
+    
+    assert len(x) == len(y), f"x and y must be same length. Got {len(x)} and {len(y)}"
 
     mc, lc, fc = random.choice(regplot_combs)
     _metric_names = {'r2': '$R^2$'}
@@ -1116,6 +1138,11 @@ def parallel_coordinates(
     ... # with categorical class labels and customized ticklabels
     >>> data['P5'] = random.choices(categories_, k=N)
     >>> parallel_coordinates(data_df,  ticklabel_kws={"fontsize": 8, "color": "red"})
+
+    Note
+    ----
+        If nans are present in data or categories, all the corresponding enteries/rows 
+        will be removed.
     """
 
     if cmap is None:
@@ -1131,7 +1158,8 @@ def parallel_coordinates(
         names = names or data.columns.tolist()
 
     if len(names) != data.shape[1]:
-        raise ValueError(f"provided names have length {len(names)} but data has {data.shape[1]} columns")
+        raise ValueError(f"""
+            provided names have length {len(names)} but data has {data.shape[1]} columns""")
 
     show_colorbar = True
     if categories is None:
@@ -1141,15 +1169,28 @@ def parallel_coordinates(
     categories = np.array(categories)
     assert len(categories) == len(data)
 
+    # remove NaN values based upon nan values in data
+    if data.isna().sum().sum() > 0:
+        df_nan_idx = data.isna().any(axis=1)
+        categories = categories[~df_nan_idx]
+        data = data[~df_nan_idx]
+
     _is_categorical = False
     cat_encoded = categories
-    num_cols = data.shape[1]
-    num_lines = len(data)
-
     if not np.issubdtype(categories.dtype, np.number):
         # category contains categorical/non-numeri values
         cat_encoded = label_encoder(categories)
         _is_categorical = True
+
+    if not _is_categorical:  # because we can't do np.isnan for categorical values
+    # if there are still any nans in categories, remove them
+        cat_nan_idx = np.isnan(categories)
+        if cat_nan_idx.any():    
+            categories = categories[~cat_nan_idx]
+            data = data[~cat_nan_idx]
+
+    num_cols = data.shape[1]
+    num_lines = len(data)
 
     # find out which columns are categorical and which are numerical
     enc_data = data.copy()
@@ -1453,6 +1494,10 @@ def circular_bar_plot(
     ax : plt.Axes
         Axes of the plot.
 
+    Note
+    ----
+        If nan values are present in the data, they will be ignored.
+
     Examples
     --------
     >>> import numpy as np
@@ -1494,6 +1539,12 @@ def circular_bar_plot(
     else:
         label_format = label_format or "{}: {:.2f}"
 
+    # remove nan values
+    val_nan_idx = np.isnan(values)
+    if val_nan_idx.any():
+        values = values[~val_nan_idx]
+        labels = [labels[i] for i in range(len(labels)) if not val_nan_idx[i]]
+
     if color is None:
         color = get_cmap(random.choice(BAR_CMAPS), len(values), 0.2)
     elif isinstance(color, str) and color in plt.colormaps():
@@ -1514,10 +1565,10 @@ def circular_bar_plot(
         #color = color[sort_idx]
 
     # Compute the width of each bar. In total we have 2*Pi = 360°
-    width = 2 * np.pi / len(data)
+    width = 2 * np.pi / len(heights)
 
     # Compute the angle each bar is centered on:
-    indexes = list(range(1, len(data) + 1))
+    indexes = list(range(1, len(heights) + 1))
     angles = [element * width for element in indexes]
 
     # Draw bars
@@ -1532,7 +1583,7 @@ def circular_bar_plot(
     )
 
     # Add labels
-    for bar, angle, label, val in zip(bars, angles, labels, data):
+    for bar, angle, label, val in zip(bars, angles, labels, values):
 
         label = label_format.format(label, val) 
 
