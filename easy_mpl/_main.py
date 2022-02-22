@@ -919,6 +919,7 @@ def dumbbell_plot(
         process_axis(ax=ax, **kwargs)
     # show plot if show=True
     if show:
+        plt.tight_layout()  # todo should we put it outside of if?
         plt.show()
 
     return ax

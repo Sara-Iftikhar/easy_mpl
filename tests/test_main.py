@@ -429,7 +429,7 @@ class TestDumbbell(unittest.TestCase):
     def test_with_labels(self):
         ax = dumbbell_plot(self.st, self.en, show=self.show,
                            title="with labels",
-                           labels=[f'Feature {i}' for i in range(10)])
+                           labels=[f'GradientBoostingRegressor {i}' for i in range(10)])
         assert isinstance(ax, plt.Axes)
         return
     
@@ -724,7 +724,7 @@ class TestCircularBarPlot(unittest.TestCase):
         return
 
     def test_with_names(self):
-        ax = circular_bar_plot(self.data, self.names, title="with names", 
+        ax = circular_bar_plot(self.data, self.names, title="with names",
                                show=self.show)
         assert isinstance(ax, plt.Axes)
         return
@@ -741,9 +741,9 @@ class TestCircularBarPlot(unittest.TestCase):
         assert isinstance(ax, plt.Axes)
         return
 
-    def test_minmax_range(self): 
+    def test_minmax_range(self):
 
-        ax = circular_bar_plot(self.data, self.names, min_max_range=(1, 10), 
+        ax = circular_bar_plot(self.data, self.names, min_max_range=(1, 10),
                               label_padding=1, show=self.show, title="minmax range")
         assert isinstance(ax, plt.Axes)
         return

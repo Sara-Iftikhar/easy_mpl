@@ -401,10 +401,13 @@ def taylor_plot(
         ...             cont_kws={'colors': 'blue', 'linewidths': 1.0, 'linestyles': 'dotted'},
         ...             grid_kws={'axis': 'x', 'color': 'g', 'lw': 1.0},
         ...             title="mutiple subplots")
-        ... 
-        ... # Sometimes we don't have actual true and simulation values as arrays. We can
-        ... # still make Taylor plot by providing only standard deviation and coefficient
-        ... # of correlation (R) values of simulations and observations.
+        ...
+
+        Sometimes we don't have actual observation and simulation values as arrays. We can
+        still make Taylor plot by providing only standard deviation of observations
+        and simulations and coefficient of correlation (R) values
+        between simulations and observations.
+
         >>> observations = {'std': 4.916}
         >>> predictions = {   # pbias is optional
         ...         'Model 1': {'std': 2.80068, 'corr_coeff': 0.49172, 'pbias': -8.85},

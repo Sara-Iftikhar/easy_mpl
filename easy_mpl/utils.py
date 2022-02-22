@@ -221,7 +221,7 @@ def get_cmap(cm: str, num_cols: int, low=0.0, high=1.0):
 
 
 def to_1d_array(array_like) -> np.ndarray:
-
+    """returned array has shape (n,) """
     if array_like.__class__.__name__ in ['list', 'tuple', 'Series']:
         return np.array(array_like)
 
@@ -236,8 +236,10 @@ def to_1d_array(array_like) -> np.ndarray:
     elif array_like.__class__.__name__ == 'DataFrame' and array_like.ndim == 2:
         assert len(array_like) == array_like.size
         return array_like.values.reshape(-1,)
+    elif isinstance(array_like, float) or isinstance(array_like, int):
+        return np.array([array_like])
     else:
-        raise ValueError(f'cannot convert object array {array_like.__class__.__name__}  to 1d ')
+        raise ValueError(f'cannot convert object {array_like.__class__.__name__}  to 1d ')
 
 
 def kde(y):
