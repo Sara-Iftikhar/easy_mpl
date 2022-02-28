@@ -82,6 +82,14 @@ circular_bar_plot
 .. automodule:: easy_mpl
    :members: circular_bar_plot
 
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Example galleries
+
+   auto_examples/index
+
+
 Indices and tables
 ==================
 

@@ -231,7 +231,7 @@ class TaylorDiagram(object):
 
 
 def taylor_plot(
-        observations: dict,
+        observations: Union[dict, np.ndarray],
         simulations: Union[dict, np.ndarray],
         axis_locs: dict = None,
         cont_kws: dict = None,

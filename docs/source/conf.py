@@ -39,6 +39,7 @@ extensions = [
   'sphinx_copybutton',
   "sphinx-prompt",
   'sphinx.ext.napoleon',
+'sphinx_gallery.gen_gallery',
 ]
 
 napoleon_numpy_docstring = True
@@ -55,6 +56,37 @@ templates_path = ['_templates']
 # This pattern also affects html_static_path and html_extra_path.
 exclude_patterns = []
 
+
+
+sphinx_gallery_conf = {
+    'backreferences_dir': 'gen_modules/backreferences',
+    #'doc_module': ('sphinx_gallery', 'numpy'),
+    'reference_url': {
+        'sphinx_gallery': None,
+    },
+    'examples_dirs': '../examples',
+    'gallery_dirs': 'auto_examples',
+    'compress_images': ('images', 'thumbnails'),
+    # specify the order of examples to be according to filename
+    'expected_failing_examples': ['../examples/no_output/plot_raise.py',
+                                  '../examples/no_output/plot_syntaxerror.py'],
+    #'min_reported_time': min_reported_time,
+    'binder': {'org': 'sphinx-gallery',
+               'repo': 'sphinx-gallery.github.io',
+               'branch': 'master',
+               'binderhub_url': 'https://mybinder.org',
+               'dependencies': '.binder/requirements.txt',
+               'notebooks_dir': 'notebooks',
+               'use_jupyter_lab': True,
+               },
+    'show_memory': True,
+    #'junit': os.path.join('sphinx-gallery', 'junit-results.xml'),
+    # capture raw HTML or, if not present, __repr__ of last expression in
+    # each code block
+    #'capture_repr': ('_repr_html_', '__repr__'),
+    'matplotlib_animations': True,
+    'image_srcset': ["2x"]
+}
 
 # -- Options for HTML output -------------------------------------------------
 
