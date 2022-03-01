@@ -525,6 +525,7 @@ def hist(
     Example
     --------
         >>> from easy_mpl import hist
+        >>> import numpy as np
         >>> hist(np.random.random((10, 1)))
 
     .. _axes.hist:
@@ -583,6 +584,8 @@ def pie(
 
     Example
     -------
+        >>> import numpy as np
+        >>> from easy_mpl import pie
         >>> pie(np.random.randint(0, 3, 100))
         or by directly providing fractions
         >>> pie([0.2, 0.3, 0.1, 0.4])
@@ -662,12 +665,13 @@ def scatter(
     --------
         >>> from easy_mpl import scatter
         >>> import numpy as np
+        >>> import matplotlib.pyplot as plt
         >>> x_ = np.random.random(100)
         >>> y_ = np.random.random(100)
         >>> scatter(x_, y_, show=False)
-        ... show colorbar
+        ... # show colorbar
         >>> scatter(x_, y_, colorbar=True, show=False)
-        ... retrieve axes for further processing
+        ... # retrieve axes for further processing
         >>> axes, _ = scatter(x_, y_, show=False)
         >>> assert isinstance(axes, plt.Axes)
 
@@ -759,7 +763,7 @@ def contour(
         >>> _y = np.random.uniform(-2, 2, 200)
         >>> _z = _x * np.exp(-_x**2 - _y**2)
         >>> contour(_x, _y, _z, fill_between=True, show_points=True)
-        ... show contour labels
+        ... # show contour labels
         >>> contour(_x, _y, _z, label_contours=True, show_points=True)
 
     Note
@@ -1134,10 +1138,10 @@ def parallel_coordinates(
     ... # using straight lines instead of bezier
     >>> parallel_coordinates(data_df, linestyle="straight")
     ... # with categorical class labels
-    >>> data['P5'] = random.choices(categories_, k=N)
+    >>> data_df['P5'] = random.choices(categories_, k=N)
     >>> parallel_coordinates(data_df, names=ynames)
     ... # with categorical class labels and customized ticklabels
-    >>> data['P5'] = random.choices(categories_, k=N)
+    >>> data_df['P5'] = random.choices(categories_, k=N)
     >>> parallel_coordinates(data_df,  ticklabel_kws={"fontsize": 8, "color": "red"})
 
     Note
@@ -1380,7 +1384,7 @@ def lollipop_plot(y, x=None, orientation:str = "vertical", sort:bool =False,
     >>> y = np.random.randint(0, 10, size=10)
     ... # vanilla lollipop plot
     >>> lollipop_plot(y, title="vanilla")
-    ... use both x and y
+    ... # use both x and y
     >>> lollipop_plot(y, np.linspace(0, 100, len(y)), title="with x and y")
     ... # use custom line style
     >>> lollipop_plot(y, line_style='--', title="with custom linestyle")
