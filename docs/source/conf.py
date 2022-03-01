@@ -13,8 +13,7 @@
 import os
 import sys
 
-sys.path.insert(0, os.path.abspath('../..'))
-sys.path.insert(0, os.path.abspath('sphinxext'))
+sys.path.insert(0, os.path.abspath('../..')) 
 
 # -- Project information -----------------------------------------------------
 
@@ -65,18 +64,16 @@ sphinx_gallery_conf = {
     'reference_url': {
         'sphinx_gallery': None,
     },
-    'examples_dirs': ['examples'],
+    'examples_dirs': os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), 'examples'),
     'gallery_dirs': 'auto_examples',
     'compress_images': ('images', 'thumbnails'),
-    # specify the order of examples to be according to filename
-    'expected_failing_examples': ['../examples/no_output/plot_raise.py',
-                                  '../examples/no_output/plot_syntaxerror.py'],
-    #'min_reported_time': min_reported_time,
+    'filename_pattern': '',
+
     'binder': {'org': 'sphinx-gallery',
                'repo': 'sphinx-gallery.github.io',
                'branch': 'master',
                'binderhub_url': 'https://mybinder.org',
-               'dependencies': 'binder/requirements.txt',
+               'dependencies': os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), '.binder', 'requirements.txt'),
                'notebooks_dir': 'notebooks',
                'use_jupyter_lab': True,
                },
