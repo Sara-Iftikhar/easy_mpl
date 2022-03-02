@@ -194,7 +194,7 @@ def plot(
 
     plot_kwargs = ('linewidth', 'linestyle', 'marker', 'fillstyle', 'ms', 'color',
                    'drawstyle', 'y_data', 'url', 'mfc', 'mec', 'snap', 'markersize',
-                   'lw', 'ls', 'ds'
+                   'lw', 'ls', 'ds', 'c'
                    )
     _plot_kwargs = {}
     for arg in plot_kwargs:

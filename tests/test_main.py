@@ -5,8 +5,7 @@ import unittest
 import os
 import site
 
-from scipy.__config__ import show
-package_path = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__)))) 
+package_path = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 site.addsitedir(package_path)
 
 import numpy as np
@@ -123,6 +122,13 @@ class TestPlot(unittest.TestCase):
         assert isinstance(ax, plt.Axes)
         return
 
+    def test_color(self):
+        ax = plot(np.random.random(100), '.', title="1array",
+                  c=np.array([35, 81, 53]) / 256.0,
+                  show=self.show)
+        assert isinstance(ax, plt.Axes)
+        return
+
     def test_2array(self):
         ax = plot(np.arange(100), np.random.random(100), title="2darray",
                   show=self.show)
@@ -136,7 +142,8 @@ class TestPlot(unittest.TestCase):
         return
 
     def test_2array_marker(self):
-        ax = plot(np.arange(100), np.random.random(100), '.', title="2array_marker", show=self.show)
+        ax = plot(np.arange(100), np.random.random(100), '.', title="2array_marker",
+                  show=self.show)
         assert isinstance(ax, plt.Axes)
         return
 
@@ -153,7 +160,8 @@ class TestPlot(unittest.TestCase):
         return
 
     def test_linewdith(self):
-        ax = plot(np.arange(10), '--', linewidth=1., title="linewidth", show=self.show)
+        ax = plot(np.arange(10), '--', linewidth=1., title="linewidth",
+                  show=self.show)
         assert isinstance(ax, plt.Axes)
         return
 
