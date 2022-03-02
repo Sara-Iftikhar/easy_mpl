@@ -16,10 +16,12 @@ plot(np.random.random(50), '--.')
 
 #############################
 
+# specify color
 x = np.random.randint(2, 10, 10)
 plot(x, '--o', color=np.array([35, 81, 53]) / 256.0)
 
 #############################
+
 # you can get set the show=False in order to further work the current active axes
 
 x2 = np.random.randint(2, 10, 10)
@@ -29,7 +31,7 @@ plot(x2, '--*', color=np.array([15, 151, 123]) / 256.0)
 #############################
 
 # 2array
-plot(np.arange(50), np.random.random(100), title="2darray")
+plot(np.arange(50), np.random.random(50), title="2darray")
 
 #############################
 
