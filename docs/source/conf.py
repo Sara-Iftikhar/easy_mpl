@@ -13,7 +13,7 @@
 import os
 import sys
 
-sys.path.insert(0, os.path.abspath('../..')) 
+sys.path.insert(0, os.path.abspath('../..'))
 
 # -- Project information -----------------------------------------------------
 
@@ -78,7 +78,6 @@ sphinx_gallery_conf = {
                'use_jupyter_lab': True,
                },
     'show_memory': True,
-    #'junit': os.path.join('sphinx-gallery', 'junit-results.xml'),
     # capture raw HTML or, if not present, __repr__ of last expression in
     # each code block
     'capture_repr': ('_repr_html_', '__repr__'),
