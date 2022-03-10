@@ -107,7 +107,10 @@ def bar_chart(
     color = color if color is not None else cm
 
     if not ax:
-        _, ax = plt.subplots()
+        ax = plt.gca()
+        if 'figsize' in kwargs:
+            figsize = kwargs.pop('figsize')
+            ax.figure.set_size_inches(figsize)
 
     if labels is None:
         labels = [f"F{i}" for i in range(len(values))]
@@ -194,7 +197,7 @@ def plot(
 
     plot_kwargs = ('linewidth', 'linestyle', 'marker', 'fillstyle', 'ms', 'color',
                    'drawstyle', 'y_data', 'url', 'mfc', 'mec', 'snap', 'markersize',
-                   'lw', 'ls', 'ds'
+                   'lw', 'ls', 'ds', 'c'
                    )
     _plot_kwargs = {}
     for arg in plot_kwargs:
@@ -228,16 +231,10 @@ def plot(
         ax = kwargs.pop('ax')
     else:
         ax = plt.gca()
+        if 'figsize' in kwargs:
+            figsize = kwargs.pop('figsize')
+            ax.figure.set_size_inches(figsize)
 
-    # if log_nz:
-    #     data = deepcopy(data)
-    #     _data = data.values
-    #     d_nz_idx = np.where(_data > 0.0)
-    #     data_nz = _data[d_nz_idx]
-    #     d_nz_log = np.log(data_nz)
-    #     _data[d_nz_idx] = d_nz_log
-    #     _data = np.where(_data < 0.0, 0.0, _data)
-    #     data = pd.Series(_data, index=data.index)
     s = data[0]
     if isinstance(s, pd.Series):
         kwargs['min_xticks'] = kwargs.get('min_xticks', 3)
@@ -451,6 +448,9 @@ def imshow(
 
     if ax is None:
         ax = plt.gca()
+        if 'figsize' in kwargs:
+            figsize = kwargs.pop('figsize')
+            ax.figure.set_size_inches(figsize)
 
     im = ax.imshow(values, **kwargs)
 
@@ -534,6 +534,10 @@ def hist(
 
     if not ax:
         ax = plt.gca()
+        if 'figsize' in kwargs:
+            figsize = kwargs.pop('figsize')
+            ax.figure.set_size_inches(figsize)
+
     hist_kws = hist_kws or {}
     n, bins, patches = ax.hist(x, **hist_kws)
 
@@ -599,6 +603,9 @@ def pie(
     #todo, add example for explode and partial pie chart
     if ax is None:
         ax = plt.gca()
+        if 'figsize' in kwargs:
+            figsize = kwargs.pop('figsize')
+            ax.figure.set_size_inches(figsize)
 
     if fractions is None:
         fractions = pd.Series(vals).value_counts(normalize=True).values
@@ -681,6 +688,9 @@ def scatter(
     """
     if ax is None:
         ax = plt.gca()
+        if 'figsize' in kwargs:
+            figsize = kwargs.pop('figsize')
+            ax.figure.set_size_inches(figsize)
 
     x = to_1d_array(x)
     y = to_1d_array(y)
@@ -791,6 +801,9 @@ def contour(
 
     if ax is None:
         ax = plt.gca()
+        if 'figsize' in kwargs:
+            figsize = kwargs.pop('figsize')
+            ax.figure.set_size_inches(figsize)
 
     kws = contour_kws or {"levels": 14, "linewidth": 0.5, "colors": "k"}
     CS = ax.tricontour(x, y, z, **kws)
@@ -818,7 +831,6 @@ def contour(
 
     return ax
 
-
 def dumbbell_plot(
         start,
         end,
@@ -845,10 +857,10 @@ def dumbbell_plot(
             ticklabcls on y-axis
         start_kws : dict, optional
             any additional keyword arguments for `axes.scatter`_ to modify start
-            markers such as `color` etc
+            markers such as ``color``, ``label`` etc
         end_kws : dict, optional
             any additional keyword arguments for `axes.scatter`_ to modify end
-            markers such as `color` etc
+            markers such as ``color``, ``label`` etc
         line_kws : dict, optional
             any additional keyword arguments for `lines.Line2D`_ to modify line
             style/color which connects dumbbells.
@@ -877,13 +889,16 @@ def dumbbell_plot(
 
     .. _axes.scatter:
         https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.scatter.html
-    
+
     .. _lines.Line2D:
         https://matplotlib.org/stable/api/_as_gen/matplotlib.lines.Line2D.html
 
     """
     if ax is None:
         ax = plt.gca()
+        if 'figsize' in kwargs:
+            figsize = kwargs.pop('figsize')
+            ax.figure.set_size_inches(figsize)
 
     # convert starting and ending values to 1d array
     start = to_1d_array(start)
@@ -897,6 +912,7 @@ def dumbbell_plot(
         labels = np.arange(len(index))
 
     line_kws = line_kws or {'color': 'skyblue'}
+
     # draw line segment
     def lien_segment(p1, p2, axes):
         l = mlines.Line2D([p1[0], p2[0]], [p1[1], p2[1]], **line_kws)
@@ -904,12 +920,14 @@ def dumbbell_plot(
         return
 
     # assigning colors
-    start_kws = start_kws or {'color': '#a3c4dc'}
-    end_kws = end_kws or {'color': '#0e668b'}
+    start_kws = start_kws or {'color': '#a3c4dc', "label": "start"}
+    end_kws = end_kws or {'color': '#0e668b', "label": "end"}
 
     # plotting points for starting and ending values
     ax, _ = scatter(y=index, x=start, show=False, ax=ax, **start_kws)
     ax, _ = scatter(y=index, x=end, ax=ax, show=False, **end_kws)
+
+    ax.legend()
 
     # joining points together using line segments
     for idx, _p1, _p2 in zip(index, end, start):
@@ -1330,11 +1348,21 @@ def label_encoder(arr):
     return np.unique(arr, return_inverse=True)[1]
 
 
-def lollipop_plot(y, x=None, orientation:str = "vertical", sort:bool =False,
-            line_style:str='-', line_color:str='cyan', line_width:int=1, line_kws: dict=None,
-            marker_style:str='o', marker_color:str='teal', marker_size:int=30, 
-            marker_kws: dict=None, show: bool = True, ax: plt.Axes=None,
-            **kwargs)->plt.Axes:
+def lollipop_plot(
+    y, x=None, 
+    orientation:str = "vertical", 
+    sort:bool =False,
+    line_style:str='-', 
+    line_color:str='cyan', 
+    line_width:int=1, 
+    line_kws: dict=None,
+    marker_style:str='o', 
+    marker_color:str='teal', 
+    marker_size:int=30, 
+    marker_kws: dict=None, 
+    show: bool = True, 
+    ax: plt.Axes=None,
+    **kwargs)->plt.Axes:
     """
     Plot a lollipop plot.
 
@@ -1405,6 +1433,9 @@ def lollipop_plot(y, x=None, orientation:str = "vertical", sort:bool =False,
 
     if ax is None:
         ax = plt.gca()
+        if 'figsize' in kwargs:
+            figsize = kwargs.pop('figsize')
+            ax.figure.set_size_inches(figsize)
     
     y = to_1d_array(y)
 
@@ -1472,8 +1503,9 @@ def circular_bar_plot(
 
     Parameters
     ----------
-    data : list, np.ndarray, pd.Series
-        Data to plot.
+    data : list, np.ndarray, pd.Series, dict
+        Data to plot. If it is a dictionary, then its keys will be used
+        as labels and values will be used as data.
     labels : list, optional
         Labels for each data point.
     sort : bool, optional
@@ -1535,7 +1567,7 @@ def circular_bar_plot(
         values = np.array(list(data.values()))
         labels = labels or list(data.keys())
     else:
-        assert isinstance(data, np.ndarray)
+        data = to_1d_array(data)
         values = data
 
     if labels is None:
@@ -1567,6 +1599,7 @@ def circular_bar_plot(
         sort_idx = np.argsort(heights)
         heights = heights[sort_idx]
         labels = [labels[i] for i in sort_idx]
+        values = values[sort_idx]
         #color = color[sort_idx]
 
     # Compute the width of each bar. In total we have 2*Pi = 360°
