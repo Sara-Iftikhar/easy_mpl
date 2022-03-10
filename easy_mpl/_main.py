@@ -818,7 +818,6 @@ def contour(
 
     return ax
 
-
 def dumbbell_plot(
         start,
         end,
@@ -845,10 +844,10 @@ def dumbbell_plot(
             ticklabcls on y-axis
         start_kws : dict, optional
             any additional keyword arguments for `axes.scatter`_ to modify start
-            markers such as `color` etc
+            markers such as ``color``, ``label`` etc
         end_kws : dict, optional
             any additional keyword arguments for `axes.scatter`_ to modify end
-            markers such as `color` etc
+            markers such as ``color``, ``label`` etc
         line_kws : dict, optional
             any additional keyword arguments for `lines.Line2D`_ to modify line
             style/color which connects dumbbells.
@@ -877,7 +876,7 @@ def dumbbell_plot(
 
     .. _axes.scatter:
         https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.scatter.html
-    
+
     .. _lines.Line2D:
         https://matplotlib.org/stable/api/_as_gen/matplotlib.lines.Line2D.html
 
@@ -897,6 +896,7 @@ def dumbbell_plot(
         labels = np.arange(len(index))
 
     line_kws = line_kws or {'color': 'skyblue'}
+
     # draw line segment
     def lien_segment(p1, p2, axes):
         l = mlines.Line2D([p1[0], p2[0]], [p1[1], p2[1]], **line_kws)
@@ -904,12 +904,14 @@ def dumbbell_plot(
         return
 
     # assigning colors
-    start_kws = start_kws or {'color': '#a3c4dc'}
-    end_kws = end_kws or {'color': '#0e668b'}
+    start_kws = start_kws or {'color': '#a3c4dc', "label": "start"}
+    end_kws = end_kws or {'color': '#0e668b', "label": "end"}
 
     # plotting points for starting and ending values
     ax, _ = scatter(y=index, x=start, show=False, ax=ax, **start_kws)
     ax, _ = scatter(y=index, x=end, ax=ax, show=False, **end_kws)
+
+    ax.legend()
 
     # joining points together using line segments
     for idx, _p1, _p2 in zip(index, end, start):
