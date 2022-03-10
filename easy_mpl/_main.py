@@ -1474,8 +1474,9 @@ def circular_bar_plot(
 
     Parameters
     ----------
-    data : list, np.ndarray, pd.Series
-        Data to plot.
+    data : list, np.ndarray, pd.Series, dict
+        Data to plot. If it is a dictionary, then its keys will be used
+        as labels and values will be used as data.
     labels : list, optional
         Labels for each data point.
     sort : bool, optional
@@ -1537,7 +1538,7 @@ def circular_bar_plot(
         values = np.array(list(data.values()))
         labels = labels or list(data.keys())
     else:
-        assert isinstance(data, np.ndarray)
+        data = to_1d_array(data)
         values = data
 
     if labels is None:
@@ -1569,6 +1570,7 @@ def circular_bar_plot(
         sort_idx = np.argsort(heights)
         heights = heights[sort_idx]
         labels = [labels[i] for i in sort_idx]
+        values = values[sort_idx]
         #color = color[sort_idx]
 
     # Compute the width of each bar. In total we have 2*Pi = 360°
