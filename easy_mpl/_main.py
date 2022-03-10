@@ -107,7 +107,10 @@ def bar_chart(
     color = color if color is not None else cm
 
     if not ax:
-        _, ax = plt.subplots()
+        ax = plt.gca()
+        if 'figsize' in kwargs:
+            figsize = kwargs.pop('figsize')
+            ax.figure.set_size_inches(figsize)
 
     if labels is None:
         labels = [f"F{i}" for i in range(len(values))]
@@ -228,16 +231,10 @@ def plot(
         ax = kwargs.pop('ax')
     else:
         ax = plt.gca()
+        if 'figsize' in kwargs:
+            figsize = kwargs.pop('figsize')
+            ax.figure.set_size_inches(figsize)
 
-    # if log_nz:
-    #     data = deepcopy(data)
-    #     _data = data.values
-    #     d_nz_idx = np.where(_data > 0.0)
-    #     data_nz = _data[d_nz_idx]
-    #     d_nz_log = np.log(data_nz)
-    #     _data[d_nz_idx] = d_nz_log
-    #     _data = np.where(_data < 0.0, 0.0, _data)
-    #     data = pd.Series(_data, index=data.index)
     s = data[0]
     if isinstance(s, pd.Series):
         kwargs['min_xticks'] = kwargs.get('min_xticks', 3)
@@ -451,6 +448,9 @@ def imshow(
 
     if ax is None:
         ax = plt.gca()
+        if 'figsize' in kwargs:
+            figsize = kwargs.pop('figsize')
+            ax.figure.set_size_inches(figsize)
 
     im = ax.imshow(values, **kwargs)
 
@@ -534,6 +534,10 @@ def hist(
 
     if not ax:
         ax = plt.gca()
+        if 'figsize' in kwargs:
+            figsize = kwargs.pop('figsize')
+            ax.figure.set_size_inches(figsize)
+
     hist_kws = hist_kws or {}
     n, bins, patches = ax.hist(x, **hist_kws)
 
@@ -599,6 +603,9 @@ def pie(
     #todo, add example for explode and partial pie chart
     if ax is None:
         ax = plt.gca()
+        if 'figsize' in kwargs:
+            figsize = kwargs.pop('figsize')
+            ax.figure.set_size_inches(figsize)
 
     if fractions is None:
         fractions = pd.Series(vals).value_counts(normalize=True).values
@@ -681,6 +688,9 @@ def scatter(
     """
     if ax is None:
         ax = plt.gca()
+        if 'figsize' in kwargs:
+            figsize = kwargs.pop('figsize')
+            ax.figure.set_size_inches(figsize)
 
     x = to_1d_array(x)
     y = to_1d_array(y)
@@ -791,6 +801,9 @@ def contour(
 
     if ax is None:
         ax = plt.gca()
+        if 'figsize' in kwargs:
+            figsize = kwargs.pop('figsize')
+            ax.figure.set_size_inches(figsize)
 
     kws = contour_kws or {"levels": 14, "linewidth": 0.5, "colors": "k"}
     CS = ax.tricontour(x, y, z, **kws)
@@ -883,6 +896,9 @@ def dumbbell_plot(
     """
     if ax is None:
         ax = plt.gca()
+        if 'figsize' in kwargs:
+            figsize = kwargs.pop('figsize')
+            ax.figure.set_size_inches(figsize)
 
     # convert starting and ending values to 1d array
     start = to_1d_array(start)
@@ -1332,11 +1348,21 @@ def label_encoder(arr):
     return np.unique(arr, return_inverse=True)[1]
 
 
-def lollipop_plot(y, x=None, orientation:str = "vertical", sort:bool =False,
-            line_style:str='-', line_color:str='cyan', line_width:int=1, line_kws: dict=None,
-            marker_style:str='o', marker_color:str='teal', marker_size:int=30, 
-            marker_kws: dict=None, show: bool = True, ax: plt.Axes=None,
-            **kwargs)->plt.Axes:
+def lollipop_plot(
+    y, x=None, 
+    orientation:str = "vertical", 
+    sort:bool =False,
+    line_style:str='-', 
+    line_color:str='cyan', 
+    line_width:int=1, 
+    line_kws: dict=None,
+    marker_style:str='o', 
+    marker_color:str='teal', 
+    marker_size:int=30, 
+    marker_kws: dict=None, 
+    show: bool = True, 
+    ax: plt.Axes=None,
+    **kwargs)->plt.Axes:
     """
     Plot a lollipop plot.
 
@@ -1407,6 +1433,9 @@ def lollipop_plot(y, x=None, orientation:str = "vertical", sort:bool =False,
 
     if ax is None:
         ax = plt.gca()
+        if 'figsize' in kwargs:
+            figsize = kwargs.pop('figsize')
+            ax.figure.set_size_inches(figsize)
     
     y = to_1d_array(y)
 

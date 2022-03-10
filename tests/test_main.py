@@ -28,7 +28,9 @@ def get_chart_data(n):
 
 
 class TestBarChart(unittest.TestCase):
+
     show = False
+
     def test_bar_h(self):
         d, names = get_chart_data(5)
         cm = get_cmap(random.choice(BAR_CMAPS), len(d), 0.2)
@@ -67,6 +69,14 @@ class TestBarChart(unittest.TestCase):
             title='test_with_nan_vals')
         assert isinstance(ax, plt.Axes)
         return
+    
+    def test_figsize(self):
+        ax = bar_chart(values=[1, 2, 3, 4, 5], 
+            figsize=(10, 10),
+            show=self.show,
+            title='test_with_nan_vals')
+        assert isinstance(ax, plt.Axes)
+        return
 
 
 class TestRegplot(unittest.TestCase):
@@ -76,6 +86,12 @@ class TestRegplot(unittest.TestCase):
 
     def test_reg_plot_with_line(self):
         regplot(self.x, self.y, ci=None, show=self.show)
+        return
+
+    def test_figsize(self):
+        regplot(self.x, self.y, ci=None, 
+        figsize=(10, 10),
+        show=self.show)
         return
 
     def test_regplot_with_line_and_ci(self):
@@ -114,6 +130,13 @@ class TestPlot(unittest.TestCase):
 
     def test_vanilla(self):
         ax = plot(np.random.random(100), title="vanilla", show=self.show)
+        assert isinstance(ax, plt.Axes)
+        return
+
+    def test_figsize(self):
+        ax = plot(np.random.random(100), title="figsize", 
+        figsize=(10, 10),
+        show=self.show)
         assert isinstance(ax, plt.Axes)
         return
 
@@ -225,6 +248,13 @@ class TestImshow(unittest.TestCase):
         assert isinstance(ax, plt.Axes)
         return
 
+    def test_figsize(self):
+        ax, _ = imshow(np.random.random((10, 10)), colorbar=True, 
+            title="figsize", figsize=(10, 10),
+                       show=self.show)
+        assert isinstance(ax, plt.Axes)
+        return
+
     def test_imshow_witout_cb(self):
         ax, img= imshow(np.random.random((10, 10)), colorbar=False, title="without_colorbar",
                         show=self.show)
@@ -253,8 +283,15 @@ class TestImshow(unittest.TestCase):
 
 class Testhist(unittest.TestCase):
     show = False
+
     def test_hist(self):
         hist(np.random.random((10, 1)), show=self.show)
+        return
+
+    def test_figsize(self):
+        hist(np.random.random((10, 1)), 
+        figsize=(10, 10),
+        show=self.show)
         return
 
     def test_hist_with_axes(self):
