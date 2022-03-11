@@ -7,6 +7,8 @@ taylor plot
 import numpy as np
 from easy_mpl import taylor_plot
 
+# sphinx_gallery_thumbnail_number = -1
+
 #############################
 
 np.random.seed(313)
