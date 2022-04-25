@@ -78,6 +78,21 @@ class TestBarChart(unittest.TestCase):
         assert isinstance(ax, plt.Axes)
         return
 
+    def test_err_h(self):
+        x = np.random.randint(1, 10, 10)
+        err = np.random.random(10)
+        ax = bar_chart(x, errors=err, orient="v",
+                  show=self.show)
+        assert isinstance(ax, plt.Axes)
+        return
+
+    def test_err_v(self):
+        x = np.random.randint(1, 10, 10)
+        err = np.random.random(10)
+        ax = bar_chart(x, errors=err, orient="h",
+                  show=self.show)
+        assert isinstance(ax, plt.Axes)
+        return
 
 class TestRegplot(unittest.TestCase):
     show = False

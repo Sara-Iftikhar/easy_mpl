@@ -39,6 +39,7 @@ def bar_chart(
         labels=None,
         orient='h',
         sort=False,
+        errors:Union=None,
         color=None,
         xlabel=None,
         xlabel_fs=None,
@@ -63,11 +64,17 @@ def bar_chart(
             orientation of bars. either 'h' or 'v'
         sort : bool, optional
             whether to sort the bars based upon their values or not
+        errors : list, optional
+            for error bars
         color : bool, optional
+            color for bars. It can either be colormap or any color value valid
+            for matplotlib
         xlabel : str, optional
+            label for x-axis
         xlabel_fs : int, optional
             xlabel font size
         title : str, optional
+            title for the figure
         title_fs : int, optional
             title font size
         show_yaxis : bool, optional
@@ -101,6 +108,10 @@ def bar_chart(
         https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.barh.html
     """
 
+    if labels is None:
+        if isinstance(values, (pd.DataFrame, pd.Series)):
+            labels = values.index
+
     values = to_1d_array(values)
 
     cm = get_cmap(random.choice(BAR_CMAPS), len(values), 0.2)
@@ -120,15 +131,23 @@ def bar_chart(
         values = values[sort_idx]
         labels = np.array(labels)[sort_idx]
 
-    if orient == 'h':
+    if orient in ['h', 'horizontal']:
         ax.barh(np.arange(len(values)), values, color=color, **kwargs)
         ax.set_yticks(np.arange(len(values)))
         ax.set_yticklabels(labels, rotation=rotation)
+
+        if errors is not None:
+            ax.errorbar(values, np.arange(len(values)),  xerr=errors, fmt=".",
+                        color="black")
 
     else:
         ax.bar(np.arange(len(values)), values, color=color, **kwargs)
         ax.set_xticks(np.arange(len(values)))
         ax.set_xticklabels(labels, rotation=rotation)
+
+        if errors is not None:
+            ax.errorbar(np.arange(len(values)), values, yerr=errors, fmt=".",
+                        color="black")
 
     if not show_yaxis:
         ax.get_yaxis().set_visible(False)
@@ -138,6 +157,9 @@ def bar_chart(
 
     if title:
         ax.set_title(title, fontdict={'fontsize': title_fs})
+
+    if 'label' in kwargs:
+        ax.legend()
 
     if show:
         plt.show()
@@ -197,7 +219,8 @@ def plot(
 
     plot_kwargs = ('linewidth', 'linestyle', 'marker', 'fillstyle', 'ms', 'color',
                    'drawstyle', 'y_data', 'url', 'mfc', 'mec', 'snap', 'markersize',
-                   'lw', 'ls', 'ds', 'c'
+                   'lw', 'ls', 'ds', 'c', 'facecolor', 'markeredgecolor', 'markeredgesize',
+                   'markerfacecolor', 'markerfacesize'
                    )
     _plot_kwargs = {}
     for arg in plot_kwargs:
