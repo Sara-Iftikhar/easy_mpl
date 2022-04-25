@@ -2,8 +2,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
-from scipy.stats import gaussian_kde
-
+import pandas as pd
 
 BAR_CMAPS = ['Blues', 'BuGn', 'gist_earth_r',
              'GnBu', 'PuBu', 'PuBuGn', 'summer_r']
@@ -242,7 +241,18 @@ def to_1d_array(array_like) -> np.ndarray:
         raise ValueError(f'cannot convert object {array_like.__class__.__name__}  to 1d ')
 
 
+def has_multi_cols(data)->bool:
+    """returns True if data contains multiple columns"""
+    if isinstance(data, (pd.DataFrame, np.ndarray)):
+        if data.ndim == 2 and data.shape[1]>1:
+            return True
+    return False
+
+
 def kde(y):
+    # don't want to make whole easy_mpl dependent upon scipy
+    from scipy.stats import gaussian_kde
+
     """Generate Kernel Density Estimate plot using Gaussian kernels."""
     gkde = gaussian_kde(y, bw_method='scott')
 
