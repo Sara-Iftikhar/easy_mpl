@@ -31,7 +31,7 @@ from mpl_toolkits.axes_grid1 import make_axes_locatable
 
 from .utils import kde
 from .utils import to_1d_array, make_cols_from_cmap, _regplot, process_axis
-from .utils import BAR_CMAPS, regplot_combs, RIDGE_CMAPS
+from .utils import BAR_CMAPS, regplot_combs, RIDGE_CMAPS, annotate_imshow
 
 
 def bar_chart(
@@ -483,32 +483,19 @@ def imshow(
             figsize = kwargs.pop('figsize')
             ax.figure.set_size_inches(figsize)
 
-    im = ax.imshow(values, **kwargs)
-
     if isinstance(values, pd.DataFrame):
         if not xticklabels:
             xticklabels = values.columns.to_list()
         if not yticklabels:
             yticklabels = values.index.tolist()
-        values = values.values
+        # when data in dataframe is object type, it causes error in plotting
+        # the best way to convert series in df to number is to use to_numeric
+        values = np.column_stack([pd.to_numeric(values.iloc[:, i]) for i in range(values.shape[1])])
+
+    im = ax.imshow(values, **kwargs)
 
     if annotate:
-
-        threshold = im.norm(values.max()) / 2
-
-        textcolors = ("black", "white")
-        annotate_kws = annotate_kws or {"ha":"center", "va":"center"}
-        if 'fmt' in annotate_kws:
-            fmt = annotate_kws.pop('fmt')
-        else:
-            fmt = '%.2f'
-
-        for i in range(values.shape[0]):
-            for j in range(values.shape[1]):
-                s = fmt % float(values[i, j])
-                _ = ax.text(j, i, s,
-                            color=textcolors[int(im.norm(values[i, j]) > threshold)],
-                            **annotate_kws)
+        annotate_imshow(im, values, annotate_kws)
 
     if yticklabels is not None:
         ax.set_yticks(np.arange(len(yticklabels)))
@@ -524,7 +511,11 @@ def imshow(
 
     if white_grid:
         # Turn spines off and create white grid.
-        ax.spines[:].set_visible(False)
+        if isinstance(ax.spines, dict):
+            for sp in ax.spines:
+                ax.spines[sp].set_visible(False)
+        else:
+            ax.spines[:].set_visible(False)
 
         ax.set_xticks(np.arange(values.shape[1] + 1) - .5, minor=True)
         ax.set_yticks(np.arange(values.shape[0] + 1) - .5, minor=True)
@@ -1014,7 +1005,7 @@ def ridge(
     Parameters
     ----------
         data : array, DataFrame
-            2 dimensional array
+            2 dimensional array. It must be either numpy array or pandas dataframe
 
         cmap : str, optional
         xlabel : str, optional
@@ -1052,6 +1043,10 @@ def ridge(
         assert data.ndim == 2
         data = pd.DataFrame(data,
                             columns=[f"Feature_{i}" for i in range(data.shape[1])])
+    else:
+        assert isinstance(data, pd.DataFrame)
+        for col in data.columns:
+            data[col] = pd.to_numeric(data[col])
 
     # +2 because we want to ignore first and last in most cases
     colors = make_cols_from_cmap(cmap, data.shape[1] + 2)

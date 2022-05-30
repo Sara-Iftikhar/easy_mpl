@@ -264,3 +264,37 @@ def kde(y):
     )
 
     return ind, gkde.evaluate(ind)
+
+
+def annotate_imshow(
+        im,
+        data:np.ndarray=None,
+        annotate_kws=None,
+        textcolors=("black", "white"),
+        threshold=None,
+):
+    """annotates imshow
+    https://matplotlib.org/stable/gallery/images_contours_and_fields/image_annotated_heatmap.html
+    """
+
+    if data is None:
+        data = im.get_array()
+
+    if threshold is not None:
+        threshold = im.norm(threshold)
+    else:
+        threshold = im.norm(data.max()) / 2
+
+    annotate_kws = annotate_kws or {"ha": "center", "va": "center"}
+    if 'fmt' in annotate_kws:
+        fmt = annotate_kws.pop('fmt')
+    else:
+        fmt = '%.2f'
+
+    for i in range(data.shape[0]):
+        for j in range(data.shape[1]):
+            s = fmt % float(data[i, j])
+            _ = im.axes.text(j, i, s,
+                        color=textcolors[int(im.norm(data[i, j]) > threshold)],
+                        **annotate_kws)
+    return
