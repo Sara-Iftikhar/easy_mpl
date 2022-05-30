@@ -213,7 +213,7 @@ def process_axis(
     return ax
 
 
-def get_cmap(cm: str, num_cols: int, low=0.0, high=1.0):
+def make_cols_from_cmap(cm: str, num_cols: int, low=0.0, high=1.0)->np.ndarray:
 
     cols = getattr(plt.cm, cm)(np.linspace(low, high, num_cols))
     return cols
