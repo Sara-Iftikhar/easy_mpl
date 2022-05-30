@@ -14,7 +14,7 @@ import pandas as pd
 
 from easy_mpl import bar_chart, imshow, hist, pie, plot
 from easy_mpl import regplot, scatter, contour
-from easy_mpl.utils import BAR_CMAPS, get_cmap
+from easy_mpl.utils import BAR_CMAPS, make_cols_from_cmap
 from easy_mpl import dumbbell_plot, ridge
 from easy_mpl import parallel_coordinates
 from easy_mpl import lollipop_plot
@@ -33,7 +33,7 @@ class TestBarChart(unittest.TestCase):
 
     def test_bar_h(self):
         d, names = get_chart_data(5)
-        cm = get_cmap(random.choice(BAR_CMAPS), len(d), 0.2)
+        cm = make_cols_from_cmap(random.choice(BAR_CMAPS), len(d), 0.2)
 
         plt.close('all')
         _, ax = plt.subplots()
@@ -42,20 +42,20 @@ class TestBarChart(unittest.TestCase):
 
     def test_bar_v_without_axis(self):
         d, names = get_chart_data(5)
-        cm = get_cmap(random.choice(BAR_CMAPS), len(d), 0.2)
+        cm = make_cols_from_cmap(random.choice(BAR_CMAPS), len(d), 0.2)
 
         bar_chart(values=d, labels=names, color=cm, sort=True, show=self.show)
 
     def test_h_sorted(self):
         d, names = get_chart_data(5)
-        cm = get_cmap(random.choice(BAR_CMAPS), len(d), 0.2)
+        cm = make_cols_from_cmap(random.choice(BAR_CMAPS), len(d), 0.2)
 
         bar_chart(values=d, labels=names, color=cm, orient='v', show=self.show)
         return
 
     def test_vertical_without_axis(self):
         d, names = get_chart_data(5)
-        cm = get_cmap(random.choice(BAR_CMAPS), len(d), 0.2)
+        cm = make_cols_from_cmap(random.choice(BAR_CMAPS), len(d), 0.2)
         bar_chart(values=d, labels=names, color=cm, sort=True, orient='v', show=self.show)
         return
 
@@ -295,6 +295,13 @@ class TestImshow(unittest.TestCase):
         assert isinstance(ax, plt.Axes)
         return
 
+    def test_white_gridlines(self):
+        data = np.random.random((4, 10))
+        ax, im = imshow(data, cmap="YlGn",
+                        xticklabels=[f"Feature {i}" for i in range(data.shape[1])],
+                        white_grid=True, annotate=True, colorbar=True, show=self.show)
+        assert isinstance(ax, plt.Axes)
+        return
 
 class Testhist(unittest.TestCase):
     show = False

@@ -30,7 +30,7 @@ import matplotlib.gridspec as grid_spec
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 
 from .utils import kde
-from .utils import to_1d_array, get_cmap, _regplot, process_axis
+from .utils import to_1d_array, make_cols_from_cmap, _regplot, process_axis
 from .utils import BAR_CMAPS, regplot_combs, RIDGE_CMAPS
 
 
@@ -114,7 +114,7 @@ def bar_chart(
 
     values = to_1d_array(values)
 
-    cm = get_cmap(random.choice(BAR_CMAPS), len(values), 0.2)
+    cm = make_cols_from_cmap(random.choice(BAR_CMAPS), len(values), 0.2)
     color = color if color is not None else cm
 
     if not ax:
@@ -422,6 +422,7 @@ def imshow(
         colorbar:bool=False,
         colorbar_orientation:str = 'vertical',
         ax=None,
+        white_grid:bool = False,
         **kwargs
 )->tuple:
     """
@@ -449,6 +450,8 @@ def imshow(
             tick labels for y-axis. For DataFrames, index is used by default
         ax : plt.Axes, optional
             if not given, current available axes will be used
+        white_grid : bool, optional (default=False)
+            whether to show the white grids or not. This will also turn off the spines.
         **kwargs : optional
             any further keyword arguments for `axes.imshow`_
 
@@ -464,7 +467,12 @@ def imshow(
         >>> imshow(x, annotate=True)
         ... # show colorbar
         >>> imshow(x, colorbar=True)
-
+        ... # setting white grid lines and annotation
+        >>> data = np.random.random((4, 10))
+        >>> imshow(data, cmap="YlGn",
+        ...        xticklabels=[f"Feature {i}" for i in range(data.shape[1])],
+        ...        white_grid=True, annotate=True,
+        ...        colorbar=True)
     .. _axes.imshow:
         https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.imshow.html
     """
@@ -485,10 +493,21 @@ def imshow(
         values = values.values
 
     if annotate:
-        annotate_kws = annotate_kws or {"color": "w", "ha":"center", "va":"center"}
+
+        threshold = im.norm(values.max()) / 2
+
+        textcolors = ("black", "white")
+        annotate_kws = annotate_kws or {"ha":"center", "va":"center"}
+        if 'fmt' in annotate_kws:
+            fmt = annotate_kws.pop('fmt')
+        else:
+            fmt = '%.2f'
+
         for i in range(values.shape[0]):
             for j in range(values.shape[1]):
-                _ = ax.text(j, i, round(values[i, j], 2),
+                s = fmt % float(values[i, j])
+                _ = ax.text(j, i, s,
+                            color=textcolors[int(im.norm(values[i, j]) > threshold)],
                             **annotate_kws)
 
     if yticklabels is not None:
@@ -497,9 +516,20 @@ def imshow(
 
     if xticklabels is not None:
         ax.set_xticks(np.arange(len(xticklabels)))
+        if len(xticklabels)>5:
+            ax.set_xticklabels(xticklabels, rotation=70)
         ax.set_xticklabels(xticklabels)
 
     process_axis(ax, xlabel=xlabel, ylabel=ylabel, title=title)
+
+    if white_grid:
+        # Turn spines off and create white grid.
+        ax.spines[:].set_visible(False)
+
+        ax.set_xticks(np.arange(values.shape[1] + 1) - .5, minor=True)
+        ax.set_yticks(np.arange(values.shape[0] + 1) - .5, minor=True)
+        ax.grid(which="minor", color="w", linestyle='-', linewidth=3)
+        ax.tick_params(which="minor", bottom=False, left=False)
 
     if colorbar:
         # https://stackoverflow.com/a/18195921/5982232
@@ -1024,7 +1054,7 @@ def ridge(
                             columns=[f"Feature_{i}" for i in range(data.shape[1])])
 
     # +2 because we want to ignore first and last in most cases
-    colors = get_cmap(cmap, data.shape[1] + 2)
+    colors = make_cols_from_cmap(cmap, data.shape[1] + 2)
 
     gs = grid_spec.GridSpec(len(data.columns), 1)
     fig = plt.figure(figsize=figsize or (16,9))
@@ -1606,9 +1636,9 @@ def circular_bar_plot(
         labels = [labels[i] for i in range(len(labels)) if not val_nan_idx[i]]
 
     if color is None:
-        color = get_cmap(random.choice(BAR_CMAPS), len(values), 0.2)
+        color = make_cols_from_cmap(random.choice(BAR_CMAPS), len(values), 0.2)
     elif isinstance(color, str) and color in plt.colormaps():
-        color = get_cmap(color, len(values), 0.2)
+        color = make_cols_from_cmap(color, len(values), 0.2)
     else:
         color = color
 
