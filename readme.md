@@ -1,6 +1,7 @@
 [![Documentation Status](https://readthedocs.org/projects/easy-mpl/badge/?version=latest)](https://easy-mpl.readthedocs.io/en/latest/?badge=latest)
 
 [![Downloads](https://pepy.tech/badge/easy-mpl)](https://pepy.tech/project/easy-mpl)
+[![PyPI version](https://badge.fury.io/py/easy_mpl.svg)](https://badge.fury.io/py/easy_mpl)
 
 Matplotlib is great library which offers huge flexibility due to its object oriented
 programming style. However, **most** of the times, we the users don't need that 

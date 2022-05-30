@@ -1,5 +1,5 @@
 =====
-plots
+API
 =====
 
 .. toctree::

@@ -6,6 +6,10 @@
 
 *.qgz
 
+# docs
+docs/source/auto_examples/
+docs/source/gen_modules/
+
 __pycache__/
 .idea
 .vscode
