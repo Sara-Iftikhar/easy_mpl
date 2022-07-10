@@ -41,14 +41,13 @@ def bar_chart(
         sort=False,
         errors:Union=None,
         color=None,
-        xlabel=None,
-        xlabel_fs=None,
-        title=None,
-        title_fs=None,
-        show_yaxis=True,
+        cmap:str=None,
         rotation=0,
         show=True,
         ax=None,
+        bar_labels: Union[list, np.ndarray]=None,
+        bar_label_kws=None,
+        ax_kws: dict = None,
         **kwargs
 )->plt.Axes:
     """
@@ -66,23 +65,21 @@ def bar_chart(
             whether to sort the bars based upon their values or not
         errors : list, optional
             for error bars
-        color : bool, optional
-            color for bars. It can either be colormap or any color value valid
-            for matplotlib
-        xlabel : str, optional
-            label for x-axis
-        xlabel_fs : int, optional
-            xlabel font size
-        title : str, optional
-            title for the figure
-        title_fs : int, optional
-            title font size
-        show_yaxis : bool, optional
+        color : bool, optional (default=None)
+            color for bars. It can any color value valid for matplotlib.
+        cmap : str, optional (default=None)
+            matplotlib colormap
         rotation : int, optional
             rotation angle of ticklabels
         ax : plt.Axes, optional
             If not given, current available axes will be used
-        show : bool, optional
+        show : bool, optional,
+        bar_labels : list
+            labels of the bars
+        bar_label_kws : dict
+        ax_kws : dict, optional
+            any keyword arguments for processing of axes that will go to
+            :py:func:`easy_mpl.utils.process_axes`
         **kwargs :
             any additional keyword arguments for `axes.bar`_ or `axes.barh`_
 
@@ -99,7 +96,6 @@ def bar_chart(
         sorting the data
         >>> bar_chart([1,2,3,4,4,5,3,2,5], sort=True)
 
-    # todo, add labeling of bars as optional parameter
 
     .. _axes.bar:
         https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.bar.html
@@ -114,8 +110,8 @@ def bar_chart(
 
     values = to_1d_array(values)
 
-    cm = make_cols_from_cmap(random.choice(BAR_CMAPS), len(values), 0.2)
-    color = color if color is not None else cm
+    cmap = make_cols_from_cmap(cmap or random.choice(BAR_CMAPS), len(values), 0.2)
+    color = color if color is not None else cmap
 
     if not ax:
         ax = plt.gca()
@@ -132,31 +128,33 @@ def bar_chart(
         labels = np.array(labels)[sort_idx]
 
     if orient in ['h', 'horizontal']:
-        ax.barh(np.arange(len(values)), values, color=color, **kwargs)
+        bar = ax.barh(np.arange(len(values)), values, color=color, **kwargs)
         ax.set_yticks(np.arange(len(values)))
         ax.set_yticklabels(labels, rotation=rotation)
+
+        if bar_labels is not None:
+            bar_label_kws = bar_label_kws or {'label_type':'center'}
+            ax.bar_label(bar, labels=bar_labels, **bar_label_kws)
 
         if errors is not None:
             ax.errorbar(values, np.arange(len(values)),  xerr=errors, fmt=".",
                         color="black")
 
     else:
-        ax.bar(np.arange(len(values)), values, color=color, **kwargs)
+        bar = ax.bar(np.arange(len(values)), values, color=color, **kwargs)
         ax.set_xticks(np.arange(len(values)))
         ax.set_xticklabels(labels, rotation=rotation)
+
+        if bar_labels is not None:
+            bar_label_kws = bar_label_kws or {'label_type': 'center'}
+            ax.bar_label(bar, labels=bar_labels, **bar_label_kws)
 
         if errors is not None:
             ax.errorbar(np.arange(len(values)), values, yerr=errors, fmt=".",
                         color="black")
 
-    if not show_yaxis:
-        ax.get_yaxis().set_visible(False)
-
-    if xlabel:
-        ax.set_xlabel(xlabel, fontdict={'fontsize': xlabel_fs})
-
-    if title:
-        ax.set_title(title, fontdict={'fontsize': title_fs})
+    if ax_kws:
+        ax = process_axis(ax, **ax_kws)
 
     if 'label' in kwargs:
         ax.legend()
