@@ -79,3 +79,9 @@ circular_bar_plot
 =================
 .. automodule:: easy_mpl
    :members: circular_bar_plot
+
+
+process_axes
+=================
+.. automodule:: easy_mpl.utils
+   :members: process_axis
