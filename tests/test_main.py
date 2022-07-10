@@ -63,18 +63,18 @@ class TestBarChart(unittest.TestCase):
         d = np.random.randint(2, 50, 10)
         bar_chart(values=d, sort=True, show=self.show)
         return
-    
+
     def test_with_nan_vals(self):
         ax = bar_chart(values=[1, 2, np.nan, 4, 5], show=self.show,
-            title='test_with_nan_vals')
+            ax_kws={'title':'test_with_nan_vals'})
         assert isinstance(ax, plt.Axes)
         return
-    
+
     def test_figsize(self):
-        ax = bar_chart(values=[1, 2, 3, 4, 5], 
+        ax = bar_chart(values=[1, 2, 3, 4, 5],
             figsize=(10, 10),
             show=self.show,
-            title='test_with_nan_vals')
+            ax_kws={'title':'test_with_nan_vals'})
         assert isinstance(ax, plt.Axes)
         return
 
@@ -94,6 +94,35 @@ class TestBarChart(unittest.TestCase):
         assert isinstance(ax, plt.Axes)
         return
 
+    def test_labels(self):
+        ax = bar_chart(np.random.randint(1, 10, 10),
+                       bar_labels=np.random.randint(1, 10, 10),
+                  show=self.show)
+        assert isinstance(ax, plt.Axes)
+        return
+
+    def test_values_as_dict_values(self):
+        d, names = get_chart_data(5)
+        data = {k:v for k,v in zip(d, names)}
+        ax = bar_chart(data.values(), data.keys(),
+                  show=self.show)
+        assert isinstance(ax, plt.Axes)
+        return
+
+    def test_color(self):
+        ax = bar_chart(np.random.randint(1, 10, 10),
+                       color="Blue", show=self.show)
+        assert isinstance(ax, plt.Axes)
+        return
+
+    def test_cmap(self):
+        ax = bar_chart(np.random.randint(1, 10, 10),
+                       cmap="GnBu",
+                  show=self.show)
+        assert isinstance(ax, plt.Axes)
+        return
+
+
 class TestRegplot(unittest.TestCase):
     show = False
     x = np.random.random(100)
@@ -104,7 +133,7 @@ class TestRegplot(unittest.TestCase):
         return
 
     def test_figsize(self):
-        regplot(self.x, self.y, ci=None, 
+        regplot(self.x, self.y, ci=None,
         figsize=(10, 10),
         show=self.show)
         return
@@ -122,7 +151,7 @@ class TestRegplot(unittest.TestCase):
         regplot(self.x.tolist(), self.y.tolist(),
                 show=self.show)
         return
-    
+
     def test_with_nan_vals(self):
         x = np.random.random(100)
         x[10] = np.nan
@@ -131,7 +160,7 @@ class TestRegplot(unittest.TestCase):
         ax = regplot(x, y, show=self.show, title='test_with_nan_vals')
         assert isinstance(ax, plt.Axes)
         return
-    
+
     def test_nan_in_x(self):
         x = np.append(self.x, np.nan)
         y = np.append(self.y, 0.5)
@@ -149,7 +178,7 @@ class TestPlot(unittest.TestCase):
         return
 
     def test_figsize(self):
-        ax = plot(np.random.random(100), title="figsize", 
+        ax = plot(np.random.random(100), title="figsize",
         figsize=(10, 10),
         show=self.show)
         assert isinstance(ax, plt.Axes)
@@ -246,7 +275,7 @@ class TestPlot(unittest.TestCase):
         ax = plot(np.random.random(10), marker=".", markersize=10,
                   title="markersize", show=self.show)
         assert isinstance(ax, plt.Axes)
-        
+
     def test_with_nan_vals(self):
         x = np.append(np.random.random(100), np.nan)
         ax = plot(x, '.', title="with_nan_vals", show=self.show)
@@ -839,7 +868,7 @@ class TestCircularBarPlot(unittest.TestCase):
         ax = circular_bar_plot(data, names, show=self.show, title="with nan vals")
         assert isinstance(ax, plt.Axes)
         return
-#
+
 
 if __name__ == "__main__":
     unittest.main()
