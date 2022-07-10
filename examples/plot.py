@@ -3,7 +3,7 @@
 plot
 =====
 """
-
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from easy_mpl import plot
@@ -108,3 +108,20 @@ plot(np.random.random(10), marker=".", markersize=10,
 # with_nan_vals
 x = np.append(np.random.random(100), np.nan)
 plot(x, '.', title="with_nan_vals")
+
+#%%
+ax = plot(
+    np.random.normal(size=100),
+    'o',
+    show=False,
+    xlabel="Predicted",
+    ylabel="Residual",
+    markerfacecolor=np.array([225, 121, 144])/256.0,
+    markeredgecolor="black", markeredgewidth=0.5,
+    xlabel_kws={"fontsize": 14},
+    ylabel_kws={"fontsize": 14},
+     )
+
+# draw horizontal line on y=0
+ax.axhline(0.0)
+plt.show()
