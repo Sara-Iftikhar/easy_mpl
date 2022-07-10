@@ -1543,9 +1543,10 @@ def circular_bar_plot(
         color: Union[str, list, np.ndarray] = None,
         label_format: str = None,
         min_max_range: tuple = None,
-        label_padding=4,
+        label_padding: int = 4,
         figsize: tuple = None,
-        show=True,
+        show: bool = True,
+        text_kws: dict = None,
         **kwargs
 ) -> plt.Axes:
     """
@@ -1605,6 +1606,8 @@ def circular_bar_plot(
     >>> circular_bar_plot(data, names, label_format='{} {:.4f}')
 
     """
+
+    text_kws = text_kws or {}
 
     plt.close('all')
     plt.figure(figsize=figsize or (8, 12))
@@ -1693,7 +1696,9 @@ def circular_bar_plot(
             ha=alignment,
             va='center',
             rotation=rotation,
-            rotation_mode="anchor")
+            rotation_mode="anchor",
+            **text_kws
+        )
 
     if kwargs:
         process_axis(ax, **kwargs)

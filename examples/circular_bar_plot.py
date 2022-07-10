@@ -16,13 +16,13 @@ circular_bar_plot(data)
 ######################################
 
 # with names
-names = [f"{i}" for i in range(50)]
+names = [f"F{i}" for i in range(len(data))]
 circular_bar_plot(data, names)
 
 ######################################
 
 # sort values
-circular_bar_plot(data, names, sort=True)
+circular_bar_plot(data, names, sort=True, text_kws={"fontsize": 16})
 
 ######################################
 
