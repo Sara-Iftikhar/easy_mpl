@@ -1,4 +1,3 @@
-
 __all__ = [
     "plot",
     "bar_chart",
@@ -30,8 +29,8 @@ import matplotlib.gridspec as grid_spec
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 
 from .utils import kde
-from .utils import to_1d_array, get_cmap, _regplot, process_axis
-from .utils import BAR_CMAPS, regplot_combs, RIDGE_CMAPS
+from .utils import to_1d_array, make_cols_from_cmap, _regplot, process_axis
+from .utils import BAR_CMAPS, regplot_combs, RIDGE_CMAPS, annotate_imshow
 
 
 def bar_chart(
@@ -39,17 +38,17 @@ def bar_chart(
         labels=None,
         orient='h',
         sort=False,
+        errors: Union = None,
         color=None,
-        xlabel=None,
-        xlabel_fs=None,
-        title=None,
-        title_fs=None,
-        show_yaxis=True,
+        cmap: str = None,
         rotation=0,
         show=True,
         ax=None,
+        bar_labels: Union[list, np.ndarray] = None,
+        bar_label_kws=None,
+        ax_kws: dict = None,
         **kwargs
-)->plt.Axes:
+) -> plt.Axes:
     """
     plots bar chart
 
@@ -63,19 +62,23 @@ def bar_chart(
             orientation of bars. either 'h' or 'v'
         sort : bool, optional
             whether to sort the bars based upon their values or not
-        color : bool, optional
-        xlabel : str, optional
-        xlabel_fs : int, optional
-            xlabel font size
-        title : str, optional
-        title_fs : int, optional
-            title font size
-        show_yaxis : bool, optional
+        errors : list, optional
+            for error bars
+        color : bool, optional (default=None)
+            color for bars. It can any color value valid for matplotlib.
+        cmap : str, optional (default=None)
+            matplotlib colormap
         rotation : int, optional
             rotation angle of ticklabels
         ax : plt.Axes, optional
             If not given, current available axes will be used
-        show : bool, optional
+        show : bool, optional,
+        bar_labels : list
+            labels of the bars
+        bar_label_kws : dict
+        ax_kws : dict, optional
+            any keyword arguments for processing of axes that will go to
+            :py:func:`easy_mpl.utils.process_axes`
         **kwargs :
             any additional keyword arguments for `axes.bar`_ or `axes.barh`_
 
@@ -92,7 +95,6 @@ def bar_chart(
         sorting the data
         >>> bar_chart([1,2,3,4,4,5,3,2,5], sort=True)
 
-    # todo, add labeling of bars as optional parameter
 
     .. _axes.bar:
         https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.bar.html
@@ -101,10 +103,14 @@ def bar_chart(
         https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.barh.html
     """
 
+    if labels is None:
+        if isinstance(values, (pd.DataFrame, pd.Series)):
+            labels = values.index
+
     values = to_1d_array(values)
 
-    cm = get_cmap(random.choice(BAR_CMAPS), len(values), 0.2)
-    color = color if color is not None else cm
+    cmap = make_cols_from_cmap(cmap or random.choice(BAR_CMAPS), len(values), 0.2)
+    color = color if color is not None else cmap
 
     if not ax:
         ax = plt.gca()
@@ -120,24 +126,37 @@ def bar_chart(
         values = values[sort_idx]
         labels = np.array(labels)[sort_idx]
 
-    if orient == 'h':
-        ax.barh(np.arange(len(values)), values, color=color, **kwargs)
+    if orient in ['h', 'horizontal']:
+        bar = ax.barh(np.arange(len(values)), values, color=color, **kwargs)
         ax.set_yticks(np.arange(len(values)))
         ax.set_yticklabels(labels, rotation=rotation)
 
+        if bar_labels is not None:
+            bar_label_kws = bar_label_kws or {'label_type': 'center'}
+            ax.bar_label(bar, labels=bar_labels, **bar_label_kws)
+
+        if errors is not None:
+            ax.errorbar(values, np.arange(len(values)), xerr=errors, fmt=".",
+                        color="black")
+
     else:
-        ax.bar(np.arange(len(values)), values, color=color, **kwargs)
+        bar = ax.bar(np.arange(len(values)), values, color=color, **kwargs)
         ax.set_xticks(np.arange(len(values)))
         ax.set_xticklabels(labels, rotation=rotation)
 
-    if not show_yaxis:
-        ax.get_yaxis().set_visible(False)
+        if bar_labels is not None:
+            bar_label_kws = bar_label_kws or {'label_type': 'center'}
+            ax.bar_label(bar, labels=bar_labels, **bar_label_kws)
 
-    if xlabel:
-        ax.set_xlabel(xlabel, fontdict={'fontsize': xlabel_fs})
+        if errors is not None:
+            ax.errorbar(np.arange(len(values)), values, yerr=errors, fmt=".",
+                        color="black")
 
-    if title:
-        ax.set_title(title, fontdict={'fontsize': title_fs})
+    if ax_kws:
+        ax = process_axis(ax, **ax_kws)
+
+    if 'label' in kwargs:
+        ax.legend()
 
     if show:
         plt.show()
@@ -149,7 +168,7 @@ def plot(
         *args,
         show: bool = True,
         **kwargs
-)->plt.Axes:
+) -> plt.Axes:
     """
     One liner plot function. It's use is not more complex than `axes.plot()`_ or
     `plt.plot()`_ . However it accomplishes all in one line what requires multiple
@@ -196,8 +215,9 @@ def plot(
     """
 
     plot_kwargs = ('linewidth', 'linestyle', 'marker', 'fillstyle', 'ms', 'color',
-                   'drawstyle', 'y_data', 'url', 'mfc', 'mec', 'snap', 'markersize',
-                   'lw', 'ls', 'ds', 'c'
+                   'drawstyle', 'y_data', 'url', 'mfc', 'mec', 'mew', 'mfcalt', 'snap', 'markersize',
+                   'lw', 'ls', 'ds', 'c', 'facecolor', 'markeredgecolor', 'markeredgewidth',
+                   'markerfacecolor', 'markerfacesize', 'markerfacecoloralt',
                    )
     _plot_kwargs = {}
     for arg in plot_kwargs:
@@ -207,7 +227,7 @@ def plot(
     plot_args = []
 
     marker = None
-    if len(args)==1:
+    if len(args) == 1:
         data, = args
         data = [data]
     elif len(args) == 2 and not isinstance(args[1], str):
@@ -215,7 +235,7 @@ def plot(
     elif len(args) == 2 and isinstance(args[1], str):
         data, marker = args[0], args[1]
         data = [data]
-    elif len(args)==3:
+    elif len(args) == 3:
         *data, marker = args
         if isinstance(marker, np.ndarray):
             data.append(marker)
@@ -244,7 +264,7 @@ def plot(
     elif isinstance(s, pd.DataFrame):
         kwargs['min_xticks'] = kwargs.get('min_xticks', 3)
         kwargs['max_xticks'] = kwargs.get('max_xticks', 5)
-        if  s.shape[1] == 1:
+        if s.shape[1] == 1:
             kwargs['xlabel'] = kwargs.get('xlabel', s.index.name)
             kwargs['ylabel'] = kwargs.get('ylabel', s.columns.tolist()[0])
         else:
@@ -288,7 +308,7 @@ def regplot(
         ylabel: str = 'Predicted',
         show: bool = True,
         ax: plt.Axes = None
-)->plt.Axes:
+) -> plt.Axes:
     """
     Regpression plot with regression line and confidence interval
 
@@ -340,16 +360,19 @@ def regplot(
 
     # remvoing nans based upon nans in x
     x_nan_idx = np.isnan(x)
-    if x_nan_idx.sum()>0:
+    if x_nan_idx.sum() > 0:
         x = x[~x_nan_idx]
         y = y[~x_nan_idx]
-    
+
     # remvoing nans based upon nans in y
     y_nan_idx = np.isnan(y)
-    if y_nan_idx.sum()>0:
+    if y_nan_idx.sum() > 0:
         x = x[~y_nan_idx]
         y = y[~y_nan_idx]
-    
+
+    assert len(x) > 1, f"""
+    length of x is smaller than 1 {x} 
+    {len(y_nan_idx)} nans found in y and   {len(x_nan_idx)} nans found in x"""
     assert len(x) == len(y), f"x and y must be same length. Got {len(x)} and {len(y)}"
 
     mc, lc, fc = random.choice(regplot_combs)
@@ -359,7 +382,7 @@ def regplot(
         _, ax = plt.subplots(figsize=figsize or (6, 5))
 
     ax.scatter(x, y, c=marker_color or mc,
-                 s=marker_size)  # set style options
+               s=marker_size)  # set style options
 
     if annotation_key is not None:
         assert annotation_val is not None
@@ -396,11 +419,12 @@ def imshow(
         show=True,
         annotate=False,
         annotate_kws=None,
-        colorbar:bool=False,
-        colorbar_orientation:str = 'vertical',
+        colorbar: bool = False,
         ax=None,
+        white_grid: bool = False,
+        cb_tick_params: dict = None,
         **kwargs
-)->tuple:
+) -> tuple:
     """
     One stop shop for matplotlib's imshow function
 
@@ -418,14 +442,16 @@ def imshow(
         annotate_kws : dict, optional
         colorbar : bool, optional
             whether to draw colorbar or not
-        colorbar_orientation : str, optional
-            either "vertical" or "horizontal"
         xticklabels : list, optional
             tick labels for x-axis. For DataFrames, column names are used by default.
         yticklabels :  list, optional
             tick labels for y-axis. For DataFrames, index is used by default
         ax : plt.Axes, optional
             if not given, current available axes will be used
+        white_grid : bool, optional (default=False)
+            whether to show the white grids or not. This will also turn off the spines.
+        cb_tick_params : dict, optional
+            tick params for colorbar. for example ``pad`` or ``orientation``
         **kwargs : optional
             any further keyword arguments for `axes.imshow`_
 
@@ -441,7 +467,12 @@ def imshow(
         >>> imshow(x, annotate=True)
         ... # show colorbar
         >>> imshow(x, colorbar=True)
-
+        ... # setting white grid lines and annotation
+        >>> data = np.random.random((4, 10))
+        >>> imshow(data, cmap="YlGn",
+        ...        xticklabels=[f"Feature {i}" for i in range(data.shape[1])],
+        ...        white_grid=True, annotate=True,
+        ...        colorbar=True)
     .. _axes.imshow:
         https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.imshow.html
     """
@@ -452,21 +483,23 @@ def imshow(
             figsize = kwargs.pop('figsize')
             ax.figure.set_size_inches(figsize)
 
-    im = ax.imshow(values, **kwargs)
-
     if isinstance(values, pd.DataFrame):
         if not xticklabels:
             xticklabels = values.columns.to_list()
         if not yticklabels:
             yticklabels = values.index.tolist()
-        values = values.values
+        # when data in dataframe is object type, it causes error in plotting
+        # the best way to convert series in df to number is to use to_numeric
+        values = np.column_stack([pd.to_numeric(values.iloc[:, i]) for i in range(values.shape[1])])
+
+    tick_params = {}
+    if 'ticks' in kwargs:
+        tick_params['ticks'] = kwargs.pop('ticks')
+
+    im = ax.imshow(values, **kwargs)
 
     if annotate:
-        annotate_kws = annotate_kws or {"color": "w", "ha":"center", "va":"center"}
-        for i in range(values.shape[0]):
-            for j in range(values.shape[1]):
-                _ = ax.text(j, i, round(values[i, j], 2),
-                            **annotate_kws)
+        annotate_imshow(im, values, annotate_kws)
 
     if yticklabels is not None:
         ax.set_yticks(np.arange(len(yticklabels)))
@@ -474,17 +507,32 @@ def imshow(
 
     if xticklabels is not None:
         ax.set_xticks(np.arange(len(xticklabels)))
+        if len(xticklabels) > 5:
+            ax.set_xticklabels(xticklabels, rotation=70)
         ax.set_xticklabels(xticklabels)
 
     process_axis(ax, xlabel=xlabel, ylabel=ylabel, title=title)
 
+    if white_grid:
+        # Turn spines off and create white grid.
+        if isinstance(ax.spines, dict):
+            for sp in ax.spines:
+                ax.spines[sp].set_visible(False)
+        else:
+            ax.spines[:].set_visible(False)
+
+        ax.set_xticks(np.arange(values.shape[1] + 1) - .5, minor=True)
+        ax.set_yticks(np.arange(values.shape[0] + 1) - .5, minor=True)
+        ax.grid(which="minor", color="w", linestyle='-', linewidth=3)
+        ax.tick_params(which="minor", bottom=False, left=False)
+
     if colorbar:
+        cb_tick_params = cb_tick_params or {'pad': 0.2, 'orientation': 'vertical'}
         # https://stackoverflow.com/a/18195921/5982232
         divider = make_axes_locatable(ax)
         cax = divider.append_axes("right", size="5%", pad=0.2)
         fig: plt.Figure = plt.gcf()
-        fig.colorbar(im, orientation=colorbar_orientation, pad=0.2, cax=cax)
-
+        cb = fig.colorbar(im, cax=cax, **cb_tick_params)
 
     if show:
         plt.show()
@@ -493,13 +541,13 @@ def imshow(
 
 
 def hist(
-        x:Union[list, np.ndarray, pd.Series, pd.DataFrame],
+        x: Union[list, np.ndarray, pd.Series, pd.DataFrame],
         hist_kws: dict = None,
-        grid:bool = True,
+        grid: bool = True,
         ax: plt.Axes = None,
         show: bool = True,
         **kwargs
-)->plt.Axes:
+) -> plt.Axes:
     """
     one stop shop for histogram
 
@@ -559,7 +607,7 @@ def pie(
         save: bool = True,
         show: bool = True,
         **kwargs
-)->plt.Axes:
+) -> plt.Axes:
     """
     pie chart
 
@@ -600,7 +648,7 @@ def pie(
     .. _axes.pie:
         https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.pie.html
     """
-    #todo, add example for explode and partial pie chart
+    # todo, add example for explode and partial pie chart
     if ax is None:
         ax = plt.gca()
         if 'figsize' in kwargs:
@@ -646,7 +694,7 @@ def scatter(
         show: bool = True,
         ax: plt.Axes = None,
         **kwargs
-)->Tuple[plt.Axes, mpl.collections.PathCollection]:
+) -> Tuple[plt.Axes, mpl.collections.PathCollection]:
     """
     scatter plot between two arrays x and y
 
@@ -831,6 +879,7 @@ def contour(
 
     return ax
 
+
 def dumbbell_plot(
         start,
         end,
@@ -954,14 +1003,14 @@ def ridge(
         title: str = None,
         figsize: tuple = None,
         show=True
-)->List[plt.Axes,]:
+) -> List[plt.Axes,]:
     """
     plots distribution of features/columns/arrays in data as ridge.
 
     Parameters
     ----------
         data : array, DataFrame
-            2 dimensional array
+            2 dimensional array. It must be either numpy array or pandas dataframe
 
         cmap : str, optional
         xlabel : str, optional
@@ -994,17 +1043,21 @@ def ridge(
 
     if isinstance(data, np.ndarray):
         if data.ndim == 1:
-            data = data.reshape(-1,1)
+            data = data.reshape(-1, 1)
 
         assert data.ndim == 2
         data = pd.DataFrame(data,
                             columns=[f"Feature_{i}" for i in range(data.shape[1])])
+    else:
+        assert isinstance(data, pd.DataFrame)
+        for col in data.columns:
+            data[col] = pd.to_numeric(data[col])
 
     # +2 because we want to ignore first and last in most cases
-    colors = get_cmap(cmap, data.shape[1] + 2)
+    colors = make_cols_from_cmap(cmap, data.shape[1] + 2)
 
     gs = grid_spec.GridSpec(len(data.columns), 1)
-    fig = plt.figure(figsize=figsize or (16,9))
+    fig = plt.figure(figsize=figsize or (16, 9))
 
     dist_maxes = {}
     xs = {}
@@ -1021,16 +1074,15 @@ def ridge(
     for idx, col in enumerate(reversed(list(ymaxes.keys()))):
 
         # creating new axes object
-        ax_objs.append(fig.add_subplot(gs[idx:idx+1, 0:]))
+        ax_objs.append(fig.add_subplot(gs[idx:idx + 1, 0:]))
 
         # plotting the distribution
         # todo, remove pandas from here, we already calculated kde
         plot_ = data[col].plot.kde(ax=ax_objs[-1])
 
-
         _x = plot_.get_children()[0]._x
         _y = plot_.get_children()[0]._y
-        ax_objs[-1].fill_between(_x, _y, alpha=1, color=colors[idx+1])
+        ax_objs[-1].fill_between(_x, _y, alpha=1, color=colors[idx + 1])
 
         # setting uniform y lims
         ax_objs[-1].set_ylim(0, max(ymaxes.values()))
@@ -1039,7 +1091,7 @@ def ridge(
         rect = ax_objs[-1].patch
         rect.set_alpha(0)
 
-        if idx == data.shape[-1]-1:
+        if idx == data.shape[-1] - 1:
             if xlabel:
                 ax_objs[-1].set_xlabel(xlabel, fontsize=26, fontweight="bold")
 
@@ -1069,12 +1121,12 @@ def ridge(
     if title:
         plt.suptitle(title, fontsize=25)
 
-    #plt.tight_layout()
+    # plt.tight_layout()
 
     if show:
         plt.show()
 
-    return  ax_objs
+    return ax_objs
 
 
 def parallel_coordinates(
@@ -1088,7 +1140,7 @@ def parallel_coordinates(
         figsize: tuple = None,
         ticklabel_kws: dict = None,
         show: bool = True
-)->plt.Axes:
+) -> plt.Axes:
     """
     parallel coordinates plot
     modifying after https://stackoverflow.com/a/60401570/5982232
@@ -1164,7 +1216,7 @@ def parallel_coordinates(
 
     Note
     ----
-        If nans are present in data or categories, all the corresponding enteries/rows 
+        If nans are present in data or categories, all the corresponding enteries/rows
         will be removed.
     """
 
@@ -1206,9 +1258,9 @@ def parallel_coordinates(
         _is_categorical = True
 
     if not _is_categorical:  # because we can't do np.isnan for categorical values
-    # if there are still any nans in categories, remove them
+        # if there are still any nans in categories, remove them
         cat_nan_idx = np.isnan(categories)
-        if cat_nan_idx.any():    
+        if cat_nan_idx.any():
             categories = categories[~cat_nan_idx]
             data = data[~cat_nan_idx]
 
@@ -1229,7 +1281,7 @@ def parallel_coordinates(
 
     # organize the data
     enc_data = enc_data.astype(float)
-    ymins = np.min(enc_data.values, axis=0)  #ys.min(axis=0)
+    ymins = np.min(enc_data.values, axis=0)  # ys.min(axis=0)
     ymaxs = np.max(enc_data.values, axis=0)  # ys.max(axis=0)
     dys = ymaxs - ymins
     ymins -= dys * 0.05  # add 5% padding below and above
@@ -1254,7 +1306,7 @@ def parallel_coordinates(
             ax.spines["right"].set_position(("axes", i / (num_cols - 1)))
 
         if cols[i]['cat']:
-            categories = np.unique(cols[i]['original']) 
+            categories = np.unique(cols[i]['original'])
             new_ticks = np.unique(enc_data.iloc[:, i]).astype("float32")
             ax.set_yticks(new_ticks)
             ax.set_yticklabels(categories)
@@ -1286,7 +1338,7 @@ def parallel_coordinates(
 
         if linestyle == "straight":
             # to just draw straight lines between the axes:
-            host.plot(range(num_cols), zs[j,:], c=colors)
+            host.plot(range(num_cols), zs[j, :], c=colors)
         else:
             # create bezier curves
             # for each axis, there will a control vertex at the point itself, one at 1/3rd towards the previous and one
@@ -1332,12 +1384,11 @@ def label_format(x):
         return x
 
 
-def is_categorical(array)->bool:
+def is_categorical(array) -> bool:
     return not np.issubdtype(array.dtype, np.number)
 
 
 def _rescale(y, _min=0.0, _max=1.0):
-
     y_std = (y - np.min(y, axis=0)) / (np.max(y, axis=0) - np.min(y, axis=0))
 
     return y_std * (_max - _min) + _min
@@ -1349,20 +1400,20 @@ def label_encoder(arr):
 
 
 def lollipop_plot(
-    y, x=None, 
-    orientation:str = "vertical", 
-    sort:bool =False,
-    line_style:str='-', 
-    line_color:str='cyan', 
-    line_width:int=1, 
-    line_kws: dict=None,
-    marker_style:str='o', 
-    marker_color:str='teal', 
-    marker_size:int=30, 
-    marker_kws: dict=None, 
-    show: bool = True, 
-    ax: plt.Axes=None,
-    **kwargs)->plt.Axes:
+        y, x=None,
+        orientation: str = "vertical",
+        sort: bool = False,
+        line_style: str = '-',
+        line_color: str = 'cyan',
+        line_width: int = 1,
+        line_kws: dict = None,
+        marker_style: str = 'o',
+        marker_color: str = 'teal',
+        marker_size: int = 30,
+        marker_kws: dict = None,
+        show: bool = True,
+        ax: plt.Axes = None,
+        **kwargs) -> plt.Axes:
     """
     Plot a lollipop plot.
 
@@ -1416,7 +1467,7 @@ def lollipop_plot(
     >>> lollipop_plot(y, np.linspace(0, 100, len(y)), title="with x and y")
     ... # use custom line style
     >>> lollipop_plot(y, line_style='--', title="with custom linestyle")
-    ... # use custom marker style 
+    ... # use custom marker style
     >>> lollipop_plot(y, marker_style='D', title="with custom marker style")
     ... # sort the data points before plotting
     >>> lollipop_plot(y, sort=True, title="sort")
@@ -1426,7 +1477,7 @@ def lollipop_plot(
 
     .. _matplotlib.axes.Axes.plot:
         https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.plot.html
-        
+
     .. _matplotlib.axes.Axes.scatter:
         https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.scatter.html
     """
@@ -1436,7 +1487,7 @@ def lollipop_plot(
         if 'figsize' in kwargs:
             figsize = kwargs.pop('figsize')
             ax.figure.set_size_inches(figsize)
-    
+
     y = to_1d_array(y)
 
     if sort:
@@ -1446,24 +1497,24 @@ def lollipop_plot(
 
     if x is None:
         x = np.arange(len(y))
-    
+
     x = to_1d_array(x)
-    
+
     marker_kws = marker_kws or {}
     line_kws = line_kws or {}
 
     if orientation == "vertical":
         _lollipop_vertical(ax, x, y, line_style, line_color, line_width, line_kws,
-                            marker_style, marker_color, marker_size, marker_kws)
+                           marker_style, marker_color, marker_size, marker_kws)
     else:
         _lollipop_horizontal(ax, x, y, line_style, line_color, line_width, line_kws,
-                            marker_style, marker_color, marker_size, marker_kws)
-    
+                             marker_style, marker_color, marker_size, marker_kws)
+
     process_axis(ax=ax, **kwargs)
 
     if show:
         plt.show()
-    
+
     return ax
 
 
@@ -1472,32 +1523,32 @@ def _lollipop_vertical(ax, x, y, line_style, line_color, line_width, line_kws,
     ax.scatter(x, y, marker=marker_style, color=marker_color,
                s=marker_size, **marker_kws)
     ax.vlines(x, np.zeros(len(x)), y, color=line_color,
-                          linestyle=line_style, linewidth=line_width, **line_kws)
+              linestyle=line_style, linewidth=line_width, **line_kws)
     return ax
 
 
 def _lollipop_horizontal(ax, x, y, line_style, line_color, line_width, line_kws,
-                       marker_style, marker_color, marker_size, marker_kws):
+                         marker_style, marker_color, marker_size, marker_kws):
     ax.scatter(y, x, marker=marker_style, color=marker_color,
                s=marker_size, **marker_kws)
     ax.hlines(x, np.zeros(len(y)), y, color=line_color,
-                          linestyle=line_style, linewidth=line_width, **line_kws)
+              linestyle=line_style, linewidth=line_width, **line_kws)
     return ax
 
 
-
 def circular_bar_plot(
-    data, 
-    labels:list=None, 
-    sort=False, 
-    color:Union[str, list, np.ndarray]=None,
-    label_format:str=None,
-    min_max_range: tuple = None,
-    label_padding = 4,
-    figsize:tuple=None, 
-    show=True,
-    **kwargs
-    )->plt.Axes:
+        data,
+        labels: list = None,
+        sort=False,
+        color: Union[str, list, np.ndarray] = None,
+        label_format: str = None,
+        min_max_range: tuple = None,
+        label_padding: int = 4,
+        figsize: tuple = None,
+        show: bool = True,
+        text_kws: dict = None,
+        **kwargs
+) -> plt.Axes:
     """
     Plot a circular bar plot.
 
@@ -1511,7 +1562,7 @@ def circular_bar_plot(
     sort : bool, optional
         Sort the data by the values.
     color : str, list, np.ndarray, optional
-        Color for each data point. It can be a single color or a colormap from 
+        Color for each data point. It can be a single color or a colormap from
         plt.colormaps.
     label_format : str, optional
         Format for the labels.
@@ -1541,11 +1592,11 @@ def circular_bar_plot(
     >>> from easy_mpl import circular_bar_plot
     >>> data = np.random.random(50, )
     ... # basic
-    >>> circular_bar_plot(data)  
+    >>> circular_bar_plot(data)
     ... # with names
     >>> names = [f"{i}" for i in range(50)]
     >>> circular_bar_plot(data, names)
-    ... # sort values 
+    ... # sort values
     >>> circular_bar_plot(data, names, sort=True)
     ... # custom color map
     >>> circular_bar_plot(data, names, color='viridis')
@@ -1555,6 +1606,8 @@ def circular_bar_plot(
     >>> circular_bar_plot(data, names, label_format='{} {:.4f}')
 
     """
+
+    text_kws = text_kws or {}
 
     plt.close('all')
     plt.figure(figsize=figsize or (8, 12))
@@ -1583,9 +1636,9 @@ def circular_bar_plot(
         labels = [labels[i] for i in range(len(labels)) if not val_nan_idx[i]]
 
     if color is None:
-        color = get_cmap(random.choice(BAR_CMAPS), len(values), 0.2)
+        color = make_cols_from_cmap(random.choice(BAR_CMAPS), len(values), 0.2)
     elif isinstance(color, str) and color in plt.colormaps():
-        color = get_cmap(color, len(values), 0.2)
+        color = make_cols_from_cmap(color, len(values), 0.2)
     else:
         color = color
 
@@ -1593,14 +1646,14 @@ def circular_bar_plot(
 
     min_max_range = min_max_range or (30, 100)
     lower_limit = min_max_range[0]
-    heights = _rescale(values.reshape(-1, 1), lower_limit, min_max_range[1]).reshape(-1,)
+    heights = _rescale(values.reshape(-1, 1), lower_limit, min_max_range[1]).reshape(-1, )
 
     if sort:
         sort_idx = np.argsort(heights)
         heights = heights[sort_idx]
         labels = [labels[i] for i in sort_idx]
         values = values[sort_idx]
-        #color = color[sort_idx]
+        # color = color[sort_idx]
 
     # Compute the width of each bar. In total we have 2*Pi = 360°
     width = 2 * np.pi / len(heights)
@@ -1615,15 +1668,15 @@ def circular_bar_plot(
         height=heights,
         width=width,
         bottom=lower_limit,
-        linewidth= 2,
-        edgecolor = "white",
+        linewidth=2,
+        edgecolor="white",
         color=color,
     )
 
     # Add labels
     for bar, angle, label, val in zip(bars, angles, labels, values):
 
-        label = label_format.format(label, val) 
+        label = label_format.format(label, val)
 
         # Labels are rotated. Rotation must be specified in degrees :(
         rotation = np.rad2deg(angle)
@@ -1643,12 +1696,14 @@ def circular_bar_plot(
             ha=alignment,
             va='center',
             rotation=rotation,
-            rotation_mode="anchor")
+            rotation_mode="anchor",
+            **text_kws
+        )
 
     if kwargs:
         process_axis(ax, **kwargs)
 
-    if show:    
+    if show:
         plt.show()
-    
+
     return ax

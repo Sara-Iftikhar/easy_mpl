@@ -1,9 +1,10 @@
 
+from collections.abc import KeysView, ValuesView
+
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
-from scipy.stats import gaussian_kde
-
+import pandas as pd
 
 BAR_CMAPS = ['Blues', 'BuGn', 'gist_earth_r',
              'GnBu', 'PuBu', 'PuBuGn', 'summer_r']
@@ -91,62 +92,83 @@ def bootdist(f, args, n_boot=1000, **func_kwargs):
 
 def process_axis(
         ax: plt.Axes=None,
-        label=None,  # legend
-        logy=False,
-        logx=False,
-        legend_kws:dict = None, # kwargs for axes.legend such as loc, fontsize, bbox_to_anchor, markerscale
-        xlabel=None,
+        label:str = None,
+        legend_kws:dict = None,
+        logy:bool = False,
+        logx: bool= False,
+        xlabel: str = None,
         xlabel_kws:dict=None,
-        xtick_kws:dict = None, # for axes.tick_params such as which, labelsize, colors etc
-        ylim:tuple=None,  # limit for y axes
-        ylabel=None,
-        ylabel_kws:dict=None,  # ylabel kwargs
-        ytick_kws:dict = None, # for axes.tick_params(  such as which, labelsize, colors etc
-        show_xaxis=True,
+        xtick_kws:dict = None,
+        ylim:tuple = None,
+        ylabel:str = None,
+        ylabel_kws:dict = None,
+        ytick_kws:dict = None,
+        show_xaxis: bool = True,
+        show_yaxis:bool = True,
         top_spine=None,
         bottom_spine=None,
         right_spine=None,
         left_spine=None,
-        invert_yaxis=False,
+        invert_yaxis: bool = False,
         max_xticks=None,
         min_xticks=None,
-        title=None,
-        title_kws:dict=None,  # title kwargs
+        title:str = None,
+        title_kws:dict=None,
         grid=None,
-        grid_kws:dict = None,  # keyword arguments for axes.grid
+        grid_kws:dict = None,
 )-> plt.Axes:
     """
     processing of matplotlib Axes
+
     Parameters
     ----------
     ax : plt.Axes
-    label
+        the axes which needs to be processed.
+    label : str (default=None)
+        will be used for legend
+    legend_kws : dict, optional
+        dictionary of keyword arguments to ax.legend(**legend_kws)
+        These include loc, fontsize, bbox_to_anchor, markerscale
     logy : bool
     logx : bool
-    legend_kws :
-    xlabel :
-    xlabel_kws :
+    xlabel : str
+        label for x-axies
+    xlabel_kws : dict
+        keyword arguments for x-label ax.set_xlabel(xlabel, **xlabel_kws)
     xtick_kws :
+        # for axes.tick_params such as which, labelsize, colors etc
     min_xticks :
     max_xticks :
-    ylabel :
-    ylabel_kws :
+    ylabel : str
+    ylabel_kws : dict
+        ylabel kwargs
     ytick_kws :
+        for axes.tick_params()  such as which, labelsize, colors etc
     ylim :
+        limit for y axes
     invert_yaxis :
-    title :
-    title_kws :
+        whether to invert y-axes or not. It true following command will be
+        executed ax.set_ylim(ax.get_ylim()[::-1])
+    title : str
+    title_kws : dict
+        title kwargs
     grid :
-    grid_kws :
+        will be fed to ax.grid(grid,...)
+    grid_kws : dict
+        dictionary of keyword arguments for ax.grid(grid, **grid_kws)
     left_spine :
     right_spine :
     top_spine :
     bottom_spine :
-    show_xaxis :
+    show_xaxis : bool, optional (default=True)
+        whether to show x-axes or not
+    show_yaxis : bool, optional (default=True)
+        whether to show y-axes or not
 
     Returns
     -------
-        plt.Axes
+    plt.Axes
+        the matplotlib Axes object which was passed to this function
     """
     if ax is None:
         ax = plt.gca()
@@ -211,10 +233,13 @@ def process_axis(
         grid_kws = grid_kws or {}
         ax.grid(grid, **grid_kws)
 
+    if not show_yaxis:
+        ax.get_yaxis().set_visible(False)
+
     return ax
 
 
-def get_cmap(cm: str, num_cols: int, low=0.0, high=1.0):
+def make_cols_from_cmap(cm: str, num_cols: int, low=0.0, high=1.0)->np.ndarray:
 
     cols = getattr(plt.cm, cm)(np.linspace(low, high, num_cols))
     return cols
@@ -236,13 +261,28 @@ def to_1d_array(array_like) -> np.ndarray:
     elif array_like.__class__.__name__ == 'DataFrame' and array_like.ndim == 2:
         assert len(array_like) == array_like.size
         return array_like.values.reshape(-1,)
-    elif isinstance(array_like, float) or isinstance(array_like, int):
+
+    elif isinstance(array_like, (float, int)):
         return np.array([array_like])
+
+    elif isinstance(array_like, (KeysView, ValuesView)):
+        return np.array(list(array_like))
     else:
         raise ValueError(f'cannot convert object {array_like.__class__.__name__}  to 1d ')
 
 
+def has_multi_cols(data)->bool:
+    """returns True if data contains multiple columns"""
+    if isinstance(data, (pd.DataFrame, np.ndarray)):
+        if data.ndim == 2 and data.shape[1]>1:
+            return True
+    return False
+
+
 def kde(y):
+    # don't want to make whole easy_mpl dependent upon scipy
+    from scipy.stats import gaussian_kde
+
     """Generate Kernel Density Estimate plot using Gaussian kernels."""
     gkde = gaussian_kde(y, bw_method='scott')
 
@@ -254,3 +294,37 @@ def kde(y):
     )
 
     return ind, gkde.evaluate(ind)
+
+
+def annotate_imshow(
+        im,
+        data:np.ndarray=None,
+        annotate_kws=None,
+        textcolors=("black", "white"),
+        threshold=None,
+):
+    """annotates imshow
+    https://matplotlib.org/stable/gallery/images_contours_and_fields/image_annotated_heatmap.html
+    """
+
+    if data is None:
+        data = im.get_array()
+
+    if threshold is not None:
+        threshold = im.norm(threshold)
+    else:
+        threshold = im.norm(data.max()) / 2
+
+    annotate_kws = annotate_kws or {"ha": "center", "va": "center"}
+    if 'fmt' in annotate_kws:
+        fmt = annotate_kws.pop('fmt')
+    else:
+        fmt = '%.2f'
+
+    for i in range(data.shape[0]):
+        for j in range(data.shape[1]):
+            s = fmt % float(data[i, j])
+            _ = im.axes.text(j, i, s,
+                        color=textcolors[int(im.norm(data[i, j]) > threshold)],
+                        **annotate_kws)
+    return

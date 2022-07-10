@@ -10,4 +10,4 @@ import numpy as np
 #############################
 
 
-hist(np.random.random((10, 1)))
+hist(np.random.randn(1000), hist_kws={'bins':100})

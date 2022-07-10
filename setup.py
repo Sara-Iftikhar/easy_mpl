@@ -1,11 +1,20 @@
 
 from setuptools import setup
 
+import os
+
+long_desc="easy_mpl",
+
+fpath = os.path.join(os.getcwd(), "readme.md")
+if os.path.exists(fpath):
+    with open(fpath, "r") as fd:
+        long_desc = fd.read()
+
 setup(
 
     name='easy_mpl',
 
-    version="0.20.4",
+    version="0.20.5",
 
     description='one stop shop for matplotlib plots',
     long_description="",

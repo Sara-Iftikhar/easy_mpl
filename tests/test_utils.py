@@ -4,7 +4,7 @@ import unittest
 import numpy as np
 import pandas as pd
 
-from easy_mpl.utils import to_1d_array
+from easy_mpl.utils import to_1d_array, has_multi_cols
 
 class Testto1darray(unittest.TestCase):
 
@@ -44,6 +44,42 @@ class Testto1darray(unittest.TestCase):
                           to_1d_array,
                           pd.DataFrame(np.array([1, 2, 3, 4]).reshape(-1, 2))
                           )
+        return
+
+    def test_dict_keys(self):
+        x = to_1d_array({'a': 1, 'b': 2}.keys())
+        assert x.ndim == 1
+        return
+
+    def test_dict_values(self):
+        x = to_1d_array({'a': 1, 'b': 2}.values())
+        assert x.ndim == 1
+        return
+
+class TestMisc(unittest.TestCase):
+
+    def test_multi_col_1darray(self):
+        assert has_multi_cols(np.array([1,2,3])) is False
+        return
+
+    def test_multi_col_series(self):
+        assert has_multi_cols(pd.Series(np.array([1,2,3]))) is False
+        return
+
+    def test_multi_col_1d_df(self):
+        assert has_multi_cols(pd.DataFrame(np.array([1,2,3]))) is False
+        return
+
+    def test_multi_col_list(self):
+        assert has_multi_cols([1,2,3]) is False
+        return
+
+    def test_multi_col_2d_df(self):
+        assert has_multi_cols(pd.DataFrame(np.array([1,2,3, 4]).reshape(-1, 2)))
+        return
+
+    def test_multi_col_2d_array(self):
+        assert has_multi_cols(np.array([1,2,3, 4]).reshape(-1, 2))
         return
 
 
