@@ -81,6 +81,12 @@ circular_bar_plot
    :members: circular_bar_plot
 
 
+spider_plot
+===========
+.. automodule:: easy_mpl
+   :members: spider_plot
+
+
 process_axes
 =================
 .. automodule:: easy_mpl.utils
