@@ -1714,7 +1714,7 @@ def circular_bar_plot(
 
 def spider_plot(
         values:Union[pd.DataFrame, np.ndarray, list],
-        tick_labels:list = None,
+        labels:list = None,
         highlight:Union[int, float]=None,
         plot_kws: Optional[Union[dict, List[dict]]] = None,
         xtick_kws: Optional[dict] = None,
@@ -1732,9 +1732,7 @@ def spider_plot(
     Parameters
     ----------
         values :
-            data to plot.
-        tick_labels : list, optional
-            names for tick labels
+        labels : list, optional
         plot_kws : dict, optional
             These can include, ``color``, ``linewidth``, ``linestyle`` etc
         xtick_kws : dict, optional
@@ -1747,12 +1745,12 @@ def spider_plot(
             colormap to use
         frame: str, optional (default="circle")
             whether the outer frame and grids should be polygon or circle
-        fill_color : str,list, optional (default=None)
-            color for filling
-        leg_kws : dict, optional (default=None)
-            keyword arguments for legneds. These will go to ax.legend()
+        ax : plt.Axes
+            matplotlib axes on which to draw the axes
         figsize : tuple, optional (default=None)
             figure size
+        fill_color
+        leg_kws : dict
         show : bool, optional (default=True)
             whether to show the plot or not
 
@@ -1786,22 +1784,16 @@ def spider_plot(
     if isinstance(values, (list, tuple)):
         values = np.array(values).reshape(-1, 1)
 
-    if tick_labels is None:
+    if labels is None:
         if isinstance(values, (pd.DataFrame, pd.Series)):
-            tick_labels = values.index
+            labels = values.index
         else:
-            tick_labels = [f"F{i}" for i in range(len(values))]
-
-
-    if isinstance(values, (pd.DataFrame, pd.Series)):
-        labels = values.columns.to_list()
-    else:
-        labels = [f"A{i}" for i in range(len(values))]
+            labels = [f"F{i}" for i in range(len(values))]
 
     if isinstance(values, (pd.DataFrame, pd.Series)):
         values = values.values
 
-    N = len(tick_labels)
+    N = len(labels)
     assert N == len(values)
 
     if not isinstance(plot_kws, list):
@@ -1810,9 +1802,9 @@ def spider_plot(
     def_color = plt.cm.get_cmap('Set2', values.shape[1])
 
     if color is None:
-        color = [def_color(i) for i in range(N)]
+        color = [def_color(i) for i in range(values.shape[1])]
     if fill_color is None:
-        fill_color = [def_color(i) for i in range(N)]
+        fill_color = [def_color(i) for i in range(values.shape[1])]
 
     if not isinstance(color, list):
         color = [color for _ in range(N)]
@@ -1834,17 +1826,13 @@ def spider_plot(
     xtick_kws = xtick_kws or {}
     _xtick_kws.update(xtick_kws)
 
-    plt.xticks(angles[:-1], tick_labels, **_xtick_kws)
+    plt.xticks(angles[:-1], labels, **_xtick_kws)
 
     for idx in range(values.shape[1]):
 
         plot_kws_ = plot_kws[idx]
 
-        _plot_kws = {"color": color[idx],
-                     "linewidth": 2,
-                     "linestyle": 'solid',
-                     'label': labels[idx],
-                     }
+        _plot_kws = {"color": color[idx], "linewidth": 2, "linestyle": 'solid'}
         plot_kws_ = plot_kws_ or {}
         _plot_kws.update(plot_kws_)
 
@@ -1871,7 +1859,7 @@ def spider_plot(
     _leg_kws = {'loc': 'best', 'labelspacing': 0.1, 'fontsize': 'small'}
     leg_kws = leg_kws or {}
     _leg_kws.update(leg_kws)
-    ax.legend(**_leg_kws)
+    legend = ax.legend(labels, **_leg_kws)
 
     if show:
         plt.show()

@@ -891,7 +891,7 @@ class TestSpiderPlot(unittest.TestCase):
 
 
         ax = spider_plot(values=self.values,
-                         tick_labels=self.labels, show=self.show)
+                         labels=self.labels, show=self.show)
         assert isinstance(ax, plt.Axes)
         return
 

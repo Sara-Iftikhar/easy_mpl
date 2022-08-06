@@ -3,7 +3,7 @@ from setuptools import setup
 
 import os
 
-long_desc="easy_mpl",
+long_desc="easy_mpl"
 
 fpath = os.path.join(os.getcwd(), "readme.md")
 if os.path.exists(fpath):
@@ -14,10 +14,10 @@ setup(
 
     name='easy_mpl',
 
-    version="0.20.5",
+    version="0.21.0",
 
     description='one stop shop for matplotlib plots',
-    long_description="",
+    long_description=long_desc,
     long_description_content_type="text/markdown",
 
     url='https://github.com/Sara-Iftikhar/easy_mpl',

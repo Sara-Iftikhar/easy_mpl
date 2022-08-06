@@ -336,6 +336,7 @@ def annotate_imshow(
                         **annotate_kws)
     return
 
+
 def register_projections(num_vars, frame="polygon", grids="polygon"):
     """
     Create a radar chart with `num_vars` axes.
