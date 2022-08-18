@@ -1,7 +1,7 @@
 """
-=======
-scatter
-=======
+==========
+2. scatter
+==========
 """
 
 from easy_mpl import scatter

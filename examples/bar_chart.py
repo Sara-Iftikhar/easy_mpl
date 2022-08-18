@@ -1,7 +1,7 @@
 """
-=========
-bar_chart
-=========
+============
+4. bar_chart
+============
 """
 
 from easy_mpl import bar_chart

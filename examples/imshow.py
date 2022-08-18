@@ -1,7 +1,7 @@
 """
-=======
-imshow
-=======
+==========
+3. imshow
+==========
 This notebook shows the usage of ``imshow`` function in easy_mpl library.
 
 ``imshow`` can be used to draw heatmap of a two dimensional array/data.

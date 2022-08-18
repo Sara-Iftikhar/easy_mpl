@@ -1,7 +1,7 @@
 """
-=====
-plot
-=====
+=======
+1. plot
+=======
 """
 import matplotlib.pyplot as plt
 import numpy as np

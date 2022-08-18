@@ -1,7 +1,7 @@
 """
-=====
-ridge
-=====
+========
+9. ridge
+========
 """
 
 import numpy as np

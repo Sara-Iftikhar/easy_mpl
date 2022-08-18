@@ -1,7 +1,7 @@
 """
-=============
-dumbbell_plot
-=============
+================
+7. dumbbell_plot
+================
 """
 
 import numpy as np

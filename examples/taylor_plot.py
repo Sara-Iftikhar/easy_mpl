@@ -1,7 +1,10 @@
 """
-===========
-taylor plot
-===========
+===============
+15. taylor plot
+===============
+
+A Taylor plot can be used to show statistical summary of one or more measurements/models.
+
 """
 
 import numpy as np
