@@ -923,6 +923,11 @@ class TestSpiderPlot(unittest.TestCase):
         assert isinstance(ax, plt.Axes)
         return
 
+    def test_2d_np_array(self):
+        ax = spider_plot(self.df.values, labels=self.df.columns.tolist(), show=self.show)
+        assert isinstance(ax, plt.Axes)
+        return
+
 
 if __name__ == "__main__":
     unittest.main()

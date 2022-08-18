@@ -359,3 +359,22 @@ circular_bar_plot(data, names, min_max_range=(1, 10), label_padding=1)
 # custom label format
 circular_bar_plot(data, names, label_format='{} {:.4f}')
 ```
+
+## spider_plot
+
+```python
+from easy_mpl import spider_plot
+values = [-0.2, 0.1, 0.0, 0.1, 0.2, 0.3]
+spider_plot(values=values)
+# specifying labels
+labels = ['a', 'b','c', 'd', 'e', 'f']
+spider_plot(values=values, labels=labels)
+# specifying tick size
+spider_plot(values, labels, xtick_kws={'size': 13})
+df = pd.DataFrame.from_dict(
+{'summer': {'a': -0.2, 'b': 0.1, 'c': 0.0, 'd': 0.1, 'e': 0.2, 'f': 0.3},
+'winter': {'a': -0.3, 'b': 0.1, 'c': 0.0, 'd': 0.2, 'e': 0.15,'f': 0.25}})
+spider_plot(df, xtick_kws={'size': 13})
+# use polygon frame
+spider_plot(values=values, frame='polygon')
+```
