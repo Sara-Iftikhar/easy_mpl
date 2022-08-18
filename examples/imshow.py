@@ -1,6 +1,6 @@
 """
 ==========
-3. imshow
+c. imshow
 ==========
 This notebook shows the usage of ``imshow`` function in easy_mpl library.
 

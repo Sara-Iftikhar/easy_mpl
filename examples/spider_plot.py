@@ -1,6 +1,6 @@
 """
 ===============
-14. spider plot
+n. spider plot
 ===============
 This file shows usage of spider_plot function.
 """

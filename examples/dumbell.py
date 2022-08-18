@@ -1,6 +1,6 @@
 """
 ================
-7. dumbbell_plot
+g. dumbbell_plot
 ================
 """
 
