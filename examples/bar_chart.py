@@ -40,3 +40,12 @@ bar_chart(
     bar_label_kws={'label_type':'edge'},
     cmap="GnBu",
     sort=True)
+
+#%%
+# vertical orientation
+bar_chart([1,2,3,4,4,5,3,2,5], orient='v')
+
+#%%
+# error bars
+errors = [0.1, 0.2, 0.3, 0.24, 0.32, 0.11, 0.32, 0.12, 0.42]
+bar_chart([1,2,3,4,4,5,3,2,5], errors=errors)

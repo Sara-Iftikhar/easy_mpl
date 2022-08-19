@@ -72,6 +72,7 @@ taylor_plot(observations=observations,
             title="mutiple subplots")
 
 #############################
+# using statistics instead of arrays
 
 observations = {'std': 4.916}
 predictions = {   # pbias is optional

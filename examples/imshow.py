@@ -19,10 +19,12 @@ imshow(x, annotate=True)
 
 #############################
 # show colorbar
+
 imshow(x, colorbar=True)
 
 #%%
 # Annotation
+
 data = np.random.random((4, 10))
 
 imshow(data, cmap="YlGn",
