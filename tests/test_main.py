@@ -339,6 +339,28 @@ class TestImshow(unittest.TestCase):
         assert isinstance(ax, plt.Axes)
         return
 
+    def test_textcolors_tuple(self):
+        data = pd.DataFrame(np.random.random((10, 10)), dtype='object')
+        ax, im = imshow(data, white_grid=True, annotate=True, show=self.show,
+                        annotate_kws={'textcolors': ("black", "white")}
+                        )
+        assert isinstance(ax, plt.Axes)
+        return
+
+    def test_textcolors_array(self):
+        data = pd.DataFrame(np.random.random((3, 3)), dtype='object')
+        ax, im = imshow(data, cmap="YlGn",
+       white_grid=True, annotate=True,
+       annotate_kws={
+              "textcolors": np.array([['black', 'black', 'black'],
+                                      ['white', 'white', 'white'],
+                                     ['green', 'green', 'green']])
+       },
+       show=self.show)
+        assert isinstance(ax, plt.Axes)
+        return
+
+
 class Testhist(unittest.TestCase):
     show = False
 

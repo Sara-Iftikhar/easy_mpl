@@ -26,3 +26,7 @@ scatter(x, y, colorbar=True)
 
 axes, _ = scatter(x, y, show=False)
 assert isinstance(axes, plt.Axes)
+
+#%%
+
+scatter(x, y, edgecolors='black', linewidth=0.5)

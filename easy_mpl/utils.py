@@ -1,4 +1,5 @@
 
+from typing import Union
 from collections.abc import KeysView, ValuesView
 
 import numpy as np
@@ -306,9 +307,10 @@ def kde(y):
 def annotate_imshow(
         im,
         data:np.ndarray=None,
-        annotate_kws=None,
-        textcolors=("black", "white"),
+        textcolors:Union[tuple, np.ndarray]=("black", "white"),
         threshold=None,
+        fmt = '%.2f',
+        **text_kws
 ):
     """annotates imshow
     https://matplotlib.org/stable/gallery/images_contours_and_fields/image_annotated_heatmap.html
@@ -317,23 +319,27 @@ def annotate_imshow(
     if data is None:
         data = im.get_array()
 
-    if threshold is not None:
-        threshold = im.norm(threshold)
+    use_threshold = True
+    if isinstance(textcolors, np.ndarray) and textcolors.shape == data.shape:
+        assert threshold is None, f"if textcolors is given as array then threshold should be None"
+        use_threshold = False
     else:
-        threshold = im.norm(data.max()) / 2
-
-    annotate_kws = annotate_kws or {"ha": "center", "va": "center"}
-    if 'fmt' in annotate_kws:
-        fmt = annotate_kws.pop('fmt')
-    else:
-        fmt = '%.2f'
+        if threshold is not None:
+            threshold = im.norm(threshold)
+        else:
+            threshold = im.norm(data.max()) / 2
 
     for i in range(data.shape[0]):
         for j in range(data.shape[1]):
             s = fmt % float(data[i, j])
-            _ = im.axes.text(j, i, s,
+            if use_threshold:
+                _ = im.axes.text(j, i, s,
                         color=textcolors[int(im.norm(data[i, j]) > threshold)],
-                        **annotate_kws)
+                        **text_kws)
+            else:
+                _ = im.axes.text(j, i, s,
+                        color=textcolors[i, j],
+                        **text_kws)
     return
 
 

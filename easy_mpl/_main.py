@@ -421,7 +421,7 @@ def imshow(
         xticklabels=None,
         show=True,
         annotate=False,
-        annotate_kws=None,
+        annotate_kws:dict = None,
         colorbar: bool = False,
         ax=None,
         white_grid: bool = False,
@@ -442,7 +442,17 @@ def imshow(
         show : bool, optional
             whether to show the plot or not
         annotate : bool, optional
+            whether to annotate the heatmap or not
         annotate_kws : dict, optional
+            a dictionary with following possible keys
+
+                - ha : horizontal alighnment (default="center")
+                - va : vertical alighnment (default="center")
+                - fmt : format (default='%.2f')
+                - textcolors : colors for axes.text
+                - threshold : threshold to be used for annotation
+                - **kws : any other keyword argument for axes.text
+
         colorbar : bool, optional
             whether to draw colorbar or not
         xticklabels : list, optional
@@ -501,8 +511,23 @@ def imshow(
 
     im = ax.imshow(values, **kwargs)
 
+    if annotate_kws is None:
+        annotate_kws = {}
+
+    assert isinstance(annotate_kws, dict)
+
+    _annotate_kws = {
+        'ha':"center",
+        "va": "center",
+        "fmt": '%.2f',
+        "textcolors": ("black", "white"),
+        "threshold": None
+    }
+
+    _annotate_kws.update(annotate_kws)
+
     if annotate:
-        annotate_imshow(im, values, annotate_kws)
+        annotate_imshow(im, values, **_annotate_kws)
 
     if yticklabels is not None:
         ax.set_yticks(np.arange(len(yticklabels)))
