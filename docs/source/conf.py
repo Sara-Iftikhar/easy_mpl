@@ -85,7 +85,22 @@ sphinx_gallery_conf = {
     'matplotlib_animations': True,
     'image_srcset': ["2x"],
 
-    'within_subsection_order': ExampleTitleSortKey,
+    'within_subsection_order': ExplicitOrder(['../../scripts/plot',
+                                       '../../scripts/scatter',
+                                       '../../scripts/imshow',
+                                       '../../scripts/bar_chart',
+                                       '../../scripts/hist',
+                                       '../../scripts/lollipop_plot',
+                                       '../../scripts/dumbell_plot',
+                                       '../../scripts/regplot',
+                                       '../../scripts/ridge',
+                                       '../../scripts/pie',
+                                       '../../scripts/contour',
+                                       '../../scripts/circular_bar_plot',
+                                       '../../scripts/parallel_coordinates',
+                                       '../../scripts/spider_plot',
+                                       '../../scripts/taylor_plot',
+                                       ]),
 }
 
 # -- Options for HTML output -------------------------------------------------

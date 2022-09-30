@@ -854,6 +854,12 @@ class TestCircularBarPlot(unittest.TestCase):
         assert isinstance(ax, plt.Axes)
         return
 
+    def test_custom_fs(self):
+        ax = circular_bar_plot(self.data, self.names, title="custon_fontsize",
+                               text_kws={"fontsize": 16}, show=self.show)
+        assert isinstance(ax, plt.Axes)
+        return
+
     def test_sort(self):
         ax = circular_bar_plot(self.data, self.names, sort=True,
                                title="sort", show=self.show)

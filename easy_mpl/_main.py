@@ -1,3 +1,4 @@
+
 __all__ = [
     "plot",
     "bar_chart",
@@ -87,7 +88,9 @@ def bar_chart(
 
     Returns
     --------
-        matplotlib Axes
+    matplotlib.pyplot.Axes
+        matplotlib Axes on which the bar_chart is drawn. If ``show`` is False, this axes
+        can be used for further processing
 
     Example
     --------
@@ -189,7 +192,9 @@ def plot(
 
     Returns
     -------
-        matplotlib.pyplot.Axes
+    matplotlib.pyplot.Axes
+        matplotlib Axes on which the plot is drawn. If ``show`` is False, this axes
+        can be used for further processing
 
     Example
     --------
@@ -254,9 +259,14 @@ def plot(
         ax = kwargs.pop('ax')
     else:
         ax = plt.gca()
-        if 'figsize' in kwargs:
-            figsize = kwargs.pop('figsize')
-            ax.figure.set_size_inches(figsize)
+
+    if ax is None:
+        # it is possible that as is given in kwargs but given as None
+        ax = plt.gca()
+
+    if 'figsize' in kwargs:
+        figsize = kwargs.pop('figsize')
+        ax.figure.set_size_inches(figsize)
 
     s = data[0]
     if isinstance(s, pd.Series):
@@ -344,7 +354,8 @@ def regplot(
 
     Returns
     --------
-        matplotlib.pyplot.Axes
+    matplotlib.pyplot.Axes
+        the matplotlib Axes on which regression plot is drawn.
 
     Examples
     --------
@@ -426,6 +437,7 @@ def imshow(
         ax=None,
         white_grid: bool = False,
         cb_tick_params: dict = None,
+        ax_kws: dict = None,
         **kwargs
 ) -> tuple:
     """
@@ -465,11 +477,14 @@ def imshow(
             whether to show the white grids or not. This will also turn off the spines.
         cb_tick_params : dict, optional
             tick params for colorbar. for example ``pad`` or ``orientation``
+        ax_kws : dict, optional (default=None)
+            any keyword arguments for process_axes function as dictionary
         **kwargs : optional
             any further keyword arguments for `axes.imshow`_
 
     Returns
     -------
+    tuple
         a tuple whose first vlaue is matplotlib axes and second argument is AxesImage
 
     Examples
@@ -539,7 +554,9 @@ def imshow(
             ax.set_xticklabels(xticklabels, rotation=70)
         ax.set_xticklabels(xticklabels)
 
-    process_axis(ax, xlabel=xlabel, ylabel=ylabel, title=title)
+    if not ax_kws:
+        ax_kws = dict()
+    process_axis(ax, xlabel=xlabel, ylabel=ylabel, title=title, **ax_kws)
 
     if white_grid:
         # Turn spines off and create white grid.
@@ -594,9 +611,9 @@ def hist(
         **kwargs : optional
             any keyword arguments for axes manipulation such as title, xlable, ylable etc
 
-    Returns
-    --------
-        matplotlib Axes
+    matplotlib.pyplot.Axes
+        matplotlib Axes on which the histogram is drawn. If ``show`` is False, this axes
+        can be used for further processing
 
     Example
     --------
@@ -741,7 +758,8 @@ def scatter(
 
     Returns
     --------
-    matplotlib Axes
+    tuple :
+        A tuple whose first member is matplotlib Axes and second member is
     matplotlib.collections.PathCollection
 
     Examples
@@ -1076,6 +1094,8 @@ def ridge(
         assert data.ndim == 2
         data = pd.DataFrame(data,
                             columns=[f"Feature_{i}" for i in range(data.shape[1])])
+    elif isinstance(data, pd.Series):
+        data = pd.DataFrame(data)
     else:
         assert isinstance(data, pd.DataFrame)
         for col in data.columns:
