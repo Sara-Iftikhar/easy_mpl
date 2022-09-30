@@ -56,71 +56,18 @@ This package can be installed using pip from pypi using following command
 ## plot
 
 ```python
+import numpy as np
 from easy_mpl import plot
-import numpy as np
-plot(np.random.random(100))
-# use x and y
-plot(np.arange(100), np.random.random(100))
-# use x and y with marker style
-plot(np.arange(100), np.random.random(100), '.')
 
-plot(np.random.random(100), '.')
-# use cutom marker
-plot(np.random.random(100), '--*')
+x = np.random.randint(2, 10, 10)
 
-plot(np.random.random(100), '--*', label='label')
-# log transform y-axis
-plot(np.random.random(100), '--*', logy=True, label='label')
+plot(x, '--o', color=np.array([35, 81, 53]) / 256.0,
+     xlabel="Days", ylabel="Values")
 ```
+<p float="left">
+  <img src="/docs/source/imgs/plot.png"  />
+</p>
 
-## bar_chart
-
-```python
-from easy_mpl import bar_chart
-bar_chart([1,2,3,4,4,5,3,2,5])
-# specifying labels
-bar_chart([3,4,2,5,10], ['a', 'b', 'c', 'd', 'e'])
-# sorting the data
-bar_chart([1,2,3,4,4,5,3,2,5], sort=True)
-```
-
-## regplot
-
-```python
-import numpy as np
-from easy_mpl import regplot
-x_, y_ = np.random.random(100), np.random.random(100)
-regplot(x_, y_)
-```
-
-## imshow
-
-```python
-import numpy as np
-from easy_mpl import imshow
-x = np.random.random((10, 5))
-imshow(x, annotate=True)
-# show colorbar
-imshow(x, colorbar=True)
-```
-
-## hist
-
-```python
-from easy_mpl import hist
-import numpy as np
-hist(np.random.random((10, 1)))
-```
-
-## pie
-
-```python
-from easy_mpl import pie
-import numpy as np
-pie(np.random.randint(0, 3, 100))
-# or by directly providing fractions
-pie([0.2, 0.3, 0.1, 0.4])
-```
 
 ## scatter
 
@@ -137,102 +84,216 @@ scatter(x, y, colorbar=True, show=False)
 ax, _ = scatter(x, y, show=False)
 assert isinstance(ax, plt.Axes)
 ```
+<p float="left">
+  <img src="/docs/source/imgs/scatter.png"  />
+</p>
 
-## contour
+
+## imshow
 
 ```python
-from easy_mpl import contour
 import numpy as np
-x = np.random.uniform(-2, 2, 200)
-y = np.random.uniform(-2, 2, 200)
-z = x * np.exp(-x**2 - y**2)
-contour(x, y, z, fill_between=True, show_points=True)
-# show contour labels
-contour(x, y, z, label_contours=True, show_points=True)
+from easy_mpl import imshow
+
+data = np.random.random((4, 10))
+imshow(data, cmap="YlGn",
+       xticklabels=[f"Feature {i}" for i in range(data.shape[1])],
+       white_grid=True, annotate=True,
+       colorbar=True)
 ```
+<p float="left">
+  <img src="/docs/source/imgs/imshow.png"  />
+</p>
+
+
+## bar_chart
+
+```python
+from easy_mpl import bar_chart
+
+bar_chart(
+    [1,2,3,4,4,5,3,2,5],
+    ['a','b','c','d','e','f','g','h','i'],
+    bar_labels=[11, 23, 12,43, 123, 12, 43, 234, 23],
+    cmap="GnBu",
+    sort=True)
+```
+<p float="left">
+  <img src="/docs/source/imgs/bar_chart.png"  />
+</p>
+
+
+## hist
+
+```python
+import numpy as np
+from easy_mpl import hist
+
+data = np.random.randn(1000)
+
+hist(data, hist_kws={'bins':100})
+```
+<p float="left">
+  <img src="/docs/source/imgs/hist.png"  />
+</p>
+
+
+## lollipop_plot
+
+```python
+import numpy as np
+from easy_mpl import lollipop_plot
+
+y = np.random.randint(0, 10, size=10)
+lollipop_plot(y, sort=True, title="sort")
+```
+<p float="left">
+  <img src="/docs/source/imgs/lollipop_plot.png"  />
+</p>
+
 
 ## dumbbell_plot
 
 ```python
 import numpy as np
 from easy_mpl import dumbbell_plot
+
 st = np.random.randint(1, 5, 10)
 en = np.random.randint(11, 20, 10)
+
 dumbbell_plot(st, en)
-# modify line color
-dumbbell_plot(st, en, line_kws={'color':"black"})
 ```
+<p float="left">
+  <img src="/docs/source/imgs/dumbbell_plot.png"  />
+</p>
+
+## regplot
+
+```python
+import numpy as np
+from easy_mpl import regplot
+
+rng = np.random.default_rng(313)
+x = rng.uniform(0, 10, size=100)
+y = x + rng.normal(size=100)
+
+regplot(x, y, line_color='black')
+```
+<p float="left">
+  <img src="/docs/source/imgs/regplot.png"  />
+</p>
+
 
 ## ridge
 
 ```python
 import numpy as np
 from easy_mpl import ridge
-data_ = np.random.random((100, 3))
-ridge(data_)
-# specifying colormap
-ridge(data_, cmap="Blues")
-# using pandas DataFrame
-import pandas as pd
-ridge(pd.DataFrame(data_))
+
+data = np.random.random((100, 3))
+ridge(data, show=False)
 ```
+<p float="left">
+  <img src="/docs/source/imgs/ridge.png"  />
+</p>
+
+
+## pie
+
+```python
+from easy_mpl import pie
+
+explode = (0, 0.1, 0, 0, 0)
+pie(fractions=[0.2, 0.3, 0.15, 0.25, 0.1], explode=explode)
+```
+<p float="left">
+  <img src="/docs/source/imgs/pie.png"  />
+</p>
+
+
+## contour
+
+```python
+import numpy as np
+from easy_mpl import contour
+
+_x = np.random.uniform(-2, 2, 200)
+_y = np.random.uniform(-2, 2, 200)
+_z = _x * np.exp(-_x**2 - _y**2)
+contour(_x, _y, _z, fill_between=True, show_points=True)
+```
+<p float="left">
+  <img src="/docs/source/imgs/contour.png"  />
+</p>
+
+
+## circular_bar_plot
+
+```python
+import numpy as np
+from easy_mpl import circular_bar_plot
+
+data = np.random.random(50, )
+
+circular_bar_plot(data, text_kws={"fontsize": 16})
+```
+<p float="left">
+  <img src="/docs/source/imgs/circular_bar_plot.png"  />
+</p>
 
 ## parallel_coordinates
 
 ```python
-import random
 import numpy as np
 import pandas as pd
 from easy_mpl import parallel_coordinates
 
-ynames = ['P1', 'P2', 'P3', 'P4', 'P5']
+ynames = ['P1', 'P2', 'P3', 'P4', 'P5']  # feature/column names
 N1, N2, N3 = 10, 5, 8
 N = N1 + N2 + N3
-categories = ['a', 'b', 'c', 'd', 'e', 'f']
+categories_ = ['a', 'b', 'c', 'd', 'e', 'f']
 y1 = np.random.uniform(0, 10, N) + 7
 y2 = np.sin(np.random.uniform(0, np.pi, N))
 y3 = np.random.binomial(300, 1 / 10, N)
 y4 = np.random.binomial(200, 1 / 3, N)
 y5 = np.random.uniform(0, 800, N)
 # combine all arrays into a pandas DataFrame
-data = np.column_stack((y1, y2, y3, y4, y5))
-data = pd.DataFrame(data, columns=ynames)
-# using DataFrame
-parallel_coordinates(data, names=ynames)
+data_df = pd.DataFrame(np.column_stack((y1, y2, y3, y4, y5)),
+                       columns=ynames)
+
 # using continuous values for categories
-parallel_coordinates(data, names=ynames, categories=np.random.randint(0, 5, N))
-# using categorical classes
-parallel_coordinates(data, names=ynames, categories=random.choices(categories, k=N))
-# using numpy array
-parallel_coordinates(data.values, names=ynames)
-# with customized tick labels
-parallel_coordinates(data.values, ticklabel_kws={"fontsize": 8, "color": "red"})
-# using straight lines instead of breziers
-parallel_coordinates(data, linestyle="straight")
-# with categorical class labels
-data['P5'] = random.choices(categories, k=N)
-parallel_coordinates(data, names=ynames)
-# with categorical class labels and customized ticklabels
-data['P5'] = random.choices(categories, k=N)
-parallel_coordinates(data,  ticklabel_kws={"fontsize": 8, "color": "red"})
+parallel_coordinates(data_df, names=ynames,
+                     categories=np.random.randint(0, 5, N), show=False)
 ```
+<p float="left">
+  <img src="/docs/source/imgs/parallel_coordinates.png"  />
+</p>
+
+
+## spider_plot
+
+```python
+import pandas as pd
+from easy_mpl import spider_plot
+
+df = pd.DataFrame.from_dict(
+    {'summer': {'a': -0.2, 'b': 0.1, 'c': 0.0, 'd': 0.1, 'e': 0.2, 'f': 0.3},
+     'winter': {'a': -0.3, 'b': 0.1, 'c': 0.0, 'd': 0.2, 'e': 0.15, 'f': 0.25},
+     'automn': {'a': -0.1, 'b': 0.3, 'c': 0.15, 'd': 0.24, 'e': 0.18, 'f': 0.2}})
+spider_plot(df, xtick_kws={'size': 13}, frame="polygon",
+           color=['b', 'r', 'g', 'm'],
+            fill_color=['b', 'r', 'g', 'm'], show=False)
+```
+<p float="left">
+  <img src="/docs/source/imgs/spider_plot.png"  />
+</p>
 
 ## taylor_plot
 
 ```python
 import numpy as np
 from easy_mpl import taylor_plot
-np.random.seed(313)
-observations =  np.random.normal(20, 40, 10)
-simulations =  {"LSTM": np.random.normal(20, 40, 10),
-                "CNN": np.random.normal(20, 40, 10),
-                "TCN": np.random.normal(20, 40, 10),
-                "CNN-LSTM": np.random.normal(20, 40, 10)}
-taylor_plot(observations=observations,
-            simulations=simulations,
-            title="Taylor Plot")
 
-# multiple taylor plots in one figure
 np.random.seed(313)
 observations = {
     'site1': np.random.normal(20, 40, 10),
@@ -243,25 +304,27 @@ observations = {
 
 simulations = {
     "site1": {"LSTM": np.random.normal(20, 40, 10),
-              "CNN": np.random.normal(20, 40, 10),
-              "TCN": np.random.normal(20, 40, 10),
-              "CNN-LSTM": np.random.normal(20, 40, 10)},
+                "CNN": np.random.normal(20, 40, 10),
+                "TCN": np.random.normal(20, 40, 10),
+                "CNN-LSTM": np.random.normal(20, 40, 10)},
 
     "site2": {"LSTM": np.random.normal(20, 40, 10),
-              "CNN": np.random.normal(20, 40, 10),
-              "TCN": np.random.normal(20, 40, 10),
-              "CNN-LSTM": np.random.normal(20, 40, 10)},
+                "CNN": np.random.normal(20, 40, 10),
+                "TCN": np.random.normal(20, 40, 10),
+                "CNN-LSTM": np.random.normal(20, 40, 10)},
 
     "site3": {"LSTM": np.random.normal(20, 40, 10),
-              "CNN": np.random.normal(20, 40, 10),
-              "TCN": np.random.normal(20, 40, 10),
-              "CNN-LSTM": np.random.normal(20, 40, 10)},
+                "CNN": np.random.normal(20, 40, 10),
+                "TCN": np.random.normal(20, 40, 10),
+                "CNN-LSTM": np.random.normal(20, 40, 10)},
 
     "site4": {"LSTM": np.random.normal(20, 40, 10),
                 "CNN": np.random.normal(20, 40, 10),
                 "TCN": np.random.normal(20, 40, 10),
                 "CNN-LSTM": np.random.normal(20, 40, 10)},
 }
+
+# define positions of subplots
 
 rects = dict(site1=221, site2=222, site3=223, site4=224)
 
@@ -272,109 +335,7 @@ taylor_plot(observations=observations,
             cont_kws={'colors': 'blue', 'linewidths': 1.0, 'linestyles': 'dotted'},
             grid_kws={'axis': 'x', 'color': 'g', 'lw': 1.0},
             title="mutiple subplots")
-
-# Sometimes we don't have actual true and simulation values as arrays. We can
-# still make Taylor plot using by providing only standard deviation and coefficient
-# of correlation (R) values.
-observations = {
-'Scenario 1': {'std': 4.916}}
-predictions = {
-    'Scenario 1': {
-        'Model 1': {'std': 2.80068, 'corr_coeff': 0.49172, 'pbias': -8.85},
-        'Model 2': {'std': 3.47, 'corr_coeff': 0.67, 'pbias': -19.76},
-        'Model 3': {'std': 3.53, 'corr_coeff': 0.596, 'pbias': 7.81},
-        'Model 4': {'std': 2.36, 'corr_coeff': 0.27, 'pbias': -22.78},
-        'Model 5': {'std': 2.97, 'corr_coeff': 0.452, 'pbias': -7.99}}}
-
-taylor_plot(observations,
-    predictions,
-    title="with statistical parameters",
-    plot_bias=True)
-
-# with customized markers
-np.random.seed(313)
-observations =  np.random.normal(20, 40, 10)
-simulations =  {"LSTM": np.random.normal(20, 40, 10),
-                "CNN": np.random.normal(20, 40, 10),
-                "TCN": np.random.normal(20, 40, 10),
-                "CNN-LSTM": np.random.normal(20, 40, 10)}
-taylor_plot(observations=observations,
-            simulations=simulations,
-            title="customized markers",
-            marker_kws={'markersize': 10, 'markeredgewidth': 1.5,
-                        'markeredgecolor': 'black'})
-
-# with customizing bbox
-np.random.seed(313)
-observations =  np.random.normal(20, 40, 10)
-simulations =  {"LSTMBasedRegressionModel": np.random.normal(20, 40, 10),
-                "CNNBasedRegressionModel": np.random.normal(20, 40, 10),
-                "TCNBasedRegressionModel": np.random.normal(20, 40, 10),
-                "CNN-LSTMBasedRegressionModel": np.random.normal(20, 40, 10)}
-taylor_plot(observations=observations,
-            simulations=simulations,
-            title="custom_legend",
-            leg_kws={'facecolor': 'white',
-                     'edgecolor': 'black','bbox_to_anchor':(1.1, 1.05)})
 ```
-
-## lollipop_plot
-
-```python
-import numpy as np
-from easy_mpl import lollipop_plot
-y = np.random.randint(0, 10, size=10)
-# vanilla lollipop plot
-lollipop_plot(y, title="vanilla")
-# use both x and y
-lollipop_plot(y, np.linspace(0, 100, len(y)), title="with x and y")
-# use custom line style
-lollipop_plot(y, line_style='--', title="with custom linestyle")
-# use custom marker style 
-lollipop_plot(y, marker_style='D', title="with custom marker style")
-# sort the data points before plotting
-lollipop_plot(y, sort=True, title="sort")
-# horzontal orientation of lollipops
-y = np.random.randint(0, 20, size=10)
-lollipop_plot(y, orientation="horizontal", title="horizontal")
-```
-
-## circular_bar_plot
-
-```python
-import numpy as np
-from easy_mpl import circular_bar_plot
-data = np.random.random(50, )
-# basic
-circular_bar_plot(data)  
-# with names
-names = [f"{i}" for i in range(50)]
-circular_bar_plot(data, names)
-# sort values 
-circular_bar_plot(data, names, sort=True)
-# custom color map
-circular_bar_plot(data, names, color='viridis')
-# custom min and max range
-circular_bar_plot(data, names, min_max_range=(1, 10), label_padding=1)
-# custom label format
-circular_bar_plot(data, names, label_format='{} {:.4f}')
-```
-
-## spider_plot
-
-```python
-from easy_mpl import spider_plot
-values = [-0.2, 0.1, 0.0, 0.1, 0.2, 0.3]
-spider_plot(values=values)
-# specifying labels
-labels = ['a', 'b','c', 'd', 'e', 'f']
-spider_plot(values=values, labels=labels)
-# specifying tick size
-spider_plot(values, labels, xtick_kws={'size': 13})
-df = pd.DataFrame.from_dict(
-{'summer': {'a': -0.2, 'b': 0.1, 'c': 0.0, 'd': 0.1, 'e': 0.2, 'f': 0.3},
-'winter': {'a': -0.3, 'b': 0.1, 'c': 0.0, 'd': 0.2, 'e': 0.15,'f': 0.25}})
-spider_plot(df, xtick_kws={'size': 13})
-# use polygon frame
-spider_plot(values=values, frame='polygon')
-```
+<p float="left">
+  <img src="/docs/source/imgs/taylor_plot.png"  />
+</p>
