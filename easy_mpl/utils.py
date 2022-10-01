@@ -434,3 +434,9 @@ def register_projections(num_vars, frame="polygon", grids="polygon"):
 
     register_projection(RadarAxes)
     return theta
+
+
+def _rescale(y, _min=0.0, _max=1.0):
+    y_std = (y - np.min(y, axis=0)) / (np.max(y, axis=0) - np.min(y, axis=0))
+
+    return y_std * (_max - _min) + _min
