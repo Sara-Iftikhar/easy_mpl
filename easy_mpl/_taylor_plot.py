@@ -101,7 +101,9 @@ class TaylorDiagram(object):
                  label='_',
                  srange=(0, 1.5),
                  extend=False,
-                 axis_fontdict: dict = None):
+                 axis_fontdict: dict = None,
+                 name:str = ''
+                 ):
         """
         Set up Taylor diagram axes, i.e. single quadrant polar
         plot, using `mpl_toolkits.axisartist.floating_axes`.
@@ -123,6 +125,9 @@ class TaylorDiagram(object):
 
         if hasattr(self.refstd, 'item'):  # if true is series/dataframe
             self.refstd = self.refstd.item()
+
+        assert not np.isnan(self.refstd), f"""
+        stdandard deviation of {name} Observations is nan."""
 
         tr = PolarAxes.PolarTransform()
 
@@ -574,7 +579,9 @@ def taylor_plot(
                             rect=axis_locs[season],
                             label=true_label,
                             axis_fontdict=axis_fontdict,
-                            extend=extend)
+                            extend=extend,
+                            name=season,
+                            )
 
         dia.samplePoints[0].set_color(ref_color)  # Mark reference point as a red star
 
