@@ -340,8 +340,6 @@ def taylor_plot(
 
             - extend : bool, default False, if True, will plot negative correlation
 
-            - save : bool, if True, will save the plot
-
             - figsize : tuple defining figsize, default is (11,8).
 
             - show : bool whether to show the plot or not
@@ -494,12 +492,9 @@ def taylor_plot(
     intervals = kwargs.get('intervals', [])
     colors = kwargs.get('colors', COLORS)
     extend = kwargs.get('extend', False)
-    save = kwargs.get('save', True)
-    name = kwargs.get('name', 'taylor.png')
     plot_bias = kwargs.get('plot_bias', False)
     title = kwargs.get('title', "")
     figsize = kwargs.get("figsize", figsizes[n_plots])  # widht and heigt respectively
-    bbox_inches = kwargs.get("bbox_inches", None)
     sim_marker = kwargs.get("sim_marker", None)
     true_label = kwargs.get("true_label", "Reference")
     show = kwargs.get("show", True)
@@ -651,9 +646,6 @@ def taylor_plot(
                **leg_kws)
 
     fig.tight_layout()
-
-    if save:
-        plt.savefig(name, dpi=400, bbox_inches=bbox_inches)
 
     if show:
         plt.show()
