@@ -1,12 +1,12 @@
 
 from ._main import plot
 from ._pie import pie
-from ._main import bar_chart
+from ._bar import bar_chart
 from ._regplot import regplot
 from ._imshow import imshow
-from ._main import hist
+from ._hist import hist
 from ._main import scatter
-from ._main import contour
+from ._contour import contour
 from ._main import dumbbell_plot
 from ._ridge import ridge
 from ._parallel_coords import parallel_coordinates

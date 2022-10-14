@@ -58,6 +58,20 @@ class TestRegplot(unittest.TestCase):
         assert isinstance(ax, plt.Axes)
         return
 
+    def test_with_single_c(self):
+        ax = regplot(self.x, self.y,
+                     marker_color=np.array([0.5546875 , 0.7265625 , 0.84765625]),
+                show=self.show)
+        assert isinstance(ax, plt.Axes)
+        return
+
+    def test_with_c_as_array(self):
+        ax = regplot(self.x, self.y,
+                     marker_color=np.random.random((len(self.x), 3)),
+                show=self.show)
+        assert isinstance(ax, plt.Axes)
+        return
+
 
 if __name__ == "__main__":
     unittest.main()

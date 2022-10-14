@@ -8,8 +8,24 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
-from .utils import to_1d_array, _regplot
-from .utils import regplot_combs
+
+REGC_COMBS = [
+    ['cadetblue', 'slateblue', 'darkslateblue'],
+    ['cadetblue', 'mediumblue', 'mediumblue'],
+    ['cornflowerblue', 'dodgerblue', 'darkblue'],
+    ['cornflowerblue', 'dodgerblue', 'steelblue'],
+    ['cornflowerblue', 'mediumblue', 'dodgerblue'],
+    ['cornflowerblue', 'steelblue', 'mediumblue'],
+    ['darkslateblue', 'aliceblue', 'mediumblue'],
+    ['darkslateblue', 'blue', 'royalblue'],
+    ['darkslateblue', 'blueviolet', 'royalblue'],
+    ['darkslateblue', 'darkblue', 'midnightblue'],
+    ['darkslateblue', 'mediumblue', 'darkslateblue'],
+    ['darkslateblue', 'midnightblue', 'mediumblue'],
+    ['seagreen', 'darkslateblue', 'cadetblue'],
+    ['cadetblue', 'darkblue', 'midnightblue'],
+    ['cadetblue', 'deepskyblue', 'cadetblue']
+]
 
 
 def regplot(
@@ -18,11 +34,14 @@ def regplot(
         title: str = None,
         annotation_key: str = None,
         annotation_val: float = None,
+        line_style = '-',
         line_color=None,
-        marker_color=None,
-        fill_color=None,
+        line_kws:dict = None,
         marker_size: int = 20,
+        marker_color=None,
+        scatter_kws:dict = None,
         ci: Union[int, None] = 95,
+        fill_color=None,
         figsize: tuple = None,
         xlabel: str = 'Observed',
         ylabel: str = 'Predicted',
@@ -46,8 +65,17 @@ def regplot(
         annotation_val : float, int, optional
             The value to annotate with.
         marker_size : int, optional
-        line_color : optional
+            size of marker
         marker_color: optional
+            color of marker
+        scatter_kws : dict
+            keyword arguments for ax.scatter
+        line_style : str (default='-')
+            line style will be used as ax.plot(x,y,line_style)
+        line_color : optional
+            color of line
+        line_kws : dict
+            keyword arguments for axes.plot for line plot
         fill_color : optional
             only relevent if ci is not None.
         figsize : tuple, optional
@@ -76,8 +104,8 @@ def regplot(
         If nans are present in x or y, they will be removed.
 
     """
-    x = to_1d_array(x)
-    y = to_1d_array(y)
+    x = np.array(x).reshape(-1,)
+    y = np.array(y).reshape(-1,)
 
     # remvoing nans based upon nans in x
     x_nan_idx = np.isnan(x)
@@ -96,14 +124,20 @@ def regplot(
     {len(y_nan_idx)} nans found in y and   {len(x_nan_idx)} nans found in x"""
     assert len(x) == len(y), f"x and y must be same length. Got {len(x)} and {len(y)}"
 
-    mc, lc, fc = random.choice(regplot_combs)
+    mc, lc, fc = random.choice(REGC_COMBS)
     _metric_names = {'r2': '$R^2$'}
 
     if ax is None:
         _, ax = plt.subplots(figsize=figsize or (6, 5))
 
-    ax.scatter(x, y, c=marker_color or mc,
-               s=marker_size)  # set style options
+    if scatter_kws is None:
+        scatter_kws = dict()
+
+    if marker_color is None:
+        marker_color = mc
+
+    ax.scatter(x, y, c=marker_color,
+               s=marker_size, **scatter_kws)  # set style options
 
     if annotation_key is not None:
         assert annotation_val is not None
@@ -113,12 +147,18 @@ def regplot(
                      xycoords='axes fraction',
                      horizontalalignment='right', verticalalignment='top',
                      fontsize=16)
+
+    if line_kws is None:
+        line_kws = dict()
+
     _regplot(x,
              y,
              ax=ax,
              ci=ci,
+             line_style=line_style,
              line_color=line_color or lc,
-             fill_color=fill_color or fc)
+             fill_color=fill_color or fc,
+             **line_kws)
 
     plt.xlabel(xlabel, fontsize=14)
     plt.ylabel(ylabel, fontsize=14)
@@ -127,4 +167,59 @@ def regplot(
     if show:
         plt.show()
 
+    return ax
+
+
+def bootdist(f, args, n_boot=1000, **func_kwargs):
+
+    n = len(args[0])
+    integers = np.random.randint
+    boot_dist = []
+    for i in range(int(n_boot)):
+        resampler = integers(0, n, n, dtype=np.intp)  # intp is indexing dtype
+        sample = [a.take(resampler, axis=0) for a in args]
+        boot_dist.append(f(*sample, **func_kwargs))
+
+    return np.array(boot_dist)
+
+
+def _regplot_paras(x, y, ci:int=None):
+    """prepares parameters for regplot"""
+    grid = np.linspace(np.min(x), np.max(x), 100)
+    x = np.c_[np.ones(len(x)), x]
+    grid = np.c_[np.ones(len(grid)), grid]
+    yhat = grid.dot(reg_func(x, y))
+
+    err_bands = None
+    if ci:
+        boots = bootdist(reg_func, args=[x, y], n_boot=1000).T
+
+        yhat_boots = grid.dot(boots).T
+        err_bands = _ci(yhat_boots, ci, axis=0)
+
+    return grid, yhat, err_bands
+
+
+def _ci(a, which=95, axis=None):
+    """Return a percentile range from an array of values."""
+    p = 50 - which / 2, 50 + which / 2
+    return np.nanpercentile(a, p, axis)
+
+
+def reg_func(_x, _y):
+    return np.linalg.pinv(_x).dot(_y)
+
+
+def _regplot(x, y, ax, ci=None,
+             line_style="-",
+             line_color=None, fill_color=None, **kwargs):
+
+    grid, yhat, err_bands = _regplot_paras(x, y, ci)
+
+    ax.plot(grid[:, 1], yhat, line_style, color=line_color, **kwargs)
+
+    if ci:
+        ax.fill_between(grid[:, 1], *err_bands,
+                        facecolor=fill_color,
+                        alpha=.15)
     return ax

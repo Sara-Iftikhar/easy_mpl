@@ -1,5 +1,4 @@
 
-import random
 import unittest
 
 import os
@@ -12,111 +11,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
 
-from easy_mpl import bar_chart, hist, plot
-from easy_mpl import scatter, contour
-from easy_mpl.utils import BAR_CMAPS, make_cols_from_cmap
+from easy_mpl import plot
+from easy_mpl import scatter
 from easy_mpl import dumbbell_plot
-
-
-def get_chart_data(n):
-    d = np.random.randint(2, 50, n)
-    return d, [f'feature_{i}' for i in d]
-
-
-class TestBarChart(unittest.TestCase):
-
-    show = False
-
-    def test_bar_h(self):
-        d, names = get_chart_data(5)
-        cm = make_cols_from_cmap(random.choice(BAR_CMAPS), len(d), 0.2)
-
-        plt.close('all')
-        _, ax = plt.subplots()
-        bar_chart(values=d, labels=names, ax=ax, color=cm, show=self.show)
-        return
-
-    def test_bar_v_without_axis(self):
-        d, names = get_chart_data(5)
-        cm = make_cols_from_cmap(random.choice(BAR_CMAPS), len(d), 0.2)
-
-        bar_chart(values=d, labels=names, color=cm, sort=True, show=self.show)
-
-    def test_h_sorted(self):
-        d, names = get_chart_data(5)
-        cm = make_cols_from_cmap(random.choice(BAR_CMAPS), len(d), 0.2)
-
-        bar_chart(values=d, labels=names, color=cm, orient='v', show=self.show)
-        return
-
-    def test_vertical_without_axis(self):
-        d, names = get_chart_data(5)
-        cm = make_cols_from_cmap(random.choice(BAR_CMAPS), len(d), 0.2)
-        bar_chart(values=d, labels=names, color=cm, sort=True, orient='v', show=self.show)
-        return
-
-    def test_without_labels(self):
-        d = np.random.randint(2, 50, 10)
-        bar_chart(values=d, sort=True, show=self.show)
-        return
-
-    def test_with_nan_vals(self):
-        ax = bar_chart(values=[1, 2, np.nan, 4, 5], show=self.show,
-            ax_kws={'title':'test_with_nan_vals'})
-        assert isinstance(ax, plt.Axes)
-        return
-
-    def test_figsize(self):
-        ax = bar_chart(values=[1, 2, 3, 4, 5],
-            figsize=(10, 10),
-            show=self.show,
-            ax_kws={'title':'test_with_nan_vals'})
-        assert isinstance(ax, plt.Axes)
-        return
-
-    def test_err_h(self):
-        x = np.random.randint(1, 10, 10)
-        err = np.random.random(10)
-        ax = bar_chart(x, errors=err, orient="v",
-                  show=self.show)
-        assert isinstance(ax, plt.Axes)
-        return
-
-    def test_err_v(self):
-        x = np.random.randint(1, 10, 10)
-        err = np.random.random(10)
-        ax = bar_chart(x, errors=err, orient="h",
-                  show=self.show)
-        assert isinstance(ax, plt.Axes)
-        return
-
-    def test_labels(self):
-        ax = bar_chart(np.random.randint(1, 10, 10),
-                       bar_labels=np.random.randint(1, 10, 10),
-                  show=self.show)
-        assert isinstance(ax, plt.Axes)
-        return
-
-    def test_values_as_dict_values(self):
-        d, names = get_chart_data(5)
-        data = {k:v for k,v in zip(d, names)}
-        ax = bar_chart(data.values(), data.keys(),
-                  show=self.show)
-        assert isinstance(ax, plt.Axes)
-        return
-
-    def test_color(self):
-        ax = bar_chart(np.random.randint(1, 10, 10),
-                       color="Blue", show=self.show)
-        assert isinstance(ax, plt.Axes)
-        return
-
-    def test_cmap(self):
-        ax = bar_chart(np.random.randint(1, 10, 10),
-                       cmap="GnBu",
-                  show=self.show)
-        assert isinstance(ax, plt.Axes)
-        return
 
 
 class TestPlot(unittest.TestCase):
@@ -233,32 +130,6 @@ class TestPlot(unittest.TestCase):
         return
 
 
-class Testhist(unittest.TestCase):
-    show = False
-
-    def test_hist(self):
-        hist(np.random.random((10, 1)), show=self.show)
-        return
-
-    def test_figsize(self):
-        hist(np.random.random((10, 1)),
-        figsize=(10, 10),
-        show=self.show)
-        return
-
-    def test_hist_with_axes(self):
-        _, ax = plt.subplots()
-        hist(np.random.random((10, 1)), ax=ax, show=self.show)
-        return
-
-    def test_with_nan_vals(self):
-        x = np.random.random((10, 1))
-        x.ravel()[np.random.choice(x.size, 5, replace=False)] = np.nan
-        ax = hist(x, show=self.show, title="with_nan_vals")
-        assert isinstance(ax, plt.Axes)
-        return
-
-
 class TestScatter(unittest.TestCase):
     show = False
     def test_basic(self):
@@ -306,51 +177,6 @@ class TestScatter(unittest.TestCase):
         # 5 random values are nan
         y[np.random.choice(y.size, 5, replace=False)] = np.nan
         ax, _ = scatter(x, y, show=self.show)
-        assert isinstance(ax, plt.Axes)
-        return
-
-
-class TestContour(unittest.TestCase):
-    show=False
-
-    npts = 200
-    x = np.random.uniform(-2, 2, npts)
-    y = np.random.uniform(-2, 2, npts)
-    z = x * np.exp(-x**2 - y**2)
-
-    def test_vanilla(self):
-        ax = contour(self.x, self.y, self.z, title="vanilla", show=self.show)
-        assert isinstance(ax, plt.Axes)
-        return
-
-    def test_fill_between(self):
-        ax = contour(self.x, self.y, self.z, fill_between=True, title="fill_between",
-                     show=self.show)
-        assert isinstance(ax, plt.Axes)
-        return
-
-    def test_fill_between_without_colorbar(self):
-        ax = contour(self.x, self.y, self.z, fill_between=True, colorbar=False,
-                     title="fill_between without colorbar", show=self.show)
-        assert isinstance(ax, plt.Axes)
-        return
-
-    def test_fill_between_with_show_points(self):
-        ax = contour(self.x, self.y, self.z, fill_between=True, colorbar=True,
-                     show_points=True, title="fill_between with show_points",
-                     show=self.show)
-        assert isinstance(ax, plt.Axes)
-        return
-
-    def test_labels(self):
-        ax = contour(self.x, self.y, self.z, label_contours=True, title="labels",
-                     show=self.show)
-        assert isinstance(ax, plt.Axes)
-        return
-
-    def test_labels_with_fill_between(self):
-        ax = contour(self.x, self.y, self.z, label_contours=True, fill_between=True,
-                     title="labels with fill_between", show=self.show)
         assert isinstance(ax, plt.Axes)
         return
 
