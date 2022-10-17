@@ -59,6 +59,32 @@ class TestRidge(unittest.TestCase):
             assert isinstance(ax, plt.Axes)
         return
 
+    def test_cmap_as_color_name(self):
+        axis = ridge(np.random.random(100, ), color="white", show=self.show)
+        for ax in axis:
+            assert isinstance(ax, plt.Axes)
+        return
+
+    def test_cmap_as_cmap_name(self):
+        axis = ridge(np.random.random(100, ), color="GnBu", show=self.show)
+        for ax in axis:
+            assert isinstance(ax, plt.Axes)
+        return
+
+    def test_cmap_as_rgb(self):
+        axis = ridge(np.random.random(100, ), color=np.random.random(3),
+                     show=self.show)
+        for ax in axis:
+            assert isinstance(ax, plt.Axes)
+        return
+
+    def test_cmap_as_array(self):
+        axis = ridge(np.random.random((100, 4)), color=np.random.random((3, 4)),
+                     show=self.show)
+        for ax in axis:
+            assert isinstance(ax, plt.Axes)
+        return
+
 
 if __name__ == "__main__":
     unittest.main()
