@@ -85,6 +85,15 @@ class TestRidge(unittest.TestCase):
             assert isinstance(ax, plt.Axes)
         return
 
+    def test_arrays_of_unequal_length(self):
+        x1 = np.random.random(100)
+        x2 = np.random.random(90)
+        axis = ridge([x1, x2], color=np.random.random((3, 2)),
+                     show=self.show)
+        for ax in axis:
+            assert isinstance(ax, plt.Axes)
+        return
+
 
 if __name__ == "__main__":
     unittest.main()

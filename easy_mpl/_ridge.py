@@ -23,7 +23,7 @@ RIDGE_CMAPS = [
 ]
 
 def ridge(
-        data: Union[pd.DataFrame, np.ndarray],
+        data: Union[np.ndarray, List[np.ndarray]],
         color: Union[str, List[str], np.ndarray, List[np.ndarray]] = None,
         fill_kws: dict = None,
         line_width:Union[int, List[int]] = 1.0,
@@ -39,7 +39,7 @@ def ridge(
     Parameters
     ----------
         data : array, DataFrame
-            2 dimensional array. It must be either numpy array or pandas dataframe
+            array or list of arrays or pandas DataFrame/Series
         color : str, optional
             color to fill the ridges. It can be any valid matplotlib color or color
              name or cmap name or a list of colors for each ridge.
@@ -75,47 +75,54 @@ def ridge(
 
     """
 
+    names = None
     if isinstance(data, np.ndarray):
-        if data.ndim == 1:
+        if len(data) == data.size:
             data = data.reshape(-1, 1)
-
         assert data.ndim == 2
-        data = pd.DataFrame(data,
-                            columns=[f"Feature_{i}" for i in range(data.shape[1])])
+        data = [data[:, i] for i in range(data.shape[1])]
+
     elif isinstance(data, pd.Series):
-        data = pd.DataFrame(data)
-    else:
-        assert isinstance(data, pd.DataFrame)
-        for col in data.columns:
-            data[col] = pd.to_numeric(data[col])
+        names = [data.name]
+        data = [data]
+    elif hasattr(data, "columns") and hasattr(data, "values"):
+        names = data.columns.tolist()
+        data = [data.values[:, i] for i in range(data.shape[1])]
+
+    assert isinstance(data, list)
+
+    if names is None:
+        names =  [f"F{i}" for i in range(len(data))]
+
+    n = len(data)
 
     if color is None:
         cmap = random.choice(RIDGE_CMAPS)
         # +2 because we want to ignore first and last in most cases
-        colors = make_cols_from_cmap(cmap, data.shape[1] + 2)
+        colors = make_cols_from_cmap(cmap, n + 2)
     elif isinstance(color, str):
         if color in plt.colormaps():
-            colors = make_cols_from_cmap(color, data.shape[1] + 2)
+            colors = make_cols_from_cmap(color, n + 2)
         else:
-            colors = [None] + [color for _ in range(data.shape[1])]
+            colors = [None] + [color for _ in range(n)]
     elif isinstance(color, list):
         colors = [None] + color
     elif isinstance(color, np.ndarray):
         if len(color)==3 and len(color) == color.size:
-            colors = ["None"] + [color for _ in range(data.shape[1])]
+            colors = ["None"] + [color for _ in range(n)]
         else:
             colors = ["noen"] + [color[:, i] for i in range(color.shape[1])]
     else:
         colors = color
 
-    gs = grid_spec.GridSpec(len(data.columns), 1)
+    gs = grid_spec.GridSpec(n, 1)
     fig = plt.figure(figsize=figsize or (16, 9))
 
     dist_maxes = {}
     xs = {}
     ys = {}
-    for col in data.columns:
-        ind, y = kde(data[col].dropna())
+    for idx, col in enumerate(names):
+        ind, y = kde(pd.Series(data[idx], name=col, dtype=np.float32).dropna())
         dist_maxes[col] = np.max(y)
         xs[col], ys[col] = ind, y
 
@@ -136,7 +143,8 @@ def ridge(
 
         # plotting the distribution
         # todo, remove pandas from here, we already calculated kde
-        plot_ = data[col].plot.kde(ax=ax_objs[-1],
+        _df = pd.Series(data[idx], name=col)
+        plot_ = _df.plot.kde(ax=ax_objs[-1],
                                    color=line_color[idx],
                                    linewidth=line_width[idx])
 
@@ -161,7 +169,7 @@ def ridge(
         rect = ax_objs[-1].patch
         rect.set_alpha(0)
 
-        if idx == data.shape[-1] - 1:
+        if idx == n - 1:
             if xlabel:
                 ax_objs[-1].set_xlabel(xlabel, fontsize=26, fontweight="bold")
 
