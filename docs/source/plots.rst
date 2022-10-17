@@ -56,6 +56,10 @@ ridge
 .. automodule:: easy_mpl
    :members: ridge
 
+boxplot
+===========
+.. automodule:: easy_mpl
+   :members: boxplot
 
 parallel_coordinates
 ====================
