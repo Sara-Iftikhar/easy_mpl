@@ -72,6 +72,14 @@ class TestRegplot(unittest.TestCase):
         assert isinstance(ax, plt.Axes)
         return
 
+    def test_linecolor_as_rgb(self):
+        regplot(self.x, self.y, line_color=np.random.random(3), show=self.show)
+        return
+
+
+    def test_fillcolor_as_rgb(self):
+        regplot(self.x, self.y, fill_color=np.random.random(3), show=self.show)
+        return
 
 if __name__ == "__main__":
     unittest.main()

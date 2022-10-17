@@ -151,13 +151,19 @@ def regplot(
     if line_kws is None:
         line_kws = dict()
 
+    if line_color is None:
+        line_color = lc
+
+    if fill_color is None:
+        fill_color = fc
+
     _regplot(x,
              y,
              ax=ax,
              ci=ci,
              line_style=line_style,
-             line_color=line_color or lc,
-             fill_color=fill_color or fc,
+             line_color=line_color,
+             fill_color=fill_color,
              **line_kws)
 
     plt.xlabel(xlabel, fontsize=14)

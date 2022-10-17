@@ -17,14 +17,6 @@ from matplotlib.projections import register_projection
 BAR_CMAPS = ['Blues', 'BuGn', 'gist_earth_r',
              'GnBu', 'PuBu', 'PuBuGn', 'summer_r']
 
-# colormaps for ridge plot
-RIDGE_CMAPS = [
-    "afmhot", "afmhot_r", "Blues", "bone",
-    "BrBG", "BuGn", "coolwarm", "cubehelix",
-    "gist_earth", "GnBu", "Greens", "magma",
-    "ocean", "Pastel1", "pink", "PuBu", "PuBuGn",
-    "RdBu", "Spectral",
-]
 
 def process_axis(
         ax: plt.Axes=None,
