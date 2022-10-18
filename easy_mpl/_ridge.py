@@ -52,8 +52,11 @@ def ridge(
         line_color : str (default="black")
             color or colors of lines of ridges.
         plot_kws : dict optional
+            any keyword argumenets that will go to axes.plot during plot of kde line
         xlabel : str, optional
+            xlabel for the figure
         title : str, optional
+            title of the figure
         figsize : tuple, optional
             size of figure
         show : bool, optional
@@ -202,13 +205,14 @@ def ridge(
 
             ax.tick_params(axis="x", labelsize=20)
         else:
-            ax.set_xticklabels([])
-            ax.set_xticks([])
+            if not share_axes:
+                ax.set_xticklabels([])
+                ax.set_xticks([])
 
         # remove borders, axis ticks, and labels
-        ax.set_ylabel('')
-        ax.set_yticklabels([])
-        ax.set_yticks([])
+        if not share_axes:
+            ax.set_yticklabels([])
+            ax.set_yticks([])
 
         spines = ["top", "right", "left", "bottom"]
         for s in spines:

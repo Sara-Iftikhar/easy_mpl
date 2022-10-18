@@ -1,5 +1,5 @@
 
-from typing import Union
+from typing import Union, Any, Optional, Tuple
 from collections.abc import KeysView, ValuesView
 
 import numpy as np
@@ -201,13 +201,13 @@ def to_1d_array(array_like) -> np.ndarray:
 
 def has_multi_cols(data)->bool:
     """returns True if data contains multiple columns"""
-    if isinstance(data, (pd.DataFrame, np.ndarray)):
+    if hasattr(data, "ndim") and hasattr(data, "shape"):
         if data.ndim == 2 and data.shape[1]>1:
             return True
     return False
 
 
-def kde(y, bw_method="scott"):
+def kde(y, bw_method="scott")->Tuple[Union[np.ndarray, Tuple[np.ndarray, Optional[float]]], Any]:
     """Generate Kernel Density Estimate plot using Gaussian kernels."""
     # don't want to make whole easy_mpl dependent upon scipy
     from scipy.stats import gaussian_kde
