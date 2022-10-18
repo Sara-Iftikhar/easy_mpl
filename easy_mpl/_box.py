@@ -103,8 +103,8 @@ def boxplot(
         kws = dict()
         if len(xticklabels)>7:
             kws['rotation'] = 90
-        ax.set_xticks(np.arange(len(xticklabels)))
-        ax.set_xticklabels(xticklabels, **kws)
+        ax.set_xticks(range(len(xticklabels) + 1))
+        ax.set_xticklabels(xticklabels.insert(0, ''), **kws)
 
     if show:
         plt.show()
