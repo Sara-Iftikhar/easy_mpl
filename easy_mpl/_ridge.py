@@ -5,9 +5,7 @@ import random
 from typing import Union, List
 
 import numpy as np
-import pandas as pd
 import matplotlib.pyplot as plt
-import matplotlib.gridspec as grid_spec
 
 from .utils import kde
 from .utils import make_cols_from_cmap
@@ -28,10 +26,14 @@ def ridge(
         fill_kws: dict = None,
         line_width:Union[int, List[int]] = 1.0,
         line_color:Union[str, List[str]] = "black",
+        plot_kws:dict = None,
         xlabel: str = None,
         title: str = None,
         figsize: tuple = None,
         show=True,
+        hspace:float = -0.7,
+        share_axes:bool = False,
+        ax: plt.Axes = None,
 ) -> List[plt.Axes,]:
     """
     plots distribution of features/columns/arrays in data as ridge.
@@ -49,12 +51,20 @@ def ridge(
             with of line of ridges.
         line_color : str (default="black")
             color or colors of lines of ridges.
+        plot_kws : dict optional
         xlabel : str, optional
         title : str, optional
         figsize : tuple, optional
             size of figure
         show : bool, optional
             whether to show the plot or not
+        hspace : float, optional (default=-0.7)
+            amount of distance between plots
+        share_axes : bool, optional (default=False)
+            whether to draw all ridges on same axes or separate axes
+        ax : plt.Axes, optional (default=None)
+            matplotlib axes object on which to draw the ridges. If given
+            all ridges will be drawn on this axes.
 
     Returns
     -------
@@ -82,9 +92,9 @@ def ridge(
         assert data.ndim == 2
         data = [data[:, i] for i in range(data.shape[1])]
 
-    elif isinstance(data, pd.Series):
+    elif hasattr(data, 'name') and hasattr(data, 'values'):
         names = [data.name]
-        data = [data]
+        data = [data.values]
     elif hasattr(data, "columns") and hasattr(data, "values"):
         names = data.columns.tolist()
         data = [data.values[:, i] for i in range(data.shape[1])]
@@ -104,31 +114,44 @@ def ridge(
         if color in plt.colormaps():
             colors = make_cols_from_cmap(color, n + 2)
         else:
-            colors = [None] + [color for _ in range(n)]
+            colors = [color for _ in range(n)]
     elif isinstance(color, list):
-        colors = [None] + color
+        colors = color
     elif isinstance(color, np.ndarray):
         if len(color)==3 and len(color) == color.size:
-            colors = ["None"] + [color for _ in range(n)]
+            colors = [color for _ in range(n)]
         else:
-            colors = ["noen"] + [color[:, i] for i in range(color.shape[1])]
+            colors = [color[:, i] for i in range(color.shape[1])]
     else:
         colors = color
 
-    gs = grid_spec.GridSpec(n, 1)
-    fig = plt.figure(figsize=figsize or (16, 9))
+    if plot_kws is None:
+        plot_kws = dict()
 
     dist_maxes = {}
     xs = {}
     ys = {}
     for idx, col in enumerate(names):
-        ind, y = kde(pd.Series(data[idx], name=col, dtype=np.float32).dropna())
+        ind, y = kde(data[idx])
         dist_maxes[col] = np.max(y)
         xs[col], ys[col] = ind, y
 
     ymaxes = dict(sorted(dist_maxes.items(), key=lambda item: item[1]))
 
-    ax_objs = []
+    nrows = n
+    if share_axes:
+        nrows = 1
+
+    if ax is None:
+        fig, axes = plt.subplots(nrows, ncols=1, figsize=figsize or (10, 6))
+    else:
+        share_axes = True
+        fig = ax.get_figure()
+        axes = ax
+
+    if not isinstance(axes, np.ndarray):
+        axes = np.array([axes])
+    ax_objs = axes.tolist()
 
     if isinstance(line_color, str):
         line_color = [line_color for _ in range(len(ymaxes))]
@@ -138,18 +161,17 @@ def ridge(
 
     for idx, col in enumerate(reversed(list(ymaxes.keys()))):
 
-        # creating new axes object
-        ax_objs.append(fig.add_subplot(gs[idx:idx + 1, 0:]))
+        ax_idx = idx
+        if share_axes:
+            ax_idx = 0
 
-        # plotting the distribution
-        # todo, remove pandas from here, we already calculated kde
-        _df = pd.Series(data[idx], name=col)
-        plot_ = _df.plot.kde(ax=ax_objs[-1],
-                                   color=line_color[idx],
-                                   linewidth=line_width[idx])
+        if isinstance(colors[idx], str) and colors[idx] == "white":
+            plot_kws['label'] = col
 
-        _x = plot_.get_children()[0]._x
-        _y = plot_.get_children()[0]._y
+        ax = ax_objs[ax_idx]
+        ax.plot(xs[col], ys[col],
+                         color=line_color[idx],
+                         linewidth=line_width[idx], **plot_kws)
 
         _fill_kws = {
             "alpha": 1.0
@@ -158,48 +180,58 @@ def ridge(
         if fill_kws is None:
             fill_kws = dict()
 
+        if isinstance(colors[idx], str) and colors[idx] == "white":
+            pass
+        else:
+            fill_kws['label'] = col
+
         _fill_kws.update(fill_kws)
 
-        ax_objs[-1].fill_between(_x, _y, color=colors[idx + 1], **_fill_kws)
+        ax.fill_between(xs[col], ys[col], color=colors[idx], **_fill_kws)
 
         # setting uniform y lims
-        ax_objs[-1].set_ylim(0, max(ymaxes.values()))
+        ax.set_ylim(0, max(ymaxes.values()))
 
         # make background transparent
-        rect = ax_objs[-1].patch
+        rect = ax.patch
         rect.set_alpha(0)
 
         if idx == n - 1:
             if xlabel:
-                ax_objs[-1].set_xlabel(xlabel, fontsize=26, fontweight="bold")
+                ax.set_xlabel(xlabel, fontsize=26, fontweight="bold")
 
-            ax_objs[-1].tick_params(axis="x", labelsize=20)
+            ax.tick_params(axis="x", labelsize=20)
         else:
-            ax_objs[-1].set_xticklabels([])
-            ax_objs[-1].set_xticks([])
+            ax.set_xticklabels([])
+            ax.set_xticks([])
 
         # remove borders, axis ticks, and labels
-        ax_objs[-1].set_ylabel('')
-        ax_objs[-1].set_yticklabels([])
-        ax_objs[-1].set_yticks([])
+        ax.set_ylabel('')
+        ax.set_yticklabels([])
+        ax.set_yticks([])
 
         spines = ["top", "right", "left", "bottom"]
         for s in spines:
-            ax_objs[-1].spines[s].set_visible(False)
+            ax.spines[s].set_visible(False)
 
-        ax_objs[-1].text(_x[0],
-                         0.2,
-                         col,
-                         fontsize=20,
-                         ha="right")
+        if not share_axes:
+            ax.text(xs[col][0],
+                             0.2,
+                             col,
+                             fontsize=20,
+                             ha="right")
         idx += 1
 
-    gs.update(hspace=-0.7)
+    if not share_axes:
+        fig._gridspecs[0].update(hspace=hspace)
 
     if title:
         plt.suptitle(title, fontsize=25)
 
     if show:
+        if share_axes:
+            plt.legend()
+
         plt.show()
 
     return ax_objs

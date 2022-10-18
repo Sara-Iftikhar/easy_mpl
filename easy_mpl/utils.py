@@ -207,12 +207,18 @@ def has_multi_cols(data)->bool:
     return False
 
 
-def kde(y):
+def kde(y, bw_method="scott"):
+    """Generate Kernel Density Estimate plot using Gaussian kernels."""
     # don't want to make whole easy_mpl dependent upon scipy
     from scipy.stats import gaussian_kde
 
-    """Generate Kernel Density Estimate plot using Gaussian kernels."""
-    gkde = gaussian_kde(y, bw_method='scott')
+    y = np.array(y)
+    if 'int' not in y.dtype.name:  # 'object' types have problem in removing nans
+        y = np.array(y, dtype=np.float32)
+
+    assert len(y) == y.size
+    y = y[~np.isnan(y)]
+    gkde = gaussian_kde(y.reshape(-1,), bw_method=bw_method)
 
     sample_range = np.nanmax(y) - np.nanmin(y)
     ind = np.linspace(
@@ -360,3 +366,24 @@ def _rescale(y, _min=0.0, _max=1.0):
     y_std = (y - np.min(y, axis=0)) / (np.max(y, axis=0) - np.min(y, axis=0))
 
     return y_std * (_max - _min) + _min
+
+def version_info():
+    import matplotlib
+
+    info = dict()
+    info['matplotlib'] = matplotlib._version
+    info['numpy'] = np.__version__
+
+    try:
+        import pandas as pd
+        info['pandas'] = pd.__version__
+    except Exception:
+        pass
+
+    try:
+        import scipy
+        info['scipy'] = scipy.__version__
+    except Exception:
+        pass
+
+    return version_info()

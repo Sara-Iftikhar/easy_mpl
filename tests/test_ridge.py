@@ -1,5 +1,4 @@
 
-import random
 import unittest
 
 import os
@@ -21,6 +20,24 @@ class TestRidge(unittest.TestCase):
     def test_df_3_cols(self):
         df = pd.DataFrame(np.random.random((100, 3)), dtype='object')
         axis = ridge(df, title="df_3_cols", show=self.show)
+        for ax in axis:
+            assert isinstance(ax, plt.Axes)
+        return
+
+    def test_share_ax(self):
+        df = pd.DataFrame(np.random.random((100, 3)), dtype='object')
+        axis = ridge(df, title="share axes", show=self.show,
+                     share_axes=True, fill_kws={"alpha": 0.5})
+        for ax in axis:
+            assert isinstance(ax, plt.Axes)
+        return
+
+    def test_existing_ax(self):
+        df = pd.DataFrame(np.random.random((100, 3)), dtype='object')
+        _, ax = plt.subplots()
+        axis = ridge(df, title="existing ax", show=self.show,
+                     ax = ax,
+                     share_axes=True, fill_kws={"alpha": 0.5})
         for ax in axis:
             assert isinstance(ax, plt.Axes)
         return
@@ -90,6 +107,20 @@ class TestRidge(unittest.TestCase):
         x2 = np.random.random(90)
         axis = ridge([x1, x2], color=np.random.random((3, 2)),
                      show=self.show)
+        for ax in axis:
+            assert isinstance(ax, plt.Axes)
+        return
+
+    def test_list_of_dfs(self):
+        x1 = pd.DataFrame(np.random.random(100))
+        x2 = pd.DataFrame(np.random.random(90))
+        axis = ridge([x1, x2], color=np.random.random((3, 2)),
+                     show=False)
+        axis[0].get_figure()
+
+        if self.show:
+            plt.show()
+
         for ax in axis:
             assert isinstance(ax, plt.Axes)
         return
