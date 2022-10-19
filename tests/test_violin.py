@@ -20,18 +20,29 @@ class TestViolin(unittest.TestCase):
 
     def test_df(self):
         axes = violin_plot(df[cols], show=self.show)
+        axes = violin_plot(df[cols], show=self.show, index_method="kde")
+        return
+
+    def test_cut(self):
+        axes = violin_plot(df[cols], show=self.show, cut=0.1)
+        axes = violin_plot(df[cols], show=self.show, cut=0.2)
+        axes = violin_plot(df[cols], show=self.show, cut=0.5)
         return
 
     def test_df_1col(self):
         axes = violin_plot(df[cols[-1:]], show=self.show)
+        axes = violin_plot(df[cols[-1:]], show=self.show, index_method="kde")
         return
 
     def test_np(self):
         axes = violin_plot(df[cols].values, show=self.show)
+        axes = violin_plot(df[cols].values, show=self.show, index_method="kde")
         return
 
     def test_np_1array(self):
-        axes = violin_plot(df[cols[0]].values, show=self.show)
+        Y = np.random.gamma(20, 10, 100)
+        axes = violin_plot(Y, show=self.show)
+        axes = violin_plot(Y, show=self.show, index_method="kde")
         return
 
     def test_swarm(self):

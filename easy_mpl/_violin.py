@@ -8,7 +8,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import scipy.stats as st
-from easy_mpl.utils import _rescale
+from easy_mpl.utils import _rescale, kde
 
 
 FILL_COLORS = [np.array([253,160,231])/255,
@@ -31,7 +31,9 @@ def violin_plot(
         show_boxplot:bool = False,
         box_kws:dict = None,
         label_violin:bool = False,
-        figsize:tuple = None,
+        index_method:str = "jitter",
+        max_dots: int = 100,
+        cut:float = 0.2,
         show:bool = True,
         ax:plt.Axes = None,
 )->plt.Axes:
@@ -41,9 +43,10 @@ def violin_plot(
     ----------
     data
     X :
-    fill
-    fill_colors
-    violin_kws :dict (default=None)
+    fill : bool, optional (default=True)
+        whether to fill the violin with color or not
+    fill_colors :
+    violin_kws : dict (default=None)
     show_datapoints
     datapoints_colors
     scatter_kws : dict (default=None)
@@ -54,7 +57,13 @@ def violin_plot(
         keyword arguments for axes.boxplot. This will only be valid if
         ``show_boxplot`` is True.
     label_violin
-    figsize :
+    index_method : str (default="jitter")
+        Only valid if `X` is not given. The method to generate indices for x-axis.
+        See `<https://stackoverflow.com/a/33965400/5982232> this_` for context
+    max_dots : int (default=100)
+        maximum number of dots to show
+    cut : float (default=0.2)
+        This variables determines the length of
     show : bool (default=True)
         whether to show the plot or not
     ax : plt.Axes (default=None)
@@ -66,6 +75,12 @@ def violin_plot(
 
     Examples
     --------
+    >>> import numpy as np
+    >>> from easy_mpl._violin import violin_plot
+    >>> data = np.random.gamma(20, 10, 100)
+    >>> violin_plot(data)
+    >>> violin_plot(data, show_datapoints=False)
+    >>> violin_plot(data, show_datapoints=False, show_boxplot=True)
     """
 
     names = None
@@ -79,20 +94,20 @@ def violin_plot(
         assert isinstance(data, list), f"Unrecognized data of type {data.__class__.__name__}"
         Y = data
 
-    # maxs = get_maxs(Y)
-    # if X is None:
-    #     X, offsets = [], []
-    #     for idx, y in enumerate(Y):
-    #        x = beeswarm_ind(y, nbins=100, lim=maxs[idx]*0.8)
-    #        X.append(x)
-    #        offsets.append(idx)
-    #
-    # else:
-    #     offsets = [0] * len(Y)
-
     if X is None:
-        X = jittered_ind(Y)
-    offsets = [0] * len(Y)
+        if index_method == "jitter":
+            X = jittered_ind(Y)
+            offsets = [0] * len(Y)
+        else:
+            maxs = get_maxs(Y, cut=cut)
+            X, offsets = [], []
+            for idx, y in enumerate(Y):
+               x = beeswarm_ind(y, nbins=100, lim=maxs[idx]*0.8)
+               X.append(x)
+               offsets.append(idx)
+    else:
+        offsets = [0] * len(Y)
+
 
     if not isinstance(X, list):
         X = [X]
@@ -125,7 +140,9 @@ def violin_plot(
 
     _violin_kws.update(violin_kws)
 
-    vpstats = get_vpstats(Y, bw_method=_violin_kws.get('bw_method', None))
+    vpstats = get_vpstats(Y,
+                          bw_method=_violin_kws.get('bw_method', None),
+                          cut=cut)
 
     if "bw_method" in _violin_kws:
         _violin_kws.pop("bw_method")
@@ -194,7 +211,7 @@ def violin_plot(
 
         for offset, x, y, color in zip(offsets, X, Y, datapoints_colors):
 
-            x, y = sample(x, y, n=100)
+            x, y = sample(x+offset, y, n=max_dots)
 
             ax.scatter(x, y, color=color, **_scatter_kws)
 
@@ -285,28 +302,30 @@ def beeswarm_ind(y, nbins=None, lim=1.0):
     return _rescale(ind, -lim, lim)
 
 
-def get_vpstats(dataset, points=100, quantiles=None, bw_method=None):
-    from matplotlib.cbook import violin_stats
-    from matplotlib.mlab import GaussianKDE
+def get_vpstats(dataset, bins=100, cut=0.2, bw_method=None):
 
-    def _kde_method(X, coords):
-        if hasattr(X, 'values'):  # support pandas.Series
-            X = X.values
-        # fallback gracefully if the vector contains only one value
-        if np.all(X[0] == X):
-            return (X[0] == coords).astype(float)
-        kde = GaussianKDE(X, bw_method)
-        return kde.evaluate(coords)
+    vpstats = []
 
-    return violin_stats(dataset, _kde_method, points=points,
-                                 quantiles=quantiles)
+    for y in dataset:
+        stats = dict()
+        coords, vals = kde(y, bw_method=bw_method, bins=bins, cut=cut)
+        stats['coords'] = coords
+        stats['vals'] = vals
+        stats['mean'] = np.mean(y)
+        stats['median'] = np.median(y)
+        stats['min'] = np.min(y)
+        stats['max'] = np.max(y)
+        vpstats.append(stats)
 
-
-def get_maxs(dataset,
-                  points=100, quantiles=None, bw_method=None):
+    return vpstats
 
 
-    vpstats = get_vpstats(dataset, points, quantiles, bw_method)
+def get_maxs(dataset, points=100, quantiles=None, bw_method=None, cut=0.5):
+
+    vpstats = get_vpstats(dataset,
+                          bins=points, #quantiles=quantiles,
+                          bw_method=bw_method,
+                          cut=cut)
 
     N = len(vpstats)
     widths = [0.45] * N
@@ -328,6 +347,7 @@ def sample(x, y, n=100):
     idx = np.random.choice(np.arange(len(x)), n, replace=False)
 
     return x[idx], y[idx]
+
 
 def to_1d_arrays(data)->List[np.ndarray,]:
     if len(data) == data.size:

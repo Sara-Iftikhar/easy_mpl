@@ -207,8 +207,14 @@ def has_multi_cols(data)->bool:
     return False
 
 
-def kde(y, bw_method="scott")->Tuple[Union[np.ndarray, Tuple[np.ndarray, Optional[float]]], Any]:
+def kde(
+        y,
+        bw_method = "scott",
+        bins:int = 1000,
+        cut:float = 0.5,
+)->Tuple[Union[np.ndarray, Tuple[np.ndarray, Optional[float]]], Any]:
     """Generate Kernel Density Estimate plot using Gaussian kernels."""
+
     # don't want to make whole easy_mpl dependent upon scipy
     from scipy.stats import gaussian_kde
 
@@ -222,9 +228,9 @@ def kde(y, bw_method="scott")->Tuple[Union[np.ndarray, Tuple[np.ndarray, Optiona
 
     sample_range = np.nanmax(y) - np.nanmin(y)
     ind = np.linspace(
-        np.nanmin(y) - 0.5 * sample_range,
-        np.nanmax(y) + 0.5 * sample_range,
-        1000,
+        np.nanmin(y) - cut * sample_range,
+        np.nanmax(y) + cut * sample_range,
+        bins,
     )
 
     return ind, gkde.evaluate(ind)
@@ -362,7 +368,8 @@ def register_projections(num_vars, frame="polygon", grids="polygon"):
     return theta
 
 
-def _rescale(y, _min=0.0, _max=1.0):
+def _rescale(y:np.ndarray, _min=0.0, _max=1.0)->np.ndarray:
+    """rescales the y array between _min and _max"""
     y_std = (y - np.min(y, axis=0)) / (np.max(y, axis=0) - np.min(y, axis=0))
 
     return y_std * (_max - _min) + _min
@@ -377,12 +384,6 @@ def version_info():
     try:
         import pandas as pd
         info['pandas'] = pd.__version__
-    except Exception:
-        pass
-
-    try:
-        import scipy
-        info['scipy'] = scipy.__version__
     except Exception:
         pass
 
