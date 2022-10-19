@@ -20,5 +20,25 @@ for col in df.columns:
 print(df.shape)
 
 # %%
-
+# basic boxplot with color pallete
 boxplot(df[cols], fill_color="GnBu", patch_artist=True)
+
+# %%
+# show the mean line
+boxplot(df[cols], fill_color="GnBu", patch_artist=True, meanline=True, showmeans=True)
+
+# %%
+# customize median line color
+boxplot(df[cols], fill_color="GnBu", patch_artist=True, medianprops={"color": "black"})
+
+# %%
+# show notches
+boxplot(df[cols],
+        fill_color="GnBu",
+        notch=True,
+        patch_artist=True,
+        medianprops={"color": "black"})
+
+# %%
+# don't show outliers
+boxplot(df[cols], fill_color="GnBu", patch_artist=True, showfliers=False)

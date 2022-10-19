@@ -5,9 +5,9 @@ import random
 from typing import Union, List
 
 import numpy as np
-import pandas as pd
-import matplotlib.pyplot as plt
 import scipy.stats as st
+import matplotlib.pyplot as plt
+
 from easy_mpl.utils import _rescale, kde
 
 
@@ -20,8 +20,8 @@ FILL_COLORS = [np.array([253,160,231])/255,
 
 
 def violin_plot(
-        data:Union[np.ndarray, pd.DataFrame, List[np.ndarray]],
-        X:Union[np.ndarray, pd.DataFrame, List[np.ndarray]]=None,
+        data:Union[np.ndarray, List[np.ndarray]],
+        X:Union[np.ndarray, List[np.ndarray]]=None,
         fill:bool = True,
         fill_colors = None,
         violin_kws:dict = None,
