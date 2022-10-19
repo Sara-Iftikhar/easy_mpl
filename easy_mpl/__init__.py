@@ -15,6 +15,7 @@ from ._lollipop import lollipop_plot
 from ._circular_bar_plot import circular_bar_plot
 from ._spider import spider_plot
 from ._box import boxplot
+from ._violin import violin_plot
 
 
 from .utils import process_axis

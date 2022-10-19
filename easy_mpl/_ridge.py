@@ -22,6 +22,8 @@ RIDGE_CMAPS = [
 
 def ridge(
         data: Union[np.ndarray, List[np.ndarray]],
+        bw_method = "scott",
+        cut:float = 0.5,
         color: Union[str, List[str], np.ndarray, List[np.ndarray]] = None,
         fill_kws: dict = None,
         line_width:Union[int, List[int]] = 1.0,
@@ -42,6 +44,8 @@ def ridge(
     ----------
         data : array, DataFrame
             array or list of arrays or pandas DataFrame/Series
+        bw_method : optional
+        cut : float (default=None)
         color : str, optional
             color to fill the ridges. It can be any valid matplotlib color or color
              name or cmap name or a list of colors for each ridge.
@@ -135,7 +139,7 @@ def ridge(
     xs = {}
     ys = {}
     for idx, col in enumerate(names):
-        ind, y = kde(data[idx])
+        ind, y = kde(data[idx], bw_method=bw_method, cut=cut)
         dist_maxes[col] = np.max(y)
         xs[col], ys[col] = ind, y
 
@@ -205,12 +209,12 @@ def ridge(
 
             ax.tick_params(axis="x", labelsize=20)
         else:
-            if not share_axes:
+            if nrows > 1:
                 ax.set_xticklabels([])
                 ax.set_xticks([])
 
         # remove borders, axis ticks, and labels
-        if not share_axes:
+        if nrows > 1:
             ax.set_yticklabels([])
             ax.set_yticks([])
 
