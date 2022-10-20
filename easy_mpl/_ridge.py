@@ -150,7 +150,9 @@ def ridge(
         nrows = 1
 
     if ax is None:
-        fig, axes = plt.subplots(nrows, ncols=1, figsize=figsize or (10, 6))
+        fig, axes = plt.subplots(nrows, ncols=1,
+                                 figsize=figsize or (10, 6),
+                                 gridspec_kw={"hspace":hspace})
     else:
         share_axes = True
         fig = ax.get_figure()
@@ -231,7 +233,7 @@ def ridge(
         idx += 1
 
     if not share_axes:
-        fig._gridspecs[0].update(hspace=hspace)
+        plt.subplots_adjust(hspace=hspace)
 
     if title:
         plt.suptitle(title, fontsize=25)
