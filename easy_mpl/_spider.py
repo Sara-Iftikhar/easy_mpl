@@ -134,7 +134,7 @@ def spider_plot(
     else:
         ax = plt.subplot(polar=True)
 
-    _xtick_kws = {'color': 'grey', 'size': 8}
+    _xtick_kws = {'color': 'grey', 'size': 14}
     xtick_kws = xtick_kws or {}
     _xtick_kws.update(xtick_kws)
 
@@ -166,14 +166,15 @@ def spider_plot(
                         color='red',
                         zorder=10)
 
-    plt.gca().set_rmax(.4)
+    plt.gca().set_rmax(np.max(values) + np.max(values)*0.3)
 
-    _leg_kws = {'loc': 'best', 'labelspacing': 0.1, 'fontsize': 'small'}
+    _leg_kws = {'labelspacing': 0.1, 'fontsize': 12, 'bbox_to_anchor': (1.3, 1.1)}
     leg_kws = leg_kws or {}
     _leg_kws.update(leg_kws)
     legend = ax.legend(labels, **_leg_kws)
 
     if show:
+        plt.tight_layout()
         plt.show()
 
     return ax
