@@ -19,14 +19,14 @@ class TestSpiderPlot(unittest.TestCase):
     show = False
 
     def test_basic(self):
-        ax = spider_plot(values=self.values, show=self.show)
+        ax = spider_plot(data=self.values, show=self.show)
         assert isinstance(ax, plt.Axes)
         return
 
     def test_specify_tick_labels(self):
 
 
-        ax = spider_plot(values=self.values,
+        ax = spider_plot(data=self.values,
                          labels=self.labels, show=self.show)
         assert isinstance(ax, plt.Axes)
         return
@@ -40,7 +40,7 @@ class TestSpiderPlot(unittest.TestCase):
 
     def test_polygon_frame_single(self):
 
-        ax = spider_plot(values=self.values, frame="polygon", show=self.show)
+        ax = spider_plot(data=self.values, frame="polygon", show=self.show)
         assert isinstance(ax, plt.Axes)
         return
 

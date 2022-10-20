@@ -12,7 +12,7 @@ from .utils import register_projections
 
 
 def spider_plot(
-        values:Union[pd.DataFrame, np.ndarray, list],
+        data:Union[np.ndarray, list],
         tick_labels:list = None,
         highlight:Union[int, float]=None,
         plot_kws: Optional[Union[dict, List[dict]]] = None,
@@ -31,19 +31,19 @@ def spider_plot(
 
     Parameters
     ----------
-        values :
-            values to display.
-        tick_labels : list, optional
+        data :
+            values to display. It should be array like/numpy array or pandas DataFrame/Series
+        tick_labels : list, optional (default=None)
             tick labels. It's length should be equal to length of values
-        plot_kws : dict, optional
+        plot_kws : dict, optional (default=None)
             These can include, ``color``, ``linewidth``, ``linestyle`` etc
-        xtick_kws : dict, optional
+        xtick_kws : dict, optional (default=None)
             These can include ``color``, ``size`` etc.
         fill_kws : dict, optional
             These can include ``color``, ``alpha`` etc.
         highlight : int/float optional (default=None)
             whether to highlight a certain circular line or not
-        color : str
+        color : str, optional (default=None)
             colormap to use
         frame: str, optional (default="circle")
             whether the outer frame and grids should be polygon or circle
@@ -85,38 +85,38 @@ def spider_plot(
 
     # todo, allow grids and frame to have different types
 
-    if isinstance(values, (list, tuple)):
-        values = np.array(values).reshape(-1, 1)
+    if isinstance(data, (list, tuple)):
+        data = np.array(data).reshape(-1, 1)
 
     if tick_labels is None:
-        if isinstance(values, (pd.DataFrame, pd.Series)):
-            tick_labels = values.index
+        if hasattr(data, "index"):
+            tick_labels = data.index
         else:
-            tick_labels = [f"F{i}" for i in range(len(values))]
+            tick_labels = [f"F{i}" for i in range(len(data))]
 
     if labels is None:
-        if isinstance(values, pd.Series):
-            labels = [values.name]
-        elif isinstance(values, pd.DataFrame):
-            labels = values.columns.tolist()
+        if hasattr(data, "name"):
+            labels = [data.name]
+        elif hasattr(data, "columns"):
+            labels = data.columns.tolist()
         else:
-            labels = [f'Value_{i}' for i in range(values.shape[1])]
+            labels = [f'Value_{i}' for i in range(data.shape[1])]
 
-    if isinstance(values, (pd.DataFrame, pd.Series)):
-        values = values.values
+    if hasattr(data, "values"):
+        data = data.values
 
     N = len(tick_labels)
-    assert N == len(values)
+    assert N == len(data)
 
     if not isinstance(plot_kws, list):
         plot_kws = [plot_kws for _ in range(N)]
 
-    def_color = plt.cm.get_cmap('Set2', values.shape[1])
+    def_color = plt.cm.get_cmap('Set2', data.shape[1])
 
     if color is None:
-        color = [def_color(i) for i in range(values.shape[1])]
+        color = [def_color(i) for i in range(data.shape[1])]
     if fill_color is None:
-        fill_color = [def_color(i) for i in range(values.shape[1])]
+        fill_color = [def_color(i) for i in range(data.shape[1])]
 
     if not isinstance(color, list):
         color = [color for _ in range(N)]
@@ -140,7 +140,7 @@ def spider_plot(
 
     plt.xticks(angles[:-1], tick_labels, **_xtick_kws)
 
-    for idx in range(values.shape[1]):
+    for idx in range(data.shape[1]):
 
         plot_kws_ = plot_kws[idx]
 
@@ -148,7 +148,7 @@ def spider_plot(
         plot_kws_ = plot_kws_ or {}
         _plot_kws.update(plot_kws_)
 
-        val = values[:, idx].tolist()
+        val = data[:, idx].tolist()
         val.append(val[0])
         ax.plot(angles, val, **_plot_kws)
 
@@ -166,7 +166,7 @@ def spider_plot(
                         color='red',
                         zorder=10)
 
-    plt.gca().set_rmax(np.max(values) + np.max(values)*0.3)
+    plt.gca().set_rmax(np.max(data) + np.max(data)*0.3)
 
     _leg_kws = {'labelspacing': 0.1, 'fontsize': 12, 'bbox_to_anchor': (1.3, 1.1)}
     leg_kws = leg_kws or {}

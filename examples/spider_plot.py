@@ -10,12 +10,12 @@ from easy_mpl import spider_plot
 
 #%%
 values = [-0.2, 0.1, 0.0, 0.1, 0.2, 0.3]
-spider_plot(values=values)
+spider_plot(data=values)
 
 #%%
 # specifying labels
 labels = ['a', 'b', 'c', 'd', 'e', 'f']
-spider_plot(values=values, labels=labels)
+spider_plot(data=values, labels=labels)
 
 #%%
 # # specifying tick size
@@ -39,7 +39,7 @@ spider_plot(df, xtick_kws={'size': 13})
 
 #%%
 # use polygon frame
-spider_plot(values=values, frame="polygon")
+spider_plot(data=values, frame="polygon")
 
 #%%
 spider_plot(df, xtick_kws={'size': 13}, frame="polygon",
