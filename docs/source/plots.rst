@@ -90,6 +90,11 @@ spider_plot
 .. automodule:: easy_mpl
    :members: spider_plot
 
+violin_plot
+===========
+.. automodule:: easy_mpl
+   :members: violin_plot
+
 
 process_axes
 =================

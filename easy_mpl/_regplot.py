@@ -5,7 +5,6 @@ import random
 from typing import Union
 
 import numpy as np
-import pandas as pd
 import matplotlib.pyplot as plt
 
 
@@ -29,17 +28,17 @@ REGC_COMBS = [
 
 
 def regplot(
-        x: Union[np.ndarray, pd.DataFrame, pd.Series, list],
-        y: Union[np.ndarray, pd.DataFrame, pd.Series, list],
+        x: Union[np.ndarray,  list],
+        y: Union[np.ndarray, list],
         title: str = None,
         annotation_key: str = None,
         annotation_val: float = None,
-        line_style = '-',
+        line_style='-',
         line_color=None,
-        line_kws:dict = None,
+        line_kws: dict = None,
         marker_size: int = 20,
         marker_color=None,
-        scatter_kws:dict = None,
+        scatter_kws: dict = None,
         ci: Union[int, None] = 95,
         fill_color=None,
         figsize: tuple = None,
@@ -54,8 +53,9 @@ def regplot(
     Parameters
     ----------
         x : array like, optional
-            the 'x' value.
+            the 'x' value. It can be numpy array, pandas DataFram/Series or a list
         y : array like, optional
+             It can be numpy array, pandas DataFram/Series or a list
         ci : optional
             confidence interval. Set to None if not required.
         show : bool, optional
@@ -107,13 +107,13 @@ def regplot(
     x = np.array(x).reshape(-1,)
     y = np.array(y).reshape(-1,)
 
-    # remvoing nans based upon nans in x
+    # removing nans based upon nans in x
     x_nan_idx = np.isnan(x)
     if x_nan_idx.sum() > 0:
         x = x[~x_nan_idx]
         y = y[~x_nan_idx]
 
-    # remvoing nans based upon nans in y
+    # removing nans based upon nans in y
     y_nan_idx = np.isnan(y)
     if y_nan_idx.sum() > 0:
         x = x[~y_nan_idx]
@@ -189,7 +189,7 @@ def bootdist(f, args, n_boot=1000, **func_kwargs):
     return np.array(boot_dist)
 
 
-def _regplot_paras(x, y, ci:int=None):
+def _regplot_paras(x, y, ci: int = None):
     """prepares parameters for regplot"""
     grid = np.linspace(np.min(x), np.max(x), 100)
     x = np.c_[np.ones(len(x)), x]

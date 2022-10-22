@@ -3,7 +3,6 @@
 __all__ = ["imshow"]
 
 import numpy as np
-import pandas as pd
 import matplotlib.pyplot as plt
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 
@@ -99,7 +98,9 @@ def imshow(
             figsize = kwargs.pop('figsize')
             ax.figure.set_size_inches(figsize)
 
-    if isinstance(values, pd.DataFrame):
+    if hasattr(values, "values") and hasattr(values, "columns"):
+        import pandas as pd  # don't make whole project dependent upon pandas
+
         if not xticklabels:
             xticklabels = values.columns.to_list()
         if not yticklabels:

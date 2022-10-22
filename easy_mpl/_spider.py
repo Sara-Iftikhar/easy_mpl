@@ -5,23 +5,22 @@ import math
 from typing import Union, List, Optional
 
 import numpy as np
-import pandas as pd
 import matplotlib.pyplot as plt
 
 from .utils import register_projections
 
 
 def spider_plot(
-        data:Union[np.ndarray, list],
-        tick_labels:list = None,
-        highlight:Union[int, float]=None,
+        data: Union[np.ndarray, list],
+        tick_labels: list = None,
+        highlight: Union[int, float] = None,
         plot_kws: Optional[Union[dict, List[dict]]] = None,
         xtick_kws: Optional[dict] = None,
-        fill_kws : Optional[dict] = None,
-        frame:str = "circle",
-        color : Union[List[str], str] = None,
+        fill_kws: Optional[dict] = None,
+        frame: str = "circle",
+        color: Union[List[str], str] = None,
         fill_color: Union[List[str], str] = None,
-        leg_kws : dict = None,
+        leg_kws: dict = None,
         labels: list = None,
         show: Optional[bool] = True,
         figsize=None,
@@ -73,7 +72,8 @@ def spider_plot(
     >>> spider_plot(values=vals, labels=labels)
     ... # specifying tick size
     >>> spider_plot(vals, labels, xtick_kws={'size': 13})
-    ...
+    ... # we can also pass dataframe
+    >>> import pandas as pd
     >>> df = pd.DataFrame.from_dict(
     ... {'summer': {'a': -0.2, 'b': 0.1, 'c': 0.0, 'd': 0.1, 'e': 0.2, 'f': 0.3},
     ... 'winter': {'a': -0.3, 'b': 0.1, 'c': 0.0, 'd': 0.2, 'e': 0.15,'f': 0.25}})

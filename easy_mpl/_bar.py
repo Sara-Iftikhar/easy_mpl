@@ -5,7 +5,6 @@ import random
 from typing import Union
 
 import numpy as np
-import pandas as pd
 import matplotlib.pyplot as plt
 
 from .utils import BAR_CMAPS
@@ -89,7 +88,7 @@ def bar_chart(
     """
 
     if labels is None:
-        if isinstance(values, (pd.DataFrame, pd.Series)):
+        if hasattr(values, "index"):
             labels = values.index
 
     values = to_1d_array(values)

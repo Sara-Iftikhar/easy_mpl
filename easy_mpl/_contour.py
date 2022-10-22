@@ -6,20 +6,21 @@ import matplotlib.pyplot as plt
 
 from .utils import process_axis
 
+
 def contour(
         x,
         y,
         z,
-        fill_between:bool = False,
-        show_points:bool = False,
-        colorbar:bool = True,
-        label_contours:bool = False,
+        fill_between: bool = False,
+        show_points: bool = False,
+        colorbar: bool = True,
+        label_contours: bool = False,
         contour_kws: dict = None,
         fill_between_kws: dict = None,
         show_points_kws: dict = None,
         label_contour_kws: dict = None,
-        ax:plt.Axes = None,
-        show:bool = True,
+        ax: plt.Axes = None,
+        show: bool = True,
         **kwargs
 ):
     """A contour plot of irregularly spaced data coordinates.

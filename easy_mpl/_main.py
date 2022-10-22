@@ -8,7 +8,6 @@ __all__ = [
 from typing import Tuple
 
 import numpy as np
-import pandas as pd
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import matplotlib.lines as mlines
@@ -115,12 +114,12 @@ def plot(
         ax.figure.set_size_inches(figsize)
 
     s = data[0]
-    if isinstance(s, pd.Series):
+    if hasattr(s, "index") and hasattr(s, "name"):
         kwargs['min_xticks'] = kwargs.get('min_xticks', 3)
         kwargs['max_xticks'] = kwargs.get('max_xticks', 5)
         kwargs['xlabel'] = kwargs.get('xlabel', s.index.name)
         kwargs['ylabel'] = kwargs.get('ylabel', s.name)
-    elif isinstance(s, pd.DataFrame):
+    elif hasattr(s, "values") and hasattr(s, "index") and hasattr(s, "columns"):
         kwargs['min_xticks'] = kwargs.get('min_xticks', 3)
         kwargs['max_xticks'] = kwargs.get('max_xticks', 5)
         if s.shape[1] == 1:

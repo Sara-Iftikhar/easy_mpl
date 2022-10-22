@@ -5,7 +5,6 @@ import random
 from typing import Union
 
 import numpy as np
-import pandas as pd
 import matplotlib.pyplot as plt
 
 from .utils import _rescale
@@ -93,7 +92,7 @@ def circular_bar_plot(
     ax = plt.subplot(111, polar=True)
     plt.axis('off')
 
-    if isinstance(data, pd.DataFrame):
+    if hasattr(data, "values"):
         values = data.values
     elif isinstance(data, dict):
         values = np.array(list(data.values()))

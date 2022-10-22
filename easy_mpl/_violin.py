@@ -5,7 +5,6 @@ import random
 from typing import Union, List
 
 import numpy as np
-import scipy.stats as st
 import matplotlib.pyplot as plt
 
 from easy_mpl.utils import _rescale, kde
@@ -20,23 +19,23 @@ FILL_COLORS = [np.array([253,160,231])/255,
 
 
 def violin_plot(
-        data:Union[np.ndarray, List[np.ndarray]],
-        X:Union[np.ndarray, List[np.ndarray]]=None,
-        fill:bool = True,
-        fill_colors = None,
-        violin_kws:dict = None,
-        show_datapoints:bool = True,
-        datapoints_colors:Union[list, str] = None,
-        scatter_kws:dict = None,
-        show_boxplot:bool = False,
-        box_kws:dict = None,
-        label_violin:bool = False,
-        index_method:str = "jitter",
+        data: Union[np.ndarray, List[np.ndarray]],
+        X: Union[np.ndarray, List[np.ndarray]] = None,
+        fill: bool = True,
+        fill_colors=None,
+        violin_kws: dict = None,
+        show_datapoints: bool = True,
+        datapoints_colors: Union[list, str] = None,
+        scatter_kws: dict = None,
+        show_boxplot: bool = False,
+        box_kws: dict = None,
+        label_violin: bool = False,
+        index_method: str = "jitter",
         max_dots: int = 100,
-        cut:float = 0.2,
-        show:bool = True,
-        ax:plt.Axes = None,
-)->plt.Axes:
+        cut: float = 0.2,
+        show: bool = True,
+        ax: plt.Axes = None,
+) -> plt.Axes:
     """
 
     parameters
@@ -47,7 +46,8 @@ def violin_plot(
         whether to fill the violin with color or not
     fill_colors :
     violin_kws : dict (default=None)
-    show_datapoints
+    show_datapoints : bool (default=True)
+        whether to plot the datapoints or not
     datapoints_colors
     scatter_kws : dict (default=None)
         keyword arguments for axes.scatter. This will only be valid if
@@ -220,7 +220,7 @@ def violin_plot(
         means = [y.mean() for y in Y]
         for i, mean in enumerate(means):
             # Add dot representing the mean
-            ax.scatter(i, mean, s=250, color="#850e00", # dark red
+            ax.scatter(i, mean, s=250, color="#850e00",  # dark red
                        zorder=3)
 
             # Add line conecting mean value and its label
@@ -242,7 +242,7 @@ def violin_plot(
                 zorder=10  # to make sure the line is on top
             )
 
-    if names is not  None:
+    if names is not None:
         ax.set_xticks(range(len(names)))
         ax.set_xticklabels(names)
 
@@ -252,7 +252,8 @@ def violin_plot(
     return ax
 
 
-def jittered_ind(y, jitter = 0.04):
+def jittered_ind(y, jitter=0.04):
+    import scipy.stats as st
 
     x_data = [np.array([i] * len(d)) for i, d in enumerate(y)]
     return [x + st.t(df=6, scale=jitter).rvs(len(x)) for x in x_data]

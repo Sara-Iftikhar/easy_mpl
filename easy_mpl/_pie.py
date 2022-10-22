@@ -10,8 +10,8 @@ import matplotlib.pyplot as plt
 
 
 def pie(
-        vals: Union[list, np.ndarray, pd.Series] = None,
-        fractions: Union[list, np.ndarray, pd.Series] = None,
+        vals: Union[list, np.ndarray] = None,
+        fractions: Union[list, np.ndarray] = None,
         labels: list = None,
         ax: plt.Axes = None,
         title: str = None,

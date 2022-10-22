@@ -3,7 +3,6 @@ from typing import Union, Any, Optional, Tuple
 from collections.abc import KeysView, ValuesView
 
 import numpy as np
-import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 from matplotlib.path import Path

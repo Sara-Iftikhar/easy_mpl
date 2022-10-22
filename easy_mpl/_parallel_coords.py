@@ -16,7 +16,7 @@ from .utils import _rescale
 
 
 def parallel_coordinates(
-        data: Union[pd.DataFrame, np.ndarray],
+        data: Union[np.ndarray,],
         categories: Union[np.ndarray, list] = None,
         names: list = None,
         cmap: str = None,
@@ -34,7 +34,8 @@ def parallel_coordinates(
     Parameters
     ----------
         data : array, DataFrame
-            a two dimensional array with the shape (rows, columns).
+            a two dimensional array with the shape (rows, columns). It can also
+            be pandas DataFrame
         categories : list, array
             1 dimensional array which contain class labels of the of each row in
             data. It can be either categorical or continuous numerical values.
@@ -115,7 +116,7 @@ def parallel_coordinates(
             names = [f"Feat_{i}" for i in range(data.shape[1])]
         data = pd.DataFrame(data, columns=names)
 
-    if isinstance(data, pd.DataFrame):
+    if hasattr(data, "columns"):
         names = names or data.columns.tolist()
 
     if len(names) != data.shape[1]:

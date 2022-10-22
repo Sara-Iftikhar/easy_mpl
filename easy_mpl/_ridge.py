@@ -20,21 +20,22 @@ RIDGE_CMAPS = [
     "RdBu", "Spectral",
 ]
 
+
 def ridge(
         data: Union[np.ndarray, List[np.ndarray]],
-        bw_method = "scott",
-        cut:float = 0.5,
+        bw_method="scott",
+        cut: float = 0.5,
         color: Union[str, List[str], np.ndarray, List[np.ndarray]] = None,
         fill_kws: dict = None,
-        line_width:Union[int, List[int]] = 1.0,
-        line_color:Union[str, List[str]] = "black",
-        plot_kws:dict = None,
+        line_width: Union[int, List[int]] = 1.0,
+        line_color: Union[str, List[str]] = "black",
+        plot_kws: dict = None,
         xlabel: str = None,
         title: str = None,
         figsize: tuple = None,
         show=True,
-        hspace:float = -0.7,
-        share_axes:bool = False,
+        hspace: float = -0.7,
+        share_axes: bool = False,
         ax: plt.Axes = None,
 ) -> List[plt.Axes,]:
     """
@@ -125,7 +126,7 @@ def ridge(
     elif isinstance(color, list):
         colors = color
     elif isinstance(color, np.ndarray):
-        if len(color)==3 and len(color) == color.size:
+        if len(color) == 3 and len(color) == color.size:
             colors = [color for _ in range(n)]
         else:
             colors = [color[:, i] for i in range(color.shape[1])]
@@ -152,7 +153,7 @@ def ridge(
     if ax is None:
         fig, axes = plt.subplots(nrows, ncols=1,
                                  figsize=figsize or (10, 6),
-                                 gridspec_kw={"hspace":hspace})
+                                 gridspec_kw={"hspace": hspace})
     else:
         share_axes = True
         fig = ax.get_figure()

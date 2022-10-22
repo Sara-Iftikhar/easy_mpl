@@ -4,14 +4,13 @@ __all__ = ["hist"]
 from typing import Union, Tuple
 
 import numpy as np
-import pandas as pd
 import matplotlib.pyplot as plt
 
 from .utils import process_axis
 
 
 def hist(
-        x: Union[list, np.ndarray, pd.Series, pd.DataFrame],
+        x: Union[list, np.ndarray],
         hist_kws: dict = None,
         grid: bool = True,
         ax: plt.Axes = None,
@@ -24,7 +23,7 @@ def hist(
     Parameters
     -----------
         x : list, array, optional
-            array like, must not be greader than 1d
+            array like, dimensions must not be greader than 1d
         grid : bool, optional
             whether to show the grid or not
         show : bool, optional
