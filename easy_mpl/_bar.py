@@ -88,7 +88,7 @@ def bar_chart(
     """
 
     if labels is None:
-        if hasattr(values, "index"):
+        if hasattr(values, "index") and hasattr("values", "name"):
             labels = values.index
 
     values = to_1d_array(values)
