@@ -92,7 +92,7 @@ def circular_bar_plot(
     ax = plt.subplot(111, polar=True)
     plt.axis('off')
 
-    if hasattr(data, "values"):
+    if hasattr(data, "values") and hasattr(data, "columns"):
         values = data.values
     elif isinstance(data, dict):
         values = np.array(list(data.values()))
