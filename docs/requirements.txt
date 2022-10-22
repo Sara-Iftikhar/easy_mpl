@@ -1,7 +1,7 @@
 
 pandas
 numpy
-matplotlib<=3.5.0
+matplotlib
 sphinx
 sphinx-prompt
 sphinx_copybutton
