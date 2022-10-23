@@ -81,6 +81,11 @@ class TestViolin(unittest.TestCase):
             plt.show()
         return
 
+    def test_cut_as_list(self):
+        axes = violin_plot(df[cols], show=self.show, cut=[0.1,0.2,0.3,0.4,0.5,0.6])
+        axes = violin_plot(df[cols], show=self.show, index_method="kde", cut=[0.1,0.2,0.3,0.4,0.5,0.6])
+        return
+
 
 if __name__ == "__main__":
     unittest.main()

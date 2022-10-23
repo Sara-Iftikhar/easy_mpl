@@ -32,7 +32,7 @@ def violin_plot(
         label_violin: bool = False,
         index_method: str = "jitter",
         max_dots: int = 100,
-        cut: float = 0.2,
+        cut: Union[float, list] = 0.2,
         show: bool = True,
         ax: plt.Axes = None,
 ) -> plt.Axes:
@@ -42,6 +42,8 @@ def violin_plot(
     ----------
     data
     X :
+        array or list of arrays. If list of arrays is given, the length of
+        arrays can be unequal.
     fill : bool, optional (default=True)
         whether to fill the violin with color or not
     fill_colors :
@@ -62,8 +64,9 @@ def violin_plot(
         See `<https://stackoverflow.com/a/33965400/5982232> this_` for context
     max_dots : int (default=100)
         maximum number of dots to show
-    cut : float (default=0.2)
-        This variables determines the length of
+    cut : float/list (default=0.2)
+        This variables determines the length of violin. If given as a list, it should
+        match the number of arrays in X.
     show : bool (default=True)
         whether to show the plot or not
     ax : plt.Axes (default=None)
@@ -304,12 +307,17 @@ def beeswarm_ind(y, nbins=None, lim=1.0):
 
 
 def get_vpstats(dataset, bins=100, cut=0.2, bw_method=None):
+    if isinstance(cut, float):
+        cut = [cut for _ in range(len(dataset))]
+
+    assert isinstance(cut, list)
+    assert len(cut)==len(dataset)
 
     vpstats = []
 
-    for y in dataset:
+    for idx, y in enumerate(dataset):
         stats = dict()
-        coords, vals = kde(y, bw_method=bw_method, bins=bins, cut=cut)
+        coords, vals = kde(y, bw_method=bw_method, bins=bins, cut=cut[idx])
         stats['coords'] = coords
         stats['vals'] = vals
         stats['mean'] = np.mean(y)
