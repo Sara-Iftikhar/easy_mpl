@@ -28,17 +28,17 @@ x = np.random.randint(2, 10, 10)
 plot(x, '--o', color=np.array([35, 81, 53]) / 256.0)
 
 #############################
-# We can get set the show=False in order to further work the current active axes
+# We can set the show=False in order to further work the current active axes
 
 x2 = np.random.randint(2, 10, 10)
-ax = plot(x, '--o', color=np.array([35, 81, 53]) / 256.0, show=False)
+plot(x, '--o', color=np.array([35, 81, 53]) / 256.0, show=False)
 plot(x2, '--*', color=np.array([15, 151, 123]) / 256.0)
 
 #############################
 # If we provide to arrays to ``plot``, the first array is used for the horizontal axis.
 # In this case, the second argument is not used as marker style
 
-plot(np.arange(50, 100), np.random.random(50), title="2darray")
+plot(np.arange(50, 100), np.random.random(50), title="2 array")
 
 #############################
 # However, when we give just one array, the second argument is interpreted as marker style.
@@ -48,7 +48,7 @@ plot(np.random.random(100), '--*', title="1array_marker")
 #############################
 # When we provide two arrays, the third argument is interpreted as marker style.
 
-plot(np.arange(100), np.random.random(100), '.', title="2array_marker")
+plot(np.arange(100), np.random.random(100), '.', title="2 array_marker")
 
 #############################
 # The legend can be set by making use of ``label`` argument.
@@ -117,7 +117,7 @@ plot(np.random.random(10), marker=".", markersize=10,
 x = np.append(np.random.random(100), np.nan)
 plot(x, '.', title="with_nan_vals")
 
-#%%
+# %%
 # The ``plot`` function returns matplotlib Axes object, which can be used for further
 # processing.
 
@@ -136,3 +136,9 @@ ax = plot(
 # draw horizontal line on y=0
 ax.axhline(0.0)
 plt.show()
+
+# %%
+# We can also provide an already existing axes to ``plot`` functio
+
+_, ax = plt.subplots()
+plot(np.random.random(100), ax=ax)

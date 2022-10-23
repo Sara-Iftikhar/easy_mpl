@@ -56,12 +56,51 @@ def hist(
             ax.figure.set_size_inches(figsize)
 
     hist_kws = hist_kws or {}
-    n, bins, patches = ax.hist(x, **hist_kws)
+
+    if isinstance(x, np.ndarray):
+        if len(x) == x.size:
+            X = [x]
+            names = [None]
+        else:
+            X = [x[:, i] for i in range(x.shape[1])]
+            names = [f"{i}" for i in range(x.shape[1])]
+    elif is_dataframe(x):
+        X = []
+        for col in x.columns:
+            X.append(x[col].values)
+        names = x.columns.tolist()
+    elif is_series(x):
+        X = x.values
+        names = [x.name]
+    elif isinstance(x, (list, tuple)) and not is_dataframe(x[0]):
+        X = [x]
+        names = [None]
+    else:
+        raise ValueError(f"unrecognized type of x {type(x)}")
+
+    for x, name in zip(X, names):
+        if name:
+            hist_kws['label'] = name
+
+        n, bins, patches = ax.hist(x, **hist_kws)
 
     process_axis(ax, grid=grid, **kwargs)
+
+    if name:
+        plt.legend()
 
     if show:
         plt.show()
 
     return ax
 
+def is_dataframe(x):
+    if all([hasattr(x, attr) for attr in ["columns", "values", "index"]]):
+        return True
+    return False
+
+
+def is_series(x):
+    if all([hasattr(x, attr) for attr in ["name", "index", "values"]]):
+        return True
+    return False
