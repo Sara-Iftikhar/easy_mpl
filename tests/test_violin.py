@@ -86,6 +86,11 @@ class TestViolin(unittest.TestCase):
         axes = violin_plot(df[cols], show=self.show, index_method="kde", cut=[0.1,0.2,0.3,0.4,0.5,0.6])
         return
 
+    def test_max_dots_as_list(self):
+        axes = violin_plot(df[cols], show=self.show, max_dots=[50, 60, 70, 50, 60, 70])
+        axes = violin_plot(df[cols], show=self.show, index_method="kde", cut=[50, 60, 70, 50, 60, 70])
+        return
+
 
 if __name__ == "__main__":
     unittest.main()

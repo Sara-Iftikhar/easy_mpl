@@ -31,8 +31,8 @@ def violin_plot(
         box_kws: dict = None,
         label_violin: bool = False,
         index_method: str = "jitter",
-        max_dots: int = 100,
-        cut: Union[float, list] = 0.2,
+        max_dots: Union[int, List[int]] = 100,
+        cut: Union[float, List[float]] = 0.2,
         show: bool = True,
         ax: plt.Axes = None,
 ) -> plt.Axes:
@@ -62,8 +62,9 @@ def violin_plot(
     index_method : str (default="jitter")
         Only valid if `X` is not given. The method to generate indices for x-axis.
         See `<https://stackoverflow.com/a/33965400/5982232> this_` for context
-    max_dots : int (default=100)
-        maximum number of dots to show
+    max_dots : int/list (default=100)
+        maximum number of dots to show. It can also be a list of integers, which
+        would define the number of dots for each array in X.
     cut : float/list (default=0.2)
         This variables determines the length of violin. If given as a list, it should
         match the number of arrays in X.
@@ -212,9 +213,12 @@ def violin_plot(
         if datapoints_colors is None:
             datapoints_colors = ["black" for _ in range(len(X))]
 
-        for offset, x, y, color in zip(offsets, X, Y, datapoints_colors):
+        if isinstance(max_dots, int):
+            max_dots = [max_dots for _ in range(len(X))]
 
-            x, y = sample(x+offset, y, n=max_dots)
+        for offset, x, y, color, n_dots in zip(offsets, X, Y, datapoints_colors, max_dots):
+
+            x, y = sample(x+offset, y, n=n_dots)
 
             ax.scatter(x, y, color=color, **_scatter_kws)
 
