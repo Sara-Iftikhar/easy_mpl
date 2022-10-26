@@ -32,7 +32,7 @@ def violin_plot(
         label_violin: bool = False,
         index_method: str = "jitter",
         max_dots: Union[int, List[int]] = 100,
-        cut: Union[float, List[float]] = 0.2,
+        cut: Union[float, tuple, List[float], List[tuple]] = 0.2,
         show: bool = True,
         ax: plt.Axes = None,
 ) -> plt.Axes:
@@ -47,10 +47,12 @@ def violin_plot(
     fill : bool, optional (default=True)
         whether to fill the violin with color or not
     fill_colors :
+        colors to fill the violins
     violin_kws : dict (default=None)
     show_datapoints : bool (default=True)
         whether to plot the datapoints or not
     datapoints_colors
+        color for the datapoints/markers
     scatter_kws : dict (default=None)
         keyword arguments for axes.scatter. This will only be valid if
         ``show_datapoints`` is True.
@@ -58,7 +60,8 @@ def violin_plot(
     box_kws
         keyword arguments for axes.boxplot. This will only be valid if
         ``show_boxplot`` is True.
-    label_violin
+    label_violin : bool
+        whether to label the violins or not
     index_method : str (default="jitter")
         Only valid if `X` is not given. The method to generate indices for x-axis.
         See `<https://stackoverflow.com/a/33965400/5982232> this_` for context
@@ -66,8 +69,8 @@ def violin_plot(
         maximum number of dots to show. It can also be a list of integers, which
         would define the number of dots for each array in X.
     cut : float/list (default=0.2)
-        This variables determines the length of violin. If given as a list, it should
-        match the number of arrays in X.
+        This variables determines the length of violin. If given as a list or
+        list of tuples, it should match the number of arrays in X.
     show : bool (default=True)
         whether to show the plot or not
     ax : plt.Axes (default=None)
@@ -311,7 +314,8 @@ def beeswarm_ind(y, nbins=None, lim=1.0):
 
 
 def get_vpstats(dataset, bins=100, cut=0.2, bw_method=None):
-    if isinstance(cut, float):
+
+    if isinstance(cut, (float, tuple)):
         cut = [cut for _ in range(len(dataset))]
 
     assert isinstance(cut, list)

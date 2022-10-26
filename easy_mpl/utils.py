@@ -210,12 +210,15 @@ def kde(
         y,
         bw_method = "scott",
         bins:int = 1000,
-        cut:float = 0.5,
+        cut:Union[float, Tuple[float]] = 0.5,
 )->Tuple[Union[np.ndarray, Tuple[np.ndarray, Optional[float]]], Any]:
     """Generate Kernel Density Estimate plot using Gaussian kernels."""
 
     # don't want to make whole easy_mpl dependent upon scipy
     from scipy.stats import gaussian_kde
+
+    if isinstance(cut, float):
+        cut = (cut, cut)
 
     y = np.array(y)
     if 'int' not in y.dtype.name:  # 'object' types have problem in removing nans
@@ -227,8 +230,8 @@ def kde(
 
     sample_range = np.nanmax(y) - np.nanmin(y)
     ind = np.linspace(
-        np.nanmin(y) - cut * sample_range,
-        np.nanmax(y) + cut * sample_range,
+        np.nanmin(y) - cut[0] * sample_range,
+        np.nanmax(y) + cut[1] * sample_range,
         bins,
     )
 

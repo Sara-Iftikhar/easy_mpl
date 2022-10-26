@@ -83,12 +83,26 @@ class TestViolin(unittest.TestCase):
 
     def test_cut_as_list(self):
         axes = violin_plot(df[cols], show=self.show, cut=[0.1,0.2,0.3,0.4,0.5,0.6])
-        axes = violin_plot(df[cols], show=self.show, index_method="kde", cut=[0.1,0.2,0.3,0.4,0.5,0.6])
+        axes = violin_plot(df[cols], show=self.show, index_method="kde",
+                           cut=[0.1,0.2,0.3,0.4,0.5,0.6])
+        return
+
+    def test_cut_tuple(self):
+        axes = violin_plot(df[cols], show=self.show, cut=(0.1, 0.2))
+        axes = violin_plot(df[cols], show=self.show, index_method="kde", cut=(0.1, 0.2))
+        return
+
+    def test_cut_as_list_of_tuple(self):
+        cut = [(0.1, 0.2), (0.11, 0.21), (0.12, 0.22), (0.13, 0.23),
+               (0.14, 0.24), (0.1, 0.2)]
+        axes = violin_plot(df[cols], show=self.show, cut=cut)
+        axes = violin_plot(df[cols], show=self.show, index_method="kde", cut=cut)
         return
 
     def test_max_dots_as_list(self):
         axes = violin_plot(df[cols], show=self.show, max_dots=[50, 60, 70, 50, 60, 70])
-        axes = violin_plot(df[cols], show=self.show, index_method="kde", cut=[50, 60, 70, 50, 60, 70])
+        axes = violin_plot(df[cols], show=self.show, index_method="kde",
+                           max_dots=[50, 60, 70, 50, 60, 70])
         return
 
 
