@@ -37,6 +37,7 @@ def violin_plot(
         ax: plt.Axes = None,
 ) -> plt.Axes:
     """
+    makes violin plot/plots of the arrays in data
 
     parameters
     ----------
@@ -49,6 +50,7 @@ def violin_plot(
     fill_colors :
         colors to fill the violins
     violin_kws : dict (default=None)
+        any keyword arugment for axes.violin_ in the form of dictionary
     show_datapoints : bool (default=True)
         whether to plot the datapoints or not
     datapoints_colors
@@ -56,15 +58,16 @@ def violin_plot(
     scatter_kws : dict (default=None)
         keyword arguments for axes.scatter. This will only be valid if
         ``show_datapoints`` is True.
-    show_boxplot
-    box_kws
+    show_boxplot : bool (default=False)
+        whether to show the boxplot inside the voilin or not?
+    box_kws : dict (default=None)
         keyword arguments for axes.boxplot. This will only be valid if
         ``show_boxplot`` is True.
     label_violin : bool
         whether to label the violins or not
     index_method : str (default="jitter")
         Only valid if `X` is not given. The method to generate indices for x-axis.
-        See `<https://stackoverflow.com/a/33965400/5982232> this_` for context
+        See `this <https://stackoverflow.com/a/33965400/5982232>_` for context
     max_dots : int/list (default=100)
         maximum number of dots to show. It can also be a list of integers, which
         would define the number of dots for each array in X.
@@ -74,11 +77,14 @@ def violin_plot(
     show : bool (default=True)
         whether to show the plot or not
     ax : plt.Axes (default=None)
+        matplotlib Axes object on which to draw the plot. If not given, then
+        the currently available axes from plt.gca will be used.
 
 
     Returns
     -------
     plt.Axes
+        the matplotlib Axes object on which violin/violins are drawn
 
     Examples
     --------
@@ -88,6 +94,11 @@ def violin_plot(
     >>> violin_plot(data)
     >>> violin_plot(data, show_datapoints=False)
     >>> violin_plot(data, show_datapoints=False, show_boxplot=True)
+
+    See :ref:`sphx_glr_auto_examples_violin.py` for more examples
+
+    .. _axes.violin:
+        https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.violin.html
     """
 
     names = None

@@ -2,6 +2,10 @@
 ============
 p. boxplot
 ============
+
+.. currentmodule:: easy_mpl
+
+This file shows the usage of :func:`boxplot` function.
 """
 
 import pandas as pd
@@ -20,16 +24,24 @@ for col in df.columns:
 print(df.shape)
 
 # %%
+boxplot(df[cols])
+
+
+# %%
 # basic boxplot with color pallete
 boxplot(df[cols], fill_color="GnBu", patch_artist=True)
+
+# %%
+# change color of median line
+boxplot(df[cols], fill_color="GnBu", patch_artist=True, medianprops={"color": "black"})
 
 # %%
 # show the mean line
 boxplot(df[cols], fill_color="GnBu", patch_artist=True, meanline=True, showmeans=True)
 
 # %%
-# customize median line color
-boxplot(df[cols], fill_color="GnBu", patch_artist=True, medianprops={"color": "black"})
+# customize mean line color
+boxplot(df[cols], fill_color="GnBu", patch_artist=True, meanprops={"color": "black"})
 
 # %%
 # show notches
@@ -42,3 +54,7 @@ boxplot(df[cols],
 # %%
 # don't show outliers
 boxplot(df[cols], fill_color="GnBu", patch_artist=True, showfliers=False)
+
+# %%
+# don't show whiskers
+boxplot(df[cols], fill_color="GnBu", patch_artist=True, showfliers=False, whis=0.0)

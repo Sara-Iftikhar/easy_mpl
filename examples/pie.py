@@ -2,6 +2,9 @@
 =======
 j. pie
 =======
+.. currentmodule:: easy_mpl
+
+This file shows the usage of :func:`pie` function.
 """
 
 import numpy as np

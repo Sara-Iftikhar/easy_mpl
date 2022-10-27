@@ -2,6 +2,9 @@
 =======
 a. plot
 =======
+.. currentmodule:: easy_mpl
+
+This file shows the usage of :func:`plot` function.
 """
 import matplotlib.pyplot as plt
 import numpy as np

@@ -2,6 +2,9 @@
 =====================
 l. circular_bar_plot
 =====================
+.. currentmodule:: easy_mpl
+
+This file shows the usage of :func:`circular_bar_plot` function.
 """
 
 import numpy as np

@@ -73,6 +73,8 @@ def contour(
         ... # show contour labels
         >>> contour(_x, _y, _z, label_contours=True, show_points=True)
 
+    See :ref:`sphx_glr_auto_examples_contour.py` for more examples
+
     Note
     ----
     The length of x and y should be same. The actual grid is created using axes.tricontour

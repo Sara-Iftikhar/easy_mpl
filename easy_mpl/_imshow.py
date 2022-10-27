@@ -88,6 +88,9 @@ def imshow(
         ...        xticklabels=[f"Feature {i}" for i in range(data.shape[1])],
         ...        white_grid=True, annotate=True,
         ...        colorbar=True)
+
+    See :ref:`sphx_glr_auto_examples_imshow.py` for more examples
+
     .. _axes.imshow:
         https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.imshow.html
     """

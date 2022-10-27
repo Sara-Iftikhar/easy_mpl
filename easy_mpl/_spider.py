@@ -81,6 +81,8 @@ def spider_plot(
     ... # use polygon frame
     >>> spider_plot(values=vals, frame="polygon")
 
+    See :ref:`sphx_glr_auto_examples_spider_plot.py` for more examples
+
     """
 
     # todo, allow grids and frame to have different types

@@ -2,6 +2,9 @@
 ==============
 q. violin
 ==============
+.. currentmodule:: easy_mpl
+
+This file shows the usage of :func:`violin_plot` function.
 """
 import matplotlib.pyplot as plt
 import pandas as pd

@@ -85,6 +85,8 @@ def lollipop_plot(
     >>> y = np.random.randint(0, 20, size=10)
     >>> lollipop_plot(y, orientation="horizontal", title="horizontal")
 
+    See :ref:`sphx_glr_auto_examples_lollipop_plot.py` for more examples
+
     .. _matplotlib.axes.Axes.plot:
         https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.plot.html
 

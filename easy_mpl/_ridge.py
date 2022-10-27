@@ -91,6 +91,8 @@ def ridge(
     >>> import pandas as pd
     >>> ridge(pd.DataFrame(data_))
 
+    See :ref:`sphx_glr_auto_examples_ridge.py` for more examples
+
     """
 
     names = None

@@ -2,6 +2,9 @@
 ================
 g. dumbbell_plot
 ================
+.. currentmodule:: easy_mpl
+
+This file shows the usage of :func:`dumbell` function.
 """
 
 import numpy as np

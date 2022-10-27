@@ -59,6 +59,8 @@ def plot(
         log transform y-axis
         >>> plot(np.random.random(100), '--*', logy=True, label='label')
 
+    See :ref:`sphx_glr_auto_examples_plot.py` for more examples
+
     .. _axes.plot():
         https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.plot.html
 
@@ -195,6 +197,8 @@ def scatter(
         >>> axes, _ = scatter(x_, y_, show=False)
         >>> assert isinstance(axes, plt.Axes)
 
+    See :ref:`sphx_glr_auto_examples_scatter.py` for more examples
+
     .. _axes.scatter:
         https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.scatter.html
 
@@ -278,6 +282,7 @@ def dumbbell_plot(
         ... # modify line color
         >>> dumbbell_plot(st, en, line_kws={'color':"black"})
 
+    See :ref:`sphx_glr_auto_examples_dumbell.py` for more examples
 
     .. _axes.scatter:
         https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.scatter.html

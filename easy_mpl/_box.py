@@ -6,6 +6,7 @@ from typing import Union, List, Tuple
 import numpy as np
 import matplotlib.pyplot as plt
 
+from .utils import process_axis
 from .utils import make_cols_from_cmap
 
 
@@ -16,6 +17,7 @@ def boxplot(
         fill_color:Union[str, List[str]] = None,
         ax:plt.Axes = None,
         show:bool = True,
+        ax_kws:dict = None,
         **box_kws,
 )->Tuple[plt.Axes, dict]:
     """
@@ -31,12 +33,14 @@ def boxplot(
         width of the box lines
     fill_color :
         name of color/colors/cmap to fill the boxes
-    box_kws :
-        any additional keyword argument for axes.boxplot
     ax : plt.Axes, optional (default=None)
         matploltib axes on which to draw the plot
     show : bool (default=show)
         whether to show the plot or not
+    ax_kws : dict (default=None)
+        keyword arguments of :func:`process_axis`
+    **box_kws :
+        any additional keyword argument for axes.boxplot_
 
     Returns
     -------
@@ -54,6 +58,11 @@ def boxplot(
     the color can be given as either color name or colormap
     >>> boxplot(np.random.random((100, 3)), fill_color=['pink', 'lightblue', 'lightgreen'])
     >>> boxplot(np.random.random((100, 3)), fill_color="viridis")
+
+    See :ref:`sphx_glr_auto_examples_boxplot.py` for more examples
+
+    .. _axes.boxplot:
+        https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.boxplot.html
     """
 
     if ax is None:
@@ -105,6 +114,9 @@ def boxplot(
             kws['rotation'] = 90
         ax.set_xticks(range(len(xticklabels) + 1))
         ax.set_xticklabels(xticklabels.insert(0, ''), **kws)
+
+    if ax_kws:
+        process_axis(ax, **ax_kws)
 
     if show:
         plt.show()

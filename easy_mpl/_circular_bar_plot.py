@@ -60,6 +60,8 @@ def circular_bar_plot(
     ax : plt.Axes
         Axes of the plot.
 
+    See :ref:`sphx_glr_auto_examples_circular_bar_plot.py` for more examples
+
     Note
     ----
         If nan values are present in the data, they will be ignored.

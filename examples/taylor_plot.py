@@ -3,6 +3,10 @@
 o. taylor plot
 ===============
 
+.. currentmodule:: easy_mpl
+
+This file shows the usage of :func:`taylor_plot` function.
+
 A Taylor plot can be used to show statistical summary of one or more measurements/models.
 
 """

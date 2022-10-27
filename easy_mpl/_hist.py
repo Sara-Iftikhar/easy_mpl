@@ -45,6 +45,8 @@ def hist(
         >>> import numpy as np
         >>> hist(np.random.random((10, 1)))
 
+    See :ref:`sphx_glr_auto_examples_hist.py` for more examples
+
     .. _axes.hist:
         https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.hist.html
     """

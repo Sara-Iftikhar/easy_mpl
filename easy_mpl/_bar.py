@@ -79,6 +79,7 @@ def bar_chart(
         sorting the data
         >>> bar_chart([1,2,3,4,4,5,3,2,5], sort=True)
 
+    See :ref:`sphx_glr_auto_examples_bar_chart.py` for more examples
 
     .. _axes.bar:
         https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.bar.html

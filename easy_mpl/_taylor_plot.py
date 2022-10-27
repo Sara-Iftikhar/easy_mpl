@@ -449,6 +449,8 @@ def taylor_plot(
         ...             leg_kws={'facecolor': 'white',
         ...                 'edgecolor': 'black','bbox_to_anchor':(1.1, 1.05)})
 
+    See :ref:`sphx_glr_auto_examples_taylor_plot.py` for more examples
+
     .. _Taylor:
         https://doi.org/10.1029/2000JD900719 
 

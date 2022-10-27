@@ -53,6 +53,8 @@ def pie(
         >>> explode = (0, 0.1, 0, 0, 0)
         >>> pie(fractions=[0.2, 0.3, 0.15, 0.25, 0.1], explode=explode)
 
+    See :ref:`sphx_glr_auto_examples_pie.py` for more examples
+
     .. _axes.pie:
         https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.pie.html
     """

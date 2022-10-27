@@ -99,6 +99,8 @@ def regplot(
         >>> x_, y_ = np.random.random(100), np.random.random(100)
         >>> regplot(x_, y_)
 
+    See :ref:`sphx_glr_auto_examples_reg_plot.py` for more examples
+
     Note
     ----
         If nans are present in x or y, they will be removed.

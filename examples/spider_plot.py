@@ -2,7 +2,9 @@
 ===============
 n. spider plot
 ===============
-This file shows usage of spider_plot function.
+.. currentmodule:: easy_mpl
+
+This file shows the usage of :func:`spider_plot` function.
 """
 
 import pandas as pd

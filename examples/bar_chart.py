@@ -2,6 +2,10 @@
 ============
 d. bar_chart
 ============
+
+.. currentmodule:: easy_mpl
+
+This file shows the usage of :func:`bar_chart` function.
 """
 
 from easy_mpl import bar_chart

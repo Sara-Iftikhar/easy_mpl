@@ -2,6 +2,9 @@
 ===========
 k. contour
 ===========
+.. currentmodule:: easy_mpl
+
+This file shows the usage of :func:`contour` function.
 """
 
 from easy_mpl import contour

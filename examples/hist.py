@@ -2,6 +2,9 @@
 =========
 e. hist
 =========
+.. currentmodule:: easy_mpl
+
+This file shows the usage of :func:`hist` function.
 """
 
 from easy_mpl import hist

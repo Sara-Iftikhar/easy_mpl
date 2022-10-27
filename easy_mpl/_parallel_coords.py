@@ -101,6 +101,8 @@ def parallel_coordinates(
     >>> data_df['P5'] = random.choices(categories_, k=N)
     >>> parallel_coordinates(data_df,  ticklabel_kws={"fontsize": 8, "color": "red"})
 
+    See :ref:`sphx_glr_auto_examples_parallel_coordinates.py` for more examples
+
     Note
     ----
         If nans are present in data or categories, all the corresponding enteries/rows
