@@ -125,6 +125,11 @@ class TestRidge(unittest.TestCase):
             assert isinstance(ax, plt.Axes)
         return
 
+    def test_labels(self):
+        data = np.random.random((100, 3))
+        ridge(data, title="labels", show=self.show, labels=['a', 'b', 'c'])
+        return
+
 
 if __name__ == "__main__":
     unittest.main()

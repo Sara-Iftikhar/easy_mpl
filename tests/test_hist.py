@@ -82,6 +82,11 @@ class Testhist(unittest.TestCase):
         hist([x[:, 0].tolist(), x[:, 1].tolist()], share_axes=False, show=self.show)
         return
 
+    def test_labels(self):
+        data = np.random.random((100, 3))
+        hist(data, title="labels", show=self.show, labels=['a', 'b', 'c'])
+        return
+
 
 if __name__ == "__main__":
     unittest.main()

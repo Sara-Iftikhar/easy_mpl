@@ -7,7 +7,7 @@ from typing import Union, List
 import numpy as np
 import matplotlib.pyplot as plt
 
-from easy_mpl.utils import _rescale, kde
+from easy_mpl.utils import _rescale, kde, is_dataframe
 
 
 FILL_COLORS = [np.array([253,160,231])/255,
@@ -33,6 +33,7 @@ def violin_plot(
         index_method: str = "jitter",
         max_dots: Union[int, List[int]] = 100,
         cut: Union[float, tuple, List[float], List[tuple]] = 0.2,
+        labels: Union[str, List[str]] = None,
         show: bool = True,
         ax: plt.Axes = None,
 ) -> plt.Axes:
@@ -74,6 +75,8 @@ def violin_plot(
     cut : float/list (default=0.2)
         This variables determines the length of violin. If given as a list or
         list of tuples, it should match the number of arrays in X.
+    labels : list/str (default=None
+        names for xticks
     show : bool (default=True)
         whether to show the plot or not
     ax : plt.Axes (default=None)
@@ -101,13 +104,13 @@ def violin_plot(
         https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.violin.html
     """
 
-    names = None
     if isinstance(data, np.ndarray):
         Y = to_1d_arrays(data)
 
-    elif hasattr(data, "values") and hasattr(data, "columns"):   # data is pd.DataFrame
+    elif is_dataframe(data):   # data is pd.DataFrame
         Y = to_1d_arrays(data.values)
-        names = data.columns.tolist()
+        if labels is None:
+            labels = data.columns.tolist()
     else:
         assert isinstance(data, list), f"Unrecognized data of type {data.__class__.__name__}"
         Y = data
@@ -263,9 +266,12 @@ def violin_plot(
                 zorder=10  # to make sure the line is on top
             )
 
-    if names is not None:
-        ax.set_xticks(range(len(names)))
-        ax.set_xticklabels(names)
+    if labels is not None:
+        kws = dict()
+        if len(labels)>7:
+            kws['rotation'] = 90
+        ax.set_xticks(range(len(labels)))
+        ax.set_xticklabels(labels, **kws)
 
     if show:
         plt.show()

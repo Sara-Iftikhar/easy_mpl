@@ -5,6 +5,7 @@ i. ridge
 .. currentmodule:: easy_mpl
 
 This file shows the usage of :func:`ridge` function.
+
 """
 
 import numpy as np

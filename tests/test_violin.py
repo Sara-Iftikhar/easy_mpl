@@ -105,6 +105,10 @@ class TestViolin(unittest.TestCase):
                            max_dots=[50, 60, 70, 50, 60, 70])
         return
 
+    def test_labels(self):
+        data = np.random.random((100, 3))
+        violin_plot(data, show=self.show, labels=['a', 'b', 'c'])
+        return
 
 if __name__ == "__main__":
     unittest.main()

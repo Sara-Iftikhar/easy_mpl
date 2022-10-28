@@ -15,6 +15,7 @@ def boxplot(
         line_color:Union[str, List[str]] = None,
         line_width = None,
         fill_color:Union[str, List[str]] = None,
+        labels:Union[str, List[str]] = None,
         ax:plt.Axes = None,
         show:bool = True,
         ax_kws:dict = None,
@@ -33,6 +34,8 @@ def boxplot(
         width of the box lines
     fill_color :
         name of color/colors/cmap to fill the boxes
+    labels : str/list (default=None)
+        used for ticklabels of x-axes
     ax : plt.Axes, optional (default=None)
         matploltib axes on which to draw the plot
     show : bool (default=show)
@@ -71,9 +74,12 @@ def boxplot(
     _box_kws = {
     }
 
-    xticklabels = None
-    if hasattr(data, "columns"):
-        xticklabels = data.columns
+    if labels is None and hasattr(data, "columns"):
+        labels = data.columns.tolist()
+    elif labels is not None:
+        assert isinstance(labels, list), f"labels should be list not {type(labels)}"
+        labels = labels.copy()
+
 
     if box_kws is None:
         box_kws = dict()
@@ -108,12 +114,13 @@ def boxplot(
         if hasattr(patch, 'set_linewidth') and line_width is not None:
             patch.set_linewidth(line_width[idx])
 
-    if xticklabels is not None:
+    if labels is not None:
         kws = dict()
-        if len(xticklabels)>7:
+        if len(labels)>7:
             kws['rotation'] = 90
-        ax.set_xticks(range(len(xticklabels) + 1))
-        ax.set_xticklabels(xticklabels.insert(0, ''), **kws)
+        ax.set_xticks(range(len(labels) + 1))
+        labels.insert(0, '')
+        ax.set_xticklabels(labels, **kws)
 
     if ax_kws:
         process_axis(ax, **ax_kws)

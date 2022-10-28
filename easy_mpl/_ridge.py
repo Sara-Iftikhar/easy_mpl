@@ -8,6 +8,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 from .utils import kde
+from .utils import is_dataframe
 from .utils import make_cols_from_cmap
 
 
@@ -35,6 +36,7 @@ def ridge(
         figsize: tuple = None,
         show=True,
         hspace: float = -0.7,
+        labels: Union[str, List[str]] = None,
         share_axes: bool = False,
         ax: plt.Axes = None,
 ) -> List[plt.Axes,]:
@@ -68,6 +70,8 @@ def ridge(
             whether to show the plot or not
         hspace : float, optional (default=-0.7)
             amount of distance between plots
+        labels : list/str (default=None
+            names for xticks
         share_axes : bool, optional (default=False)
             whether to draw all ridges on same axes or separate axes
         ax : plt.Axes, optional (default=None)
@@ -95,7 +99,6 @@ def ridge(
 
     """
 
-    names = None
     if isinstance(data, np.ndarray):
         if len(data) == data.size:
             data = data.reshape(-1, 1)
@@ -103,16 +106,18 @@ def ridge(
         data = [data[:, i] for i in range(data.shape[1])]
 
     elif hasattr(data, 'name') and hasattr(data, 'values'):
-        names = [data.name]
+        if labels is None:
+            labels = [data.name]
         data = [data.values]
-    elif hasattr(data, "columns") and hasattr(data, "values"):
-        names = data.columns.tolist()
+    elif is_dataframe(data):
+        if labels is None:
+            labels = data.columns.tolist()
         data = [data.values[:, i] for i in range(data.shape[1])]
 
     assert isinstance(data, list)
 
-    if names is None:
-        names =  [f"F{i}" for i in range(len(data))]
+    if labels is None:
+        labels =  [f"F{i}" for i in range(len(data))]
 
     n = len(data)
 
@@ -141,7 +146,7 @@ def ridge(
     dist_maxes = {}
     xs = {}
     ys = {}
-    for idx, col in enumerate(names):
+    for idx, col in enumerate(labels):
         ind, y = kde(data[idx], bw_method=bw_method, cut=cut)
         dist_maxes[col] = np.max(y)
         xs[col], ys[col] = ind, y

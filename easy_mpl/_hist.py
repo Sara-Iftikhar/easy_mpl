@@ -1,7 +1,7 @@
 
 __all__ = ["hist"]
 
-from typing import Union
+from typing import Union, List
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -12,6 +12,7 @@ from .utils import process_axis, is_dataframe, create_subplots
 def hist(
         x: Union[list, np.ndarray],
         hist_kws: dict = None,
+        labels:Union[str, List[str]] = None,
         share_axes:bool = True,
         grid: bool = True,
         ax: plt.Axes = None,
@@ -28,6 +29,8 @@ def hist(
             array like, numpy ndarray or pandas DataFrame, or list of arrays
         hist_kws : dict, optional
             any keyword arguments for `axes.hist`_
+        labels : list/str optional
+            names of the arrays, used for setting the legend
         share_axes : bool (default=True)
             whether to draw all the histograms on one axes or not?
         grid : bool, optional
@@ -78,7 +81,7 @@ def hist(
         X = x.values
         names = [x.name]
 
-    elif isinstance(x, (list, tuple)) and isinstance(x[0], (list, tuple)):
+    elif isinstance(x, (list, tuple)) and isinstance(x[0], (list, tuple, np.ndarray)):
         X = [x_ for x_ in x]
         names = [None]*len(X)
 
@@ -88,7 +91,12 @@ def hist(
     else:
         raise ValueError(f"unrecognized type of x {type(x)}")
 
-    #nplots = len(names)
+    if labels is not None:
+        if isinstance(labels, str):
+            labels = [labels]
+        assert len(labels) == len(names), f"{len(names)} does not match data"
+        names = labels
+
     if share_axes:
         nplots = 1
     else:

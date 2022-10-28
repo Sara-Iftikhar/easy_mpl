@@ -64,5 +64,11 @@ class TestBox(unittest.TestCase):
         assert isinstance(out, dict)
         return
 
+    def test_labels(self):
+        data = np.random.random((100, 3))
+        boxplot(data, show=self.show, labels=['a', 'b', 'c'])
+        return
+
+
 if __name__ == "__main__":
     unittest.main()
