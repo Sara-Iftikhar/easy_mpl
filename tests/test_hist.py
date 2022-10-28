@@ -15,6 +15,7 @@ from easy_mpl import hist
 
 
 class Testhist(unittest.TestCase):
+
     show = False
 
     def test_hist(self):
@@ -23,7 +24,7 @@ class Testhist(unittest.TestCase):
 
     def test_figsize(self):
         hist(np.random.random((10, 1)),
-        figsize=(10, 10),
+        subplots_kws={"figsize":(10, 10)},
         show=self.show)
         return
 
@@ -40,18 +41,45 @@ class Testhist(unittest.TestCase):
         return
 
     def test_df(self):
+        hist(pd.DataFrame(np.random.random((10, 2))), show=self.show)
+        return
+
+    def test_df_with_ax(self):
         _, ax = plt.subplots()
         hist(pd.DataFrame(np.random.random((10, 2))), ax=ax, show=self.show)
         return
 
+    def test_df_shareax_false(self):
+        hist(pd.DataFrame(np.random.random((10, 2))), share_axes=False, show=self.show)
+        return
+
     def test_np_2d(self):
+        hist(np.random.random((10, 2)), show=self.show)
+        return
+
+    def test_np_2d_with_ax(self):
         _, ax = plt.subplots()
         hist(np.random.random((10, 2)), ax=ax, show=self.show)
         return
 
+    def test_np_2d_sharex_false(self):
+        hist(np.random.random((10, 2)), share_axes=False, show=self.show)
+        return
+
     def test_list(self):
+        x = np.random.random((10, 2))
+        hist([x[:, 0].tolist(), x[:, 1].tolist()], show=self.show)
+        return
+
+    def test_list_with_ax(self):
         _, ax = plt.subplots()
-        hist(np.random.random((10, 2)).tolist(), ax=ax, show=self.show)
+        x = np.random.random((10, 2))
+        hist([x[:, 0].tolist(), x[:, 1].tolist()], ax=ax, show=self.show)
+        return
+
+    def test_list_sharex_false(self):
+        x = np.random.random((10, 2))
+        hist([x[:, 0].tolist(), x[:, 1].tolist()], share_axes=False, show=self.show)
         return
 
 

@@ -13,6 +13,8 @@ import pandas as pd
 from easy_mpl import boxplot
 from easy_mpl.utils import _rescale
 
+# sphinx_gallery_thumbnail_number = -3
+
 # %%
 
 f = "https://raw.githubusercontent.com/AtrCheema/AI4Water/master/ai4water/datasets/arg_busan.csv"
@@ -24,11 +26,14 @@ for col in df.columns:
 print(df.shape)
 
 # %%
+# To draw a boxplot we can provide a pandas DataFrame
 boxplot(df[cols])
 
+# We can also provide a number array
+boxplot(df[cols].values)
 
 # %%
-# basic boxplot with color pallete
+# The fill color can be specificed using any valid matplotlib cmap
 boxplot(df[cols], fill_color="GnBu", patch_artist=True)
 
 # %%

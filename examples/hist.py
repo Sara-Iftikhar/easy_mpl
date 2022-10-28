@@ -30,3 +30,6 @@ hist(data, hist_kws={'bins':100, 'color': 'green'})
 
 # %%
 hist(df[cols])
+
+# %%
+hist(df[cols], share_axes=False, subplots_kws={"sharex": "all"})

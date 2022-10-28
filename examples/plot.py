@@ -11,7 +11,7 @@ import numpy as np
 import pandas as pd
 from easy_mpl import plot
 
-# sphinx_gallery_thumbnail_number = 2
+# sphinx_gallery_thumbnail_number = 4
 
 #############################
 # A basic plot can be drawn just by providing a sequence of numbers to the ``plot``
