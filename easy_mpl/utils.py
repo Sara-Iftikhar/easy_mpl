@@ -376,6 +376,7 @@ def _rescale(y:np.ndarray, _min=0.0, _max=1.0)->np.ndarray:
 
     return y_std * (_max - _min) + _min
 
+
 def version_info():
     import matplotlib
 
@@ -390,3 +391,67 @@ def version_info():
         pass
 
     return version_info()
+
+
+def is_dataframe(obj)->bool:
+    if all([hasattr(obj, attr) for attr in ["columns", "index", "values", "shape"]]):
+        return True
+    return False
+
+
+def create_subplots(
+        naxes:int, ax:plt.Axes=None,
+        figsize=None,
+        **fig_kws
+)->Tuple:
+
+    if ax is None:
+
+        if naxes == 1:
+            fig = plt.figure(figsize=figsize)
+            ax = fig.add_subplot()
+
+        else:
+            nrows, ncols = get_layout(naxes)
+            plt.close('all')
+            fig, ax = plt.subplots(nrows, ncols, figsize=figsize, **fig_kws)
+            switch_off_redundant_axes(naxes, nrows * ncols, ax)
+
+    else:
+        fig = ax.get_figure()
+        if naxes == 1:
+            return fig, ax
+
+        nrows, ncols = get_layout(naxes)
+        plt.close('all')
+        fig, ax = plt.subplots(nrows, ncols, figsize=figsize, **fig_kws)
+        switch_off_redundant_axes(naxes, nrows*ncols, ax)
+
+    return fig, ax
+
+
+def switch_off_redundant_axes(naxes, nplots, axarr):
+
+    shape = axarr.shape
+    axarr = axarr.flatten()
+    if naxes != nplots:
+        for ax in axarr[naxes:]:
+            ax.set_visible(False)
+
+    return axarr.reshape(shape)
+
+
+def get_layout(naxes):
+    layouts = {1: (1, 1), 2: (1, 2), 3: (2, 2), 4: (2, 2)}
+    try:
+        nrows, ncols = layouts[naxes]
+    except KeyError:
+        k = 1
+        while k ** 2 < naxes:
+            k += 1
+
+        if (k - 1) * k >= naxes:
+            nrows, ncols = k, (k - 1)
+        else:
+            nrows, ncols =  k, k
+    return nrows, ncols

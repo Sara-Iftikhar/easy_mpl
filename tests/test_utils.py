@@ -3,8 +3,11 @@ import unittest
 
 import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt
 
+from easy_mpl.utils import create_subplots
 from easy_mpl.utils import to_1d_array, has_multi_cols
+
 
 class Testto1darray(unittest.TestCase):
 
@@ -56,6 +59,7 @@ class Testto1darray(unittest.TestCase):
         assert x.ndim == 1
         return
 
+
 class TestMisc(unittest.TestCase):
 
     def test_multi_col_1darray(self):
@@ -80,6 +84,77 @@ class TestMisc(unittest.TestCase):
 
     def test_multi_col_2d_array(self):
         assert has_multi_cols(np.array([1,2,3, 4]).reshape(-1, 2))
+        return
+
+
+class TestCreateSubplots(unittest.TestCase):
+
+    show = False
+
+    def test_1(self):
+        f, axes = create_subplots(1)
+        axes.plot([1, 2, 3])
+        if self.show:
+            plt.show()
+        return
+
+    def test_1subplot(self):
+
+        fig, ax = plt.subplots()
+        f, axes = create_subplots(1, ax=ax)
+        axes.plot([1, 2, 3])
+        if self.show:
+            plt.show()
+
+        return
+
+    def test_2subplots(self):
+
+        f, axes = create_subplots(2)
+        for ax in axes.flat:
+            ax.plot([1, 2, 3])
+        if self.show:
+            plt.show()
+
+        return
+
+    def test_3subplots(self):
+
+        f, axes = create_subplots(3)
+
+        for ax in axes.flat:
+            ax.plot([1, 2, 3])
+
+        if self.show:
+            plt.show()
+
+        return
+
+    def test_3subplots_sharex(self):
+
+        f, axes = create_subplots(3, sharex="all")
+
+        for ax in axes.flat:
+            ax.plot([1, 2, 3])
+
+        if self.show:
+            plt.show()
+
+        return
+
+    def test_5subplots(self):
+
+        fig, ax = plt.subplots()
+        f, axes = create_subplots(5, ax=ax)
+        axes = axes.flat
+
+        for i in range(5):
+            ax = axes[i]
+            ax.plot([1,2,3])
+
+        if self.show:
+            plt.show()
+
         return
 
 
