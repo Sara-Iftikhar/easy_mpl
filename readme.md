@@ -339,3 +339,46 @@ taylor_plot(observations=observations,
 <p float="left">
   <img src="/docs/source/imgs/taylor_plot.png"  />
 </p>
+
+## boxplot
+
+```python
+import pandas as pd
+from easy_mpl import boxplot
+from easy_mpl.utils import _rescale
+f = "https://raw.githubusercontent.com/AtrCheema/AI4Water/master/ai4water/datasets/arg_busan.csv"
+df = pd.read_csv(f, index_col='index').iloc[:, 0:10]
+for col in df.columns:
+    df[col] = _rescale(df[col])
+
+boxplot(df,
+        fill_color="GnBu",
+        notch=True,
+        patch_artist=True,
+        medianprops={"color": "black"})
+```
+<p float="left">
+  <img src="/docs/source/imgs/boxplot.png"  />
+</p>
+
+## violin_plot
+
+```python
+import matplotlib.pyplot as plt
+import pandas as pd
+from easy_mpl import violin_plot
+from easy_mpl.utils import _rescale
+
+f = "https://raw.githubusercontent.com/AtrCheema/AI4Water/master/ai4water/datasets/arg_busan.csv"
+df = pd.read_csv(f, index_col='index').iloc[:, 0:10]
+
+for col in df.columns:
+    df[col] = _rescale(df[col])
+
+axes = violin_plot(df, show=False)
+axes.set_facecolor("#fbf9f4")
+plt.show()
+```
+<p float="left">
+  <img src="/docs/source/imgs/boxplot.png"  />
+</p>
