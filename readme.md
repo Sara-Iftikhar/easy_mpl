@@ -2,6 +2,8 @@
 
 [![Downloads](https://pepy.tech/badge/easy-mpl)](https://pepy.tech/project/easy-mpl)
 [![PyPI version](https://badge.fury.io/py/easy_mpl.svg)](https://badge.fury.io/py/easy_mpl)
+![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/Sara-Iftikhar/easy_mpl)
+![GitHub last commit (branch)](https://img.shields.io/github/last-commit/Sara-Iftikhar/easy_mpl/master)
 
 Matplotlib is great library which offers huge flexibility due to its object oriented
 programming style. However, **most** of the times, we the users don't need that 
@@ -50,6 +52,11 @@ This package can be installed using pip from pypi using following command
 [lollipop_plot](#lollipop_plot)
 
 [circular_bar_plot](#circular_bar_plot)
+
+[boxplot](#boxplot)
+
+[violin_plot](#violin_plot)
+
 
 # Usage
 
@@ -191,7 +198,7 @@ import numpy as np
 from easy_mpl import ridge
 
 data = np.random.random((100, 3))
-ridge(data, show=False)
+ridge(data)
 ```
 <p float="left">
   <img src="/docs/source/imgs/ridge.png"  />
@@ -263,7 +270,7 @@ data_df = pd.DataFrame(np.column_stack((y1, y2, y3, y4, y5)),
 
 # using continuous values for categories
 parallel_coordinates(data_df, names=ynames,
-                     categories=np.random.randint(0, 5, N), show=False)
+                     categories=np.random.randint(0, 5, N))
 ```
 <p float="left">
   <img src="/docs/source/imgs/parallel_coordinates.png"  />
@@ -282,7 +289,7 @@ df = pd.DataFrame.from_dict(
      'automn': {'a': -0.1, 'b': 0.3, 'c': 0.15, 'd': 0.24, 'e': 0.18, 'f': 0.2}})
 spider_plot(df, xtick_kws={'size': 13}, frame="polygon",
            color=['b', 'r', 'g', 'm'],
-            fill_color=['b', 'r', 'g', 'm'], show=False)
+            fill_color=['b', 'r', 'g', 'm'])
 ```
 <p float="left">
   <img src="/docs/source/imgs/spider_plot.png"  />
@@ -380,5 +387,5 @@ axes.set_facecolor("#fbf9f4")
 plt.show()
 ```
 <p float="left">
-  <img src="/docs/source/imgs/boxplot.png"  />
+  <img src="/docs/source/imgs/violin.png"  />
 </p>

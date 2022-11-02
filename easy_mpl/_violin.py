@@ -61,15 +61,15 @@ def violin_plot(
     datapoints_colors
         color for the datapoints/markers
     scatter_kws : dict (default=None)
-        keyword arguments for axes.scatter. This will only be valid if
+        keyword arguments for axes.scatter_. This will only be valid if
         ``show_datapoints`` is True.
     show_boxplot : bool (default=False)
         whether to show the boxplot inside the voilin or not?
     box_kws : dict (default=None)
         keyword arguments for axes.boxplot. This will only be valid if
         ``show_boxplot`` is True.
-    label_violin : bool
-        whether to label the violins or not
+    label_violin : bool (default=False)
+        whether to label mean value of each violin or not
     index_method : str (default="jitter")
         Only valid if `X` is not given. The method to generate indices for x-axis.
         See `this <https://stackoverflow.com/a/33965400/5982232>_` for context
@@ -103,6 +103,9 @@ def violin_plot(
     >>> violin_plot(data, show_datapoints=False, show_boxplot=True)
 
     See :ref:`sphx_glr_auto_examples_violin.py` for more examples
+
+    .. _axes.scatter:
+        https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.scatter.html
 
     .. _axes.violin:
         https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.violin.html
@@ -246,10 +249,14 @@ def violin_plot(
     if label_violin:
         # Add mean value labels ------------------------------------------
         means = [y.mean() for y in Y]
+        _mean_kws = {
+            's': 12,
+            'color': '#850e00', # dark red
+            'zorder': 3
+        }
         for i, mean in enumerate(means):
             # Add dot representing the mean
-            ax.scatter(i, mean, s=250, color="#850e00",  # dark red
-                       zorder=3)
+            ax.scatter(i, mean, **_mean_kws)
 
             # Add line conecting mean value and its label
             ax.plot([i, i + 0.25], [mean, mean], ls="dashdot", color="black", zorder=3)
