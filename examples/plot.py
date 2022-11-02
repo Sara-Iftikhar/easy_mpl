@@ -73,7 +73,7 @@ plot(np.arange(10), '--', linewidth=1., title="linewidth")
 # We can also provide three arrays to ``plot`` function.
 
 x = np.random.random(100)
-plot(x, x, x, label="3array", title="3arrays")
+plot(x, x, x, title="3 arrays")
 
 #############################
 # In such a case, the fourth argument is interpreted as marker style.
@@ -96,12 +96,12 @@ x = pd.DataFrame(np.random.random(100), columns=["first_col"],
 plot(x, '.', title="df_1col")
 
 #############################
-# if we provide pandas DataFrame with two columns, both columns are plotted.
+# If we provide pandas DataFrame with two columns, both columns are plotted.
 
-x = pd.DataFrame(np.random.random((100, 2)),
+x = pd.DataFrame(np.random.random((20, 2)),
                  columns=[f"col_{i}" for i in range(2)],
-                 index=pd.date_range("20100101", periods=100, freq="D"))
-plot(x, '-', title="df_ncol")
+                 index=pd.date_range("20100101", periods=20, freq="D"))
+plot(x, '-o', color=np.array([35, 81, 53]) / 256.0, title="df 2cols")
 
 #############################
 # lw

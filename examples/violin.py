@@ -6,8 +6,9 @@ q. violin
 
 This file shows the usage of :func:`violin_plot` function.
 """
-import matplotlib.pyplot as plt
+import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt
 
 from easy_mpl import violin_plot
 from easy_mpl.utils import _rescale
@@ -20,6 +21,7 @@ cols = ['air_temp_c', 'wat_temp_c', 'sal_psu', 'tide_cm', 'rel_hum', 'pcp12_mm']
 for col in df.columns:
     df[col] = _rescale(df[col].values)
 
+# %%
 
 violin_plot(df[cols])
 
@@ -31,5 +33,20 @@ plt.show()
 
 # %%
 axes = violin_plot(df[cols], show=False, cut=0.1)
+axes.set_facecolor("#fbf9f4")
+plt.show()
+
+#%%
+axes = violin_plot(
+    df[cols], show=False, cut=0.1, fill=False,
+    scatter_kws={"s": 12, 'alpha': 0.5, 'edgecolors': None, 'linewidths': 0.2},
+    datapoints_colors=['seagreen',
+                       np.array([237, 187, 147]) / 255,
+                      np.array([197, 194, 218]) / 255,
+                      'darkcyan',
+                      'skyblue',
+                      "plum",
+                       ]
+                   )
 axes.set_facecolor("#fbf9f4")
 plt.show()
