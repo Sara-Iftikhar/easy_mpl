@@ -1,7 +1,14 @@
 """
-===========
-taylor plot
-===========
+===============
+o. taylor plot
+===============
+
+.. currentmodule:: easy_mpl
+
+This file shows the usage of :func:`taylor_plot` function.
+
+A Taylor plot can be used to show statistical summary of one or more measurements/models.
+
 """
 
 import numpy as np
@@ -69,6 +76,7 @@ taylor_plot(observations=observations,
             title="mutiple subplots")
 
 #############################
+# using statistics instead of arrays
 
 observations = {'std': 4.916}
 predictions = {   # pbias is optional

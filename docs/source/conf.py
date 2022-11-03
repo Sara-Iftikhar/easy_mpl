@@ -12,6 +12,7 @@
 #
 import os
 import sys
+from sphinx_gallery.sorting import ExampleTitleSortKey, ExplicitOrder
 
 sys.path.insert(0, os.path.abspath('../..'))
 
@@ -22,7 +23,7 @@ copyright = '2022, Ather Abbas'
 author = 'Ather Abbas, Sara Iftikhar'
 
 # The full version, including alpha/beta/rc tags
-release = "0.20.4"
+release = "0.21.0"
 
 
 # -- General configuration ---------------------------------------------------
@@ -56,7 +57,15 @@ templates_path = ['_templates']
 # This pattern also affects html_static_path and html_extra_path.
 exclude_patterns = []
 
-
+# intersphinx configuration
+intersphinx_mapping = {
+    'python': ('https://docs.python.org/{.major}'.format(
+        sys.version_info), None),
+    'numpy': ('https://docs.scipy.org/doc/numpy/', None),
+    'scipy': ('https://docs.scipy.org/doc/scipy/reference', None),
+    'matplotlib': ('https://matplotlib.org/', None),
+    'pandas': ('https://pandas.pydata.org/pandas-docs/stable/', None),
+}
 
 sphinx_gallery_conf = {
     'backreferences_dir': 'gen_modules/backreferences',
@@ -82,7 +91,25 @@ sphinx_gallery_conf = {
     # each code block
     'capture_repr': ('_repr_html_', '__repr__'),
     'matplotlib_animations': True,
-    'image_srcset': ["2x"]
+    'image_srcset': ["2x"],
+
+    'within_subsection_order':  ExampleTitleSortKey,
+        # '../../examples/plot',
+        # '../../examples/scatter',
+        # '../../examples/imshow',
+        # '../../examples/bar_chart',
+        # '../../examples/hist',
+        # '../../examples/lollipop_plot',
+        # '../../examples/dumbell_plot',
+        # '../../examples/regplot',
+        # '../../examples/ridge',
+        # '../../examples/pie',
+        # '../../examples/contour',
+        # '../../examples/circular_bar_plot',
+        # '../../examples/parallel_coordinates',
+        # '../../examples/spider_plot',
+        # '../../examples/taylor_plot',
+#                                       ]),
 }
 
 # -- Options for HTML output -------------------------------------------------

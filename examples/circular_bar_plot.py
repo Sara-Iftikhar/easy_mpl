@@ -1,7 +1,10 @@
 """
-==================
-circular_bar_plot
-==================
+=====================
+l. circular_bar_plot
+=====================
+.. currentmodule:: easy_mpl
+
+This file shows the usage of :func:`circular_bar_plot` function.
 """
 
 import numpy as np
@@ -14,27 +17,27 @@ data = np.random.random(50, )
 circular_bar_plot(data)
 
 ######################################
-
 # with names
+
 names = [f"F{i}" for i in range(len(data))]
 circular_bar_plot(data, names)
 
 ######################################
-
 # sort values
+
 circular_bar_plot(data, names, sort=True, text_kws={"fontsize": 16})
 
 ######################################
-
 # custom color map
+
 circular_bar_plot(data, names, color='viridis')
 
 ######################################
-
 # custom min and max range
+
 circular_bar_plot(data, names, min_max_range=(1, 10), label_padding=1)
 
 ######################################
-
 # custom label format
+
 circular_bar_plot(data, names, label_format='{} {:.4f}')

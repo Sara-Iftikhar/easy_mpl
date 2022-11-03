@@ -56,6 +56,10 @@ ridge
 .. automodule:: easy_mpl
    :members: ridge
 
+boxplot
+===========
+.. automodule:: easy_mpl
+   :members: boxplot
 
 parallel_coordinates
 ====================
@@ -79,6 +83,17 @@ circular_bar_plot
 =================
 .. automodule:: easy_mpl
    :members: circular_bar_plot
+
+
+spider_plot
+===========
+.. automodule:: easy_mpl
+   :members: spider_plot
+
+violin_plot
+===========
+.. automodule:: easy_mpl
+   :members: violin_plot
 
 
 process_axes

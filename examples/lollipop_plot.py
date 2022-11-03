@@ -1,7 +1,10 @@
 """
-==============
-lollipop_plot
-==============
+=================
+f. lollipop_plot
+=================
+.. currentmodule:: easy_mpl
+
+This file shows the usage of :func:`lollipop_plot` function.
 """
 
 import numpy as np

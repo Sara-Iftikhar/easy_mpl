@@ -1,8 +1,10 @@
 """
-=======
-imshow
-=======
-This notebook shows the usage of ``imshow`` function in easy_mpl library.
+==========
+c. imshow
+==========
+.. currentmodule:: easy_mpl
+
+This file shows the usage of :func:`imshow` function.
 
 ``imshow`` can be used to draw heatmap of a two dimensional array/data.
 """
@@ -19,13 +21,32 @@ imshow(x, annotate=True)
 
 #############################
 # show colorbar
+
 imshow(x, colorbar=True)
 
 #%%
 # Annotation
+
 data = np.random.random((4, 10))
 
 imshow(data, cmap="YlGn",
        xticklabels=[f"Feature {i}" for i in range(data.shape[1])],
        white_grid=True, annotate=True,
+       colorbar=True)
+
+# %%
+# we can specify color of text in each box of imshow for annotation
+# For this, ``textcolors`` must a numpy array of shape same as that of data.
+# Each value in this numpy array will define color for corresponding box annotation.
+
+data = np.arange(9).reshape((3,3))
+
+imshow(data, cmap="Blues",
+       annotate=True,
+       annotate_kws={
+              "textcolors": np.array([['black', 'black', 'black'],
+                                      ['black', 'black', 'black'],
+                                     ['white', 'white', 'white']]),
+              'fontsize': 14
+       },
        colorbar=True)

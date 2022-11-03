@@ -1,93 +1,20 @@
 
+from typing import Union, Any, Optional, Tuple
 from collections.abc import KeysView, ValuesView
 
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
-import pandas as pd
+from matplotlib.path import Path
+from matplotlib.spines import Spine
+from matplotlib.transforms import Affine2D
+from matplotlib.projections.polar import PolarAxes
+from matplotlib.patches import Circle, RegularPolygon
+from matplotlib.projections import register_projection
+
 
 BAR_CMAPS = ['Blues', 'BuGn', 'gist_earth_r',
              'GnBu', 'PuBu', 'PuBuGn', 'summer_r']
-
-# colormaps for ridge plot
-RIDGE_CMAPS = [
-    "afmhot", "afmhot_r", "Blues", "bone",
-    "BrBG", "BuGn", "coolwarm", "cubehelix",
-    "gist_earth", "GnBu", "Greens", "magma",
-    "ocean", "Pastel1", "pink", "PuBu", "PuBuGn",
-    "RdBu", "Spectral",
-]
-
-regplot_combs = [
-    ['cadetblue', 'slateblue', 'darkslateblue'],
-    ['cadetblue', 'mediumblue', 'mediumblue'],
-    ['cornflowerblue', 'dodgerblue', 'darkblue'],
-    ['cornflowerblue', 'dodgerblue', 'steelblue'],
-    ['cornflowerblue', 'mediumblue', 'dodgerblue'],
-    ['cornflowerblue', 'steelblue', 'mediumblue'],
-    ['darkslateblue', 'aliceblue', 'mediumblue'],
-    ['darkslateblue', 'blue', 'royalblue'],
-    ['darkslateblue', 'blueviolet', 'royalblue'],
-    ['darkslateblue', 'darkblue', 'midnightblue'],
-    ['darkslateblue', 'mediumblue', 'darkslateblue'],
-    ['darkslateblue', 'midnightblue', 'mediumblue'],
-    ['seagreen', 'darkslateblue', 'cadetblue'],
-    ['cadetblue', 'darkblue', 'midnightblue'],
-    ['cadetblue', 'deepskyblue', 'cadetblue']
-]
-
-
-def _regplot_paras(x, y, ci:int=None):
-    """prepares parameters for regplot"""
-    grid = np.linspace(np.min(x), np.max(x), 100)
-    x = np.c_[np.ones(len(x)), x]
-    grid = np.c_[np.ones(len(grid)), grid]
-    yhat = grid.dot(reg_func(x, y))
-
-    err_bands = None
-    if ci:
-        boots = bootdist(reg_func, args=[x, y], n_boot=1000).T
-
-        yhat_boots = grid.dot(boots).T
-        err_bands = _ci(yhat_boots, ci, axis=0)
-
-    return grid, yhat, err_bands
-
-
-def _regplot(x, y, ax, ci=None, line_color=None, fill_color=None):
-
-    grid, yhat, err_bands = _regplot_paras(x, y, ci)
-
-    ax.plot(grid[:, 1], yhat, color=line_color)
-
-    if ci:
-        ax.fill_between(grid[:, 1], *err_bands,
-                        facecolor=fill_color,
-                        alpha=.15)
-    return ax
-
-
-def _ci(a, which=95, axis=None):
-    """Return a percentile range from an array of values."""
-    p = 50 - which / 2, 50 + which / 2
-    return np.nanpercentile(a, p, axis)
-
-
-def reg_func(_x, _y):
-    return np.linalg.pinv(_x).dot(_y)
-
-
-def bootdist(f, args, n_boot=1000, **func_kwargs):
-
-    n = len(args[0])
-    integers = np.random.randint
-    boot_dist = []
-    for i in range(int(n_boot)):
-        resampler = integers(0, n, n, dtype=np.intp)  # intp is indexing dtype
-        sample = [a.take(resampler, axis=0) for a in args]
-        boot_dist.append(f(*sample, **func_kwargs))
-
-    return np.array(boot_dist)
 
 
 def process_axis(
@@ -273,24 +200,39 @@ def to_1d_array(array_like) -> np.ndarray:
 
 def has_multi_cols(data)->bool:
     """returns True if data contains multiple columns"""
-    if isinstance(data, (pd.DataFrame, np.ndarray)):
+    if hasattr(data, "ndim") and hasattr(data, "shape"):
         if data.ndim == 2 and data.shape[1]>1:
             return True
     return False
 
 
-def kde(y):
+def kde(
+        y,
+        bw_method = "scott",
+        bins:int = 1000,
+        cut:Union[float, Tuple[float]] = 0.5,
+)->Tuple[Union[np.ndarray, Tuple[np.ndarray, Optional[float]]], Any]:
+    """Generate Kernel Density Estimate plot using Gaussian kernels."""
+
     # don't want to make whole easy_mpl dependent upon scipy
     from scipy.stats import gaussian_kde
 
-    """Generate Kernel Density Estimate plot using Gaussian kernels."""
-    gkde = gaussian_kde(y, bw_method='scott')
+    if isinstance(cut, float):
+        cut = (cut, cut)
+
+    y = np.array(y)
+    if 'int' not in y.dtype.name:  # 'object' types have problem in removing nans
+        y = np.array(y, dtype=np.float32)
+
+    assert len(y) == y.size
+    y = y[~np.isnan(y)]
+    gkde = gaussian_kde(y.reshape(-1,), bw_method=bw_method)
 
     sample_range = np.nanmax(y) - np.nanmin(y)
     ind = np.linspace(
-        np.nanmin(y) - 0.5 * sample_range,
-        np.nanmax(y) + 0.5 * sample_range,
-        1000,
+        np.nanmin(y) - cut[0] * sample_range,
+        np.nanmax(y) + cut[1] * sample_range,
+        bins,
     )
 
     return ind, gkde.evaluate(ind)
@@ -299,9 +241,10 @@ def kde(y):
 def annotate_imshow(
         im,
         data:np.ndarray=None,
-        annotate_kws=None,
-        textcolors=("black", "white"),
+        textcolors:Union[tuple, np.ndarray]=("black", "white"),
         threshold=None,
+        fmt = '%.2f',
+        **text_kws
 ):
     """annotates imshow
     https://matplotlib.org/stable/gallery/images_contours_and_fields/image_annotated_heatmap.html
@@ -310,21 +253,205 @@ def annotate_imshow(
     if data is None:
         data = im.get_array()
 
-    if threshold is not None:
-        threshold = im.norm(threshold)
+    use_threshold = True
+    if isinstance(textcolors, np.ndarray) and textcolors.shape == data.shape:
+        assert threshold is None, f"if textcolors is given as array then threshold should be None"
+        use_threshold = False
     else:
-        threshold = im.norm(data.max()) / 2
-
-    annotate_kws = annotate_kws or {"ha": "center", "va": "center"}
-    if 'fmt' in annotate_kws:
-        fmt = annotate_kws.pop('fmt')
-    else:
-        fmt = '%.2f'
+        if threshold is not None:
+            threshold = im.norm(threshold)
+        else:
+            threshold = im.norm(data.max()) / 2
 
     for i in range(data.shape[0]):
         for j in range(data.shape[1]):
             s = fmt % float(data[i, j])
-            _ = im.axes.text(j, i, s,
+            if use_threshold:
+                _ = im.axes.text(j, i, s,
                         color=textcolors[int(im.norm(data[i, j]) > threshold)],
-                        **annotate_kws)
+                        **text_kws)
+            else:
+                _ = im.axes.text(j, i, s,
+                        color=textcolors[i, j],
+                        **text_kws)
     return
+
+
+def register_projections(num_vars, frame="polygon", grids="polygon"):
+    """
+    Create a radar chart with `num_vars` axes.
+
+    This function creates a RadarAxes projection and registers it.
+
+    Parameters
+    ----------
+    num_vars : int
+        Number of variables for radar chart.
+    frame : {'circle', 'polygon'}
+        Shape of frame surrounding axes.
+    grids: {"circle", "polygon"}
+
+    """
+    # calculate evenly-spaced axis angles
+    theta = np.linspace(0, 2*np.pi, num_vars, endpoint=False)
+
+    class RadarTransform(PolarAxes.PolarTransform):
+
+        def transform_path_non_affine(self, path):
+            # Paths with non-unit interpolation steps correspond to gridlines,
+            # in which case we force interpolation (to defeat PolarTransform's
+            # autoconversion to circular arcs).
+            if path._interpolation_steps > 1:
+                path = path.interpolated(num_vars)
+            return Path(self.transform(path.vertices), path.codes)
+
+    class RadarAxes(PolarAxes):
+
+        name = 'radar'
+        # use 1 line segment to connect specified points
+        RESOLUTION = 1
+        PolarTransform = RadarTransform
+
+        def __init__(self, *args, **kwargs):
+            super().__init__(*args, **kwargs)
+            # rotate plot such that the first axis is at the top
+            self.set_theta_zero_location('N')
+
+        def fill(self, *args, closed=True, **kwargs):
+            """Override fill so that line is closed by default"""
+            return super().fill(closed=closed, *args, **kwargs)
+
+        def plot(self, *args, **kwargs):
+            """Override plot so that line is closed by default"""
+            lines = super().plot(*args, **kwargs)
+            for line in lines:
+                self._close_line(line)
+
+        def _close_line(self, line):
+            x, y = line.get_data()
+            # FIXME: markers at x[0], y[0] get doubled-up
+            if x[0] != x[-1]:
+                x = np.append(x, x[0])
+                y = np.append(y, y[0])
+                line.set_data(x, y)
+
+        def set_varlabels(self, labels):
+            self.set_thetagrids(np.degrees(theta), labels)
+
+        def _gen_axes_patch(self):
+            # The Axes patch must be centered at (0.5, 0.5) and of radius 0.5
+            # in axes coordinates.
+            if frame == 'circle':
+                pass #return Circle((0.5, 0.5), 0.5)
+            elif frame == 'polygon':
+                return RegularPolygon((0.5, 0.5), num_vars,
+                                      radius=.5, edgecolor="k")
+            else:
+                raise ValueError("Unknown value for 'frame': %s" % frame)
+
+        def _gen_axes_spines(self):
+            if frame == 'circle':
+                return super()._gen_axes_spines()
+            elif frame == 'polygon':
+                # spine_type must be 'left'/'right'/'top'/'bottom'/'circle'.
+                spine = Spine(axes=self,
+                              spine_type='circle',
+                              path=Path.unit_regular_polygon(num_vars))
+                # unit_regular_polygon gives a polygon of radius 1 centered at
+                # (0, 0) but we want a polygon of radius 0.5 centered at (0.5,
+                # 0.5) in axes coordinates.
+                spine.set_transform(Affine2D().scale(.5).translate(.5, .5)
+                                    + self.transAxes)
+                return {'polar': spine}
+            else:
+                raise ValueError("Unknown value for 'frame': %s" % frame)
+
+    register_projection(RadarAxes)
+    return theta
+
+
+def _rescale(y:np.ndarray, _min=0.0, _max=1.0)->np.ndarray:
+    """rescales the y array between _min and _max"""
+    y_std = (y - np.min(y, axis=0)) / (np.max(y, axis=0) - np.min(y, axis=0))
+
+    return y_std * (_max - _min) + _min
+
+
+def version_info():
+    import matplotlib
+
+    info = dict()
+    info['matplotlib'] = matplotlib._version
+    info['numpy'] = np.__version__
+
+    try:
+        import pandas as pd
+        info['pandas'] = pd.__version__
+    except Exception:
+        pass
+
+    return version_info()
+
+
+def is_dataframe(obj)->bool:
+    if all([hasattr(obj, attr) for attr in ["columns", "index", "values", "shape"]]):
+        return True
+    return False
+
+
+def create_subplots(
+        naxes:int, ax:plt.Axes=None,
+        figsize=None,
+        **fig_kws
+)->Tuple:
+
+    if ax is None:
+
+        if naxes == 1:
+            fig = plt.figure(figsize=figsize)
+            ax = fig.add_subplot()
+
+        else:
+            nrows, ncols = get_layout(naxes)
+            plt.close('all')
+            fig, ax = plt.subplots(nrows, ncols, figsize=figsize, **fig_kws)
+            switch_off_redundant_axes(naxes, nrows * ncols, ax)
+
+    else:
+        fig = ax.get_figure()
+        if naxes == 1:
+            return fig, ax
+
+        nrows, ncols = get_layout(naxes)
+        plt.close('all')
+        fig, ax = plt.subplots(nrows, ncols, figsize=figsize, **fig_kws)
+        switch_off_redundant_axes(naxes, nrows*ncols, ax)
+
+    return fig, ax
+
+
+def switch_off_redundant_axes(naxes, nplots, axarr):
+
+    shape = axarr.shape
+    axarr = axarr.flatten()
+    if naxes != nplots:
+        for ax in axarr[naxes:]:
+            ax.set_visible(False)
+
+    return axarr.reshape(shape)
+
+
+def get_layout(naxes):
+    layouts = {1: (1, 1), 2: (1, 2), 3: (2, 2), 4: (2, 2)}
+    try:
+        nrows, ncols = layouts[naxes]
+    except KeyError:
+        k = 1
+        while k ** 2 < naxes:
+            k += 1
+
+        if (k - 1) * k >= naxes:
+            nrows, ncols = k, (k - 1)
+        else:
+            nrows, ncols =  k, k
+    return nrows, ncols

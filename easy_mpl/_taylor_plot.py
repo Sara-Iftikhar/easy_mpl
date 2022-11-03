@@ -101,7 +101,9 @@ class TaylorDiagram(object):
                  label='_',
                  srange=(0, 1.5),
                  extend=False,
-                 axis_fontdict: dict = None):
+                 axis_fontdict: dict = None,
+                 name:str = ''
+                 ):
         """
         Set up Taylor diagram axes, i.e. single quadrant polar
         plot, using `mpl_toolkits.axisartist.floating_axes`.
@@ -123,6 +125,9 @@ class TaylorDiagram(object):
 
         if hasattr(self.refstd, 'item'):  # if true is series/dataframe
             self.refstd = self.refstd.item()
+
+        assert not np.isnan(self.refstd), f"""
+        stdandard deviation of {name} Observations is nan."""
 
         tr = PolarAxes.PolarTransform()
 
@@ -340,8 +345,6 @@ def taylor_plot(
 
             - extend : bool, default False, if True, will plot negative correlation
 
-            - save : bool, if True, will save the plot
-
             - figsize : tuple defining figsize, default is (11,8).
 
             - show : bool whether to show the plot or not
@@ -446,6 +449,8 @@ def taylor_plot(
         ...             leg_kws={'facecolor': 'white',
         ...                 'edgecolor': 'black','bbox_to_anchor':(1.1, 1.05)})
 
+    See :ref:`sphx_glr_auto_examples_taylor_plot.py` for more examples
+
     .. _Taylor:
         https://doi.org/10.1029/2000JD900719 
 
@@ -494,12 +499,9 @@ def taylor_plot(
     intervals = kwargs.get('intervals', [])
     colors = kwargs.get('colors', COLORS)
     extend = kwargs.get('extend', False)
-    save = kwargs.get('save', True)
-    name = kwargs.get('name', 'taylor.png')
     plot_bias = kwargs.get('plot_bias', False)
     title = kwargs.get('title', "")
     figsize = kwargs.get("figsize", figsizes[n_plots])  # widht and heigt respectively
-    bbox_inches = kwargs.get("bbox_inches", None)
     sim_marker = kwargs.get("sim_marker", None)
     true_label = kwargs.get("true_label", "Reference")
     show = kwargs.get("show", True)
@@ -579,7 +581,9 @@ def taylor_plot(
                             rect=axis_locs[season],
                             label=true_label,
                             axis_fontdict=axis_fontdict,
-                            extend=extend)
+                            extend=extend,
+                            name=season,
+                            )
 
         dia.samplePoints[0].set_color(ref_color)  # Mark reference point as a red star
 
@@ -651,9 +655,6 @@ def taylor_plot(
                **leg_kws)
 
     fig.tight_layout()
-
-    if save:
-        plt.savefig(name, dpi=400, bbox_inches=bbox_inches)
 
     if show:
         plt.show()

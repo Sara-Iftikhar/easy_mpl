@@ -1,0 +1,233 @@
+
+__all__ = ["regplot"]
+
+import random
+from typing import Union
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+
+REGC_COMBS = [
+    ['cadetblue', 'slateblue', 'darkslateblue'],
+    ['cadetblue', 'mediumblue', 'mediumblue'],
+    ['cornflowerblue', 'dodgerblue', 'darkblue'],
+    ['cornflowerblue', 'dodgerblue', 'steelblue'],
+    ['cornflowerblue', 'mediumblue', 'dodgerblue'],
+    ['cornflowerblue', 'steelblue', 'mediumblue'],
+    ['darkslateblue', 'aliceblue', 'mediumblue'],
+    ['darkslateblue', 'blue', 'royalblue'],
+    ['darkslateblue', 'blueviolet', 'royalblue'],
+    ['darkslateblue', 'darkblue', 'midnightblue'],
+    ['darkslateblue', 'mediumblue', 'darkslateblue'],
+    ['darkslateblue', 'midnightblue', 'mediumblue'],
+    ['seagreen', 'darkslateblue', 'cadetblue'],
+    ['cadetblue', 'darkblue', 'midnightblue'],
+    ['cadetblue', 'deepskyblue', 'cadetblue']
+]
+
+
+def regplot(
+        x: Union[np.ndarray,  list],
+        y: Union[np.ndarray, list],
+        title: str = None,
+        annotation_key: str = None,
+        annotation_val: float = None,
+        line_style='-',
+        line_color=None,
+        line_kws: dict = None,
+        marker_size: int = 20,
+        marker_color=None,
+        scatter_kws: dict = None,
+        ci: Union[int, None] = 95,
+        fill_color=None,
+        figsize: tuple = None,
+        xlabel: str = 'Observed',
+        ylabel: str = 'Predicted',
+        show: bool = True,
+        ax: plt.Axes = None
+) -> plt.Axes:
+    """
+    Regpression plot with regression line and confidence interval
+
+    Parameters
+    ----------
+        x : array like, optional
+            the 'x' value. It can be numpy array, pandas DataFram/Series or a list
+        y : array like, optional
+             It can be numpy array, pandas DataFram/Series or a list
+        ci : optional
+            confidence interval. Set to None if not required.
+        show : bool, optional
+            whether to show the plot or not
+        annotation_key : str, optional
+            The name of the value to annotate with.
+        annotation_val : float, int, optional
+            The value to annotate with.
+        marker_size : int, optional
+            size of marker
+        marker_color: optional
+            color of marker
+        scatter_kws : dict
+            keyword arguments for ax.scatter
+        line_style : str (default='-')
+            line style will be used as ax.plot(x,y,line_style)
+        line_color : optional
+            color of line
+        line_kws : dict
+            keyword arguments for axes.plot for line plot
+        fill_color : optional
+            only relevent if ci is not None.
+        figsize : tuple, optional
+        title : str, optional
+            name to be used for title
+        xlabel : str, optional
+        ylabel : str, optional
+        ax : plt.Axes, optional
+            matplotlib axes to draw plot on. If not given, current avaialable
+            will be used.
+
+    Returns
+    --------
+    matplotlib.pyplot.Axes
+        the matplotlib Axes on which regression plot is drawn.
+
+    Examples
+    --------
+        >>> import numpy as np
+        >>> from easy_mpl import regplot
+        >>> x_, y_ = np.random.random(100), np.random.random(100)
+        >>> regplot(x_, y_)
+
+    See :ref:`sphx_glr_auto_examples_reg_plot.py` for more examples
+
+    Note
+    ----
+        If nans are present in x or y, they will be removed.
+
+    """
+    x = np.array(x).reshape(-1,)
+    y = np.array(y).reshape(-1,)
+
+    # removing nans based upon nans in x
+    x_nan_idx = np.isnan(x)
+    if x_nan_idx.sum() > 0:
+        x = x[~x_nan_idx]
+        y = y[~x_nan_idx]
+
+    # removing nans based upon nans in y
+    y_nan_idx = np.isnan(y)
+    if y_nan_idx.sum() > 0:
+        x = x[~y_nan_idx]
+        y = y[~y_nan_idx]
+
+    assert len(x) > 1, f"""
+    length of x is smaller than 1 {x} 
+    {len(y_nan_idx)} nans found in y and   {len(x_nan_idx)} nans found in x"""
+    assert len(x) == len(y), f"x and y must be same length. Got {len(x)} and {len(y)}"
+
+    mc, lc, fc = random.choice(REGC_COMBS)
+    _metric_names = {'r2': '$R^2$'}
+
+    if ax is None:
+        _, ax = plt.subplots(figsize=figsize or (6, 5))
+
+    if scatter_kws is None:
+        scatter_kws = dict()
+
+    if marker_color is None:
+        marker_color = mc
+
+    ax.scatter(x, y, c=marker_color,
+               s=marker_size, **scatter_kws)  # set style options
+
+    if annotation_key is not None:
+        assert annotation_val is not None
+
+        plt.annotate(f'{annotation_key}: {round(annotation_val, 3)}',
+                     xy=(0.3, 0.95),
+                     xycoords='axes fraction',
+                     horizontalalignment='right', verticalalignment='top',
+                     fontsize=16)
+
+    if line_kws is None:
+        line_kws = dict()
+
+    if line_color is None:
+        line_color = lc
+
+    if fill_color is None:
+        fill_color = fc
+
+    _regplot(x,
+             y,
+             ax=ax,
+             ci=ci,
+             line_style=line_style,
+             line_color=line_color,
+             fill_color=fill_color,
+             **line_kws)
+
+    plt.xlabel(xlabel, fontsize=14)
+    plt.ylabel(ylabel, fontsize=14)
+    plt.title(title, fontsize=26)
+
+    if show:
+        plt.show()
+
+    return ax
+
+
+def bootdist(f, args, n_boot=1000, **func_kwargs):
+
+    n = len(args[0])
+    integers = np.random.randint
+    boot_dist = []
+    for i in range(int(n_boot)):
+        resampler = integers(0, n, n, dtype=np.intp)  # intp is indexing dtype
+        sample = [a.take(resampler, axis=0) for a in args]
+        boot_dist.append(f(*sample, **func_kwargs))
+
+    return np.array(boot_dist)
+
+
+def _regplot_paras(x, y, ci: int = None):
+    """prepares parameters for regplot"""
+    grid = np.linspace(np.min(x), np.max(x), 100)
+    x = np.c_[np.ones(len(x)), x]
+    grid = np.c_[np.ones(len(grid)), grid]
+    yhat = grid.dot(reg_func(x, y))
+
+    err_bands = None
+    if ci:
+        boots = bootdist(reg_func, args=[x, y], n_boot=1000).T
+
+        yhat_boots = grid.dot(boots).T
+        err_bands = _ci(yhat_boots, ci, axis=0)
+
+    return grid, yhat, err_bands
+
+
+def _ci(a, which=95, axis=None):
+    """Return a percentile range from an array of values."""
+    p = 50 - which / 2, 50 + which / 2
+    return np.nanpercentile(a, p, axis)
+
+
+def reg_func(_x, _y):
+    return np.linalg.pinv(_x).dot(_y)
+
+
+def _regplot(x, y, ax, ci=None,
+             line_style="-",
+             line_color=None, fill_color=None, **kwargs):
+
+    grid, yhat, err_bands = _regplot_paras(x, y, ci)
+
+    ax.plot(grid[:, 1], yhat, line_style, color=line_color, **kwargs)
+
+    if ci:
+        ax.fill_between(grid[:, 1], *err_bands,
+                        facecolor=fill_color,
+                        alpha=.15)
+    return ax

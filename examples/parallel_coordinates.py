@@ -1,7 +1,10 @@
 """
-====================
-parallel_coordinates
-====================
+========================
+m. parallel_coordinates
+========================
+.. currentmodule:: easy_mpl
+
+This file shows the usage of :func:`parallel_coordinates` function.
 """
 
 import random

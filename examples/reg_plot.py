@@ -1,12 +1,38 @@
 """
-=======
-regplot
-=======
+==========
+h. regplot
+==========
+.. currentmodule:: easy_mpl
+
+This file shows the usage of :func:`regplot` function.
 """
 
 
 import numpy as np
 from easy_mpl import regplot
 
-x_, y_ = np.random.random(100), np.random.random(100)
-regplot(x_, y_)
+#%%
+
+rng = np.random.default_rng(313)
+
+x = rng.uniform(0, 10, size=100)
+y = x + rng.normal(size=100)
+regplot(x, y)
+
+
+#%%
+# customizing marker style
+regplot(x, y, marker_color='black')
+
+
+#%%
+# customizing line style
+regplot(x, y, line_color='black')
+
+#%%
+# customizing fill color
+regplot(x, y, fill_color='black')
+
+#%%
+
+regplot(x, y, ci=None, line_color='green')

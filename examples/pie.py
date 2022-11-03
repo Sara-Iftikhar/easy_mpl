@@ -1,11 +1,17 @@
 """
-===
-pie
-===
+=======
+j. pie
+=======
+.. currentmodule:: easy_mpl
+
+This file shows the usage of :func:`pie` function.
 """
 
 import numpy as np
 from easy_mpl import pie
+
+# sphinx_gallery_thumbnail_number = 3
+
 #############################
 
 pie(np.random.randint(0, 3, 100))
