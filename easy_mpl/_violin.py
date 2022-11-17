@@ -66,7 +66,7 @@ def violin_plot(
     show_boxplot : bool (default=False)
         whether to show the boxplot inside the voilin or not?
     box_kws : dict (default=None)
-        keyword arguments for axes.boxplot. This will only be valid if
+        keyword arguments for :obj:`matplotlib.axes.Axes.boxplot`. This will only be valid if
         ``show_boxplot`` is True.
     label_violin : bool (default=False)
         whether to label mean value of each violin or not
