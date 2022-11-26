@@ -29,9 +29,7 @@ taylor_plot(observations=observations,
             title="Taylor Plot")
 
 #############################
-
 # multiple taylor plots in one figure
-#-----------------------
 
 np.random.seed(313)
 observations = {
@@ -93,9 +91,8 @@ taylor_plot(observations,
     title="with statistical parameters")
 
 #############################
-
 # with customized markers
-#-----------------------
+
 
 np.random.seed(313)
 observations =  np.random.normal(20, 40, 10)

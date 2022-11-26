@@ -48,10 +48,10 @@ def ridge(
         data : array, DataFrame
             array or list of arrays or pandas DataFrame/Series
         bw_method : optional
-        cut : float (default=None)
+        cut : float (default=0.5)
         color : str, optional
             color to fill the ridges. It can be any valid matplotlib color or color
-             name or cmap name or a list of colors for each ridge.
+            name or cmap name or a list of colors for each ridge.
         fill_kws : dict, (default=None)
             keyword arguments that will go to axes.fill_between
         line_width : int (default=1.0)
@@ -75,8 +75,8 @@ def ridge(
         share_axes : bool, optional (default=False)
             whether to draw all ridges on same axes or separate axes
         ax : plt.Axes, optional (default=None)
-            matplotlib axes object on which to draw the ridges. If given
-            all ridges will be drawn on this axes.
+            matplotlib axes object :obj:`matplotlib.axes` on which to draw the ridges.
+             If given all ridges will be drawn on this axes.
 
     Returns
     -------

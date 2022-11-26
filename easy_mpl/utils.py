@@ -50,25 +50,30 @@ def process_axis(
     Parameters
     ----------
     ax : plt.Axes
-        the axes which needs to be processed.
+        the :obj:`matplotlib.axes` axes which needs to be processed.
     label : str (default=None)
         will be used for legend
     legend_kws : dict, optional
-        dictionary of keyword arguments to ax.legend(**legend_kws)
+        dictionary of keyword arguments to :obj:`matplotlib.axes.Axes.legend`
         These include loc, fontsize, bbox_to_anchor, markerscale
     logy : bool
+        whether to convert y-axes to logrithmic scale or not
     logx : bool
+        whether to convert x-axes to logrithmic scale or not
     xlabel : str
-        label for x-axies
+        label for x-axes
     xlabel_kws : dict
-        keyword arguments for x-label ax.set_xlabel(xlabel, **xlabel_kws)
+        keyword arguments for :obj:`matplotlib.axes.Axes.set_xlabel` ax.set_xlabel(xlabel, **xlabel_kws)
     xtick_kws :
         # for axes.tick_params such as which, labelsize, colors etc
-    min_xticks :
-    max_xticks :
+    min_xticks : int
+        maximum number of ticks on x-axes
+    max_xticks : int
+        minimum number of ticks on x-axes
     ylabel : str
+        label for y-axes
     ylabel_kws : dict
-        ylabel kwargs
+        ylabel kwargs for :obj:`matplotlib.axes.Axes.set_ylabel`
     ytick_kws :
         for axes.tick_params()  such as which, labelsize, colors etc
     ylim :
@@ -77,6 +82,7 @@ def process_axis(
         whether to invert y-axes or not. It true following command will be
         executed ax.set_ylim(ax.get_ylim()[::-1])
     title : str
+        title for axes :obj:`matplotlib.axes.Axes.set_title`
     title_kws : dict
         title kwargs
     grid :
@@ -95,7 +101,7 @@ def process_axis(
     Returns
     -------
     plt.Axes
-        the matplotlib Axes object which was passed to this function
+        the matplotlib Axes object :obj:`matplotlib.axes` which was passed to this function
     """
     if ax is None:
         ax = plt.gca()
