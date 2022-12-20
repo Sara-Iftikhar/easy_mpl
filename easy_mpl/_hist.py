@@ -6,7 +6,7 @@ from typing import Union, List
 import numpy as np
 import matplotlib.pyplot as plt
 
-from .utils import process_axis, is_dataframe, create_subplots
+from .utils import process_axis, is_dataframe, create_subplots, is_series
 
 
 def hist(
@@ -134,9 +134,3 @@ def hist(
         plt.show()
 
     return ax
-
-
-def is_series(x):
-    if all([hasattr(x, attr) for attr in ["name", "index", "values"]]):
-        return True
-    return False

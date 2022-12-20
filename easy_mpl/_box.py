@@ -7,7 +7,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 from .utils import process_axis
+from .utils import create_subplots
 from .utils import make_cols_from_cmap
+from .utils import is_dataframe
+from .utils import is_series
 
 
 def boxplot(
@@ -19,6 +22,7 @@ def boxplot(
         ax:plt.Axes = None,
         show:bool = True,
         ax_kws:dict = None,
+        share_axes:bool = True,
         **box_kws,
 )->Tuple[plt.Axes, dict]:
     """
@@ -42,6 +46,8 @@ def boxplot(
         whether to show the plot or not
     ax_kws : dict (default=None)
         keyword arguments of :func:`process_axis`
+    share_axes : bool (default=True)
+        whether to draw all the histograms on one axes or not?
     **box_kws :
         any additional keyword argument for axes.boxplot_
 
@@ -74,20 +80,68 @@ def boxplot(
     _box_kws = {
     }
 
-    if labels is None and hasattr(data, "columns"):
-        labels = data.columns.tolist()
-    elif labels is not None:
-        assert isinstance(labels, list), f"labels should be list not {type(labels)}"
-        labels = labels.copy()
+    data, labels = _unpack_data(data, labels, share_axes)
 
+    if share_axes:
+        nplots = 1
+    else:
+        nplots = len(labels)
 
     if box_kws is None:
         box_kws = dict()
 
     _box_kws.update(box_kws)
 
-    box_out = ax.boxplot(data, **_box_kws)
+    f, axes = create_subplots(nplots, ax=ax)
 
+    if isinstance(axes, np.ndarray):
+        axes = axes.flat
+    elif isinstance(axes, plt.Axes):
+        axes = [axes]
+
+    box_outs = []
+    for (idx, name), x, ax in zip(enumerate(labels), data, axes):
+        box_out = ax.boxplot(x, **_box_kws)
+        box_outs.append(box_out)
+
+        _set_box_props(box_out, fill_color, line_color, line_width)
+
+        if name is not None:
+            kws = dict()
+
+            if not share_axes:
+                if isinstance(name, (str, int)):
+                    ax.set_xticklabels([name])
+                elif isinstance(name, list):
+                    ax.set_xticklabels(name)
+
+            if share_axes and len(name)>7:
+                kws['rotation'] = 90
+                ax.xaxis.set_tick_params(rotation=90)
+
+
+        if ax_kws:
+            process_axis(ax, **ax_kws)
+
+    if show:
+        plt.show()
+
+    if len(box_outs)==1:
+        box_outs = box_outs[0]
+
+    if len(axes)==1:
+        axes = axes[0]
+
+    return axes, box_outs
+
+
+def is_rgb(color)->bool:
+    if isinstance(color, list) and len(color)==3 and isinstance(color[0], (int, float)):
+        return True
+    return False
+
+
+def _set_box_props(box_out, fill_color, line_color, line_width):
     if isinstance(fill_color, str) or is_rgb(fill_color):
         if isinstance(fill_color, str) and fill_color in plt.colormaps():
             fill_color = make_cols_from_cmap(fill_color, len(box_out['boxes']))  # name of cmap
@@ -113,25 +167,47 @@ def boxplot(
 
         if hasattr(patch, 'set_linewidth') and line_width is not None:
             patch.set_linewidth(line_width[idx])
+    return
+
+
+def _unpack_data(x, labels, share_axes:bool)->Tuple[list, list]:
+
+    if isinstance(x, np.ndarray):
+        if len(x) == x.size:
+            X = [x]
+            names = [None]
+        else:
+            X = [x[:, i] for i in range(x.shape[1])]
+            names = [f"{i}" for i in range(x.shape[1])]
+
+    elif is_dataframe(x):
+        if share_axes:
+            names = [x.columns.tolist()]
+            X = [x]
+        else:
+            X = []
+            for col in x.columns:
+                X.append(x[col].values)
+            names = x.columns.tolist()
+
+    elif is_series(x):
+        X = x.values
+        names = [x.name]
+
+    elif isinstance(x, (list, tuple)) and isinstance(x[0], (list, tuple, np.ndarray)):
+        X = [x_ for x_ in x]
+        names = [None]*len(X)
+
+    elif isinstance(x, (list, tuple)) and not is_dataframe(x[0]):
+        X = [x]
+        names = [None]
+    else:
+        raise ValueError(f"unrecognized type of x {type(x)}")
 
     if labels is not None:
-        kws = dict()
-        if len(labels)>7:
-            kws['rotation'] = 90
-        ax.set_xticks(range(len(labels) + 1))
-        labels.insert(0, '')
-        ax.set_xticklabels(labels, **kws)
+        if isinstance(labels, str):
+            labels = [labels]
+        assert len(labels) == len(names), f"{len(names)} does not match data"
+        names = labels
 
-    if ax_kws:
-        process_axis(ax, **ax_kws)
-
-    if show:
-        plt.show()
-
-    return ax, box_out
-
-
-def is_rgb(color)->bool:
-    if isinstance(color, list) and len(color)==3 and isinstance(color[0], (int, float)):
-        return True
-    return False
+    return X, names

@@ -405,9 +405,16 @@ def is_dataframe(obj)->bool:
     return False
 
 
+def is_series(obj)->bool:
+    if all([hasattr(obj, attr) for attr in ["name", "index", "values"]]):
+        return True
+    return False
+
+
 def create_subplots(
-        naxes:int, ax:plt.Axes=None,
-        figsize=None,
+        naxes:int,
+        ax:plt.Axes = None,
+        figsize:tuple = None,
         **fig_kws
 )->Tuple:
 

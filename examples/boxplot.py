@@ -18,8 +18,9 @@ from easy_mpl.utils import _rescale
 # %%
 
 f = "https://raw.githubusercontent.com/AtrCheema/AI4Water/master/ai4water/datasets/arg_busan.csv"
-df = pd.read_csv(f, index_col='index')
+dataframe = pd.read_csv(f, index_col='index')
 cols = ['air_temp_c', 'wat_temp_c', 'sal_psu', 'tide_cm', 'rel_hum', 'pcp12_mm']
+df = dataframe.copy()
 for col in df.columns:
     df[col] = _rescale(df[col].values)
 
@@ -29,7 +30,7 @@ print(df.shape)
 # To draw a boxplot we can provide a pandas DataFrame
 boxplot(df[cols])
 
-# We can also provide a number array
+# We can also provide multiple array
 boxplot(df[cols].values)
 
 # %%
@@ -61,5 +62,12 @@ boxplot(df[cols],
 boxplot(df[cols], fill_color="GnBu", patch_artist=True, showfliers=False)
 
 # %%
+# change circle size of fliers
+boxplot(df[cols], fill_color="GnBu", flierprops={"ms": 1.0})
+
+# %%
 # don't show whiskers
 boxplot(df[cols], fill_color="GnBu", patch_artist=True, showfliers=False, whis=0.0)
+
+# %%
+boxplot(dataframe[cols], share_axes=False)
