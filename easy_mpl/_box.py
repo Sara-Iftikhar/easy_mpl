@@ -121,20 +121,7 @@ def boxplot(
         _set_box_props(fill_colors[idx], line_colors[idx],
                        line_widths[idx], box_out)
 
-        if name is not None:
-            kws = dict()
-
-            if share_axes:
-                ax.set_xticklabels(name)
-            else:
-                if isinstance(name, (str, int)):
-                    ax.set_xticklabels([name])
-                elif isinstance(name, list):
-                    ax.set_xticklabels(name)
-
-            if share_axes and len(name)>7:
-                kws['rotation'] = 90
-                ax.xaxis.set_tick_params(rotation=90)
+        _set_ticklabels(ax, share_axes, name, _box_kws)
 
         if ax_kws:
             process_axis(ax, **ax_kws)
@@ -149,6 +136,35 @@ def boxplot(
         axes = axes[0]
 
     return axes, box_outs
+
+
+def _set_ticklabels(ax, share_axes, name, box_kws):
+
+    if name is not None:
+        kws = dict()
+
+        if share_axes:
+            if box_kws.get('vert', True):
+                ax.set_xticklabels(name)
+            else:
+                ax.set_yticklabels(name)
+        else:
+            if isinstance(name, (str, int)):
+                if box_kws.get('vert', True):
+                    ax.set_xticklabels([name])
+                else:
+                    ax.set_yticklabels([name], rotation=90, va='center')
+            elif isinstance(name, list):
+                if box_kws.get('vert', True):
+                    ax.set_xticklabels(name)
+                else:
+                    ax.set_yticklabels(name, rotation=90, va='center')
+
+        if share_axes and len(name) > 7:
+            kws['rotation'] = 90
+            ax.xaxis.set_tick_params(rotation=90, ha="center")
+
+    return
 
 
 def is_rgb(color)->bool:

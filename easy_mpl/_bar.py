@@ -112,6 +112,11 @@ def bar_chart(
         sort_idx = np.argsort(values)
         values = values[sort_idx]
         labels = np.array(labels)[sort_idx]
+        if bar_labels is not None:
+            bar_labels = np.array(bar_labels)
+            bar_labels = bar_labels[sort_idx]
+            if 'float' in bar_labels.dtype.name:
+                bar_labels = np.round(bar_labels, decimals=2)
 
     if max_bars:
         n = len(values) - max_bars

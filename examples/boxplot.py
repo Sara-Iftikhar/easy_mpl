@@ -7,7 +7,7 @@ p. boxplot
 
 This file shows the usage of :func:`boxplot` function.
 """
-
+import numpy as np
 import pandas as pd
 
 from easy_mpl import boxplot
@@ -24,7 +24,7 @@ df = dataframe.copy()
 for col in df.columns:
     df[col] = _rescale(df[col].values)
 
-print(df.shape)
+print(f"Our data has {len(df)} rows and {df.shape[1]} columns")
 
 # %%
 # To draw a boxplot we can provide a pandas DataFrame
@@ -75,3 +75,9 @@ _ = boxplot(df[cols], fill_color="GnBu", patch_artist=True,
 _ = boxplot(dataframe[cols], flierprops={"ms": 1.0},
             fill_color="GnBu", patch_artist=True,
             share_axes=False, figsize=(5, 7))
+
+# %%
+# make boxplots horizontal
+_ = boxplot(dataframe[cols], flierprops={"ms": 1.0},
+            fill_color="GnBu", patch_artist=True,
+            share_axes=False, vert=False, widths=0.7)
