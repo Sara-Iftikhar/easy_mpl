@@ -21,60 +21,69 @@ class TestBox(unittest.TestCase):
 
     def test_basic_df(self):
         ax, out = boxplot(df[cols], show=self.show)
-        assert isinstance(ax, plt.Axes), ax
-        assert isinstance(out, dict)
+        _assert_output(ax, out)
         return
 
     def test_basic_np(self):
         ax, out = boxplot(df[cols].values, show=self.show)
-        assert isinstance(ax, plt.Axes), ax
-        assert isinstance(out, dict)
+        _assert_output(ax, out)
         return
 
     def test_notch(self):
         ax, out = boxplot(df[cols], show=self.show, notch=True)
-        assert isinstance(ax, plt.Axes), ax
-        assert isinstance(out, dict)
+        _assert_output(ax, out)
         return
 
     def test_fill_color(self):
-        ax, out = boxplot(df[cols], show=self.show, fill_color=colors)
-        assert isinstance(ax, plt.Axes), ax
-        assert isinstance(out, dict)
+        ax, out = boxplot(df[cols], show=self.show,
+                          patch_artist=True,
+                          fill_color=colors)
+        _assert_output(ax, out)
+        return
+
+    def test_fill_color_black(self):
+        axes, outs = boxplot(df[cols], show=self.show,
+                             patch_artist=True,
+                             fill_color="k")
+        _assert_output(axes, outs)
+        return
+
+    def test_fill_color_rgb(self):
+        axes, outs = boxplot(df[cols], show=self.show,
+                             fill_color=np.random.random(3),
+                             patch_artist=True,
+                          )
+        _assert_output(axes, outs)
         return
 
     def test_fill_color_as_cmap(self):
         ax, out = boxplot(df[cols], show=self.show, patch_artist=True,
                           fill_color="hot")
-        assert isinstance(ax, plt.Axes), ax
-        assert isinstance(out, dict)
+        _assert_output(ax, out)
         return
 
     def test_unequal_array(self):
         x1 = np.random.random(100)
         x2 = np.random.random(90)
-        ax, out = boxplot([x1, x2], show=self.show, fill_color=colors)
-        assert isinstance(ax, plt.Axes), ax
-        assert isinstance(out, dict)
+        ax, out = boxplot([x1, x2], show=self.show,
+                          fill_color=colors[0:2])
+        _assert_output(ax, out)
         return
 
     def test_linecolor(self):
         ax, out = boxplot(df[cols], show=self.show, line_color="red")
-        assert isinstance(ax, plt.Axes), ax
-        assert isinstance(out, dict)
+        _assert_output(ax, out)
         return
 
     def test_width(self):
         ax, out = boxplot(df[cols], show=self.show, line_width=3)
-        assert isinstance(ax, plt.Axes), ax
-        assert isinstance(out, dict)
+        _assert_output(ax, out)
         return
 
     def test_labels(self):
         data = np.random.random((100, 3))
         ax, out = boxplot(data, show=self.show, labels=['a', 'b', 'c'])
-        assert isinstance(ax, plt.Axes), ax
-        assert isinstance(out, dict)
+        _assert_output(ax, out)
         return
 
 
@@ -99,7 +108,23 @@ class TestShareAxes(unittest.TestCase):
         return
 
     def test_fill_color(self):
-        axes, outs = boxplot(df[cols], show=self.show, fill_color=colors,
+        axes, outs = boxplot(df[cols], show=self.show,
+                             patch_artist=True, fill_color=colors,
+                          share_axes=False)
+        _assert_list(axes, outs)
+        return
+
+    def test_fill_color_black(self):
+        axes, outs = boxplot(df[cols], show=self.show,
+                             patch_artist=True, fill_color="k",
+                          share_axes=False)
+        _assert_list(axes, outs)
+        return
+
+    def test_fill_color_rgb(self):
+        axes, outs = boxplot(df[cols], show=self.show,
+                             fill_color=np.random.random(3),
+                             patch_artist=True,
                           share_axes=False)
         _assert_list(axes, outs)
         return
@@ -113,7 +138,8 @@ class TestShareAxes(unittest.TestCase):
     def test_unequal_array(self):
         x1 = np.random.random(100)
         x2 = np.random.random(90)
-        axes, outs = boxplot([x1, x2], show=self.show, fill_color=colors,
+        axes, outs = boxplot([x1, x2], show=self.show,
+                             fill_color=colors[0:2],
                           share_axes=False)
         _assert_list(axes, outs)
         return
@@ -139,9 +165,18 @@ class TestShareAxes(unittest.TestCase):
         return
 
 
+def _assert_output(ax, out):
+    assert isinstance(ax, plt.Axes), ax
+    assert isinstance(out, dict)
+    plt.close('all')
+    return
+
+
 def _assert_list(axes, outs):
+    assert isinstance(axes, list)
     for out in outs:
         assert isinstance(out, dict)
+    assert isinstance(outs, list)
     for ax in axes:
         assert isinstance(ax, plt.Axes)
     return

@@ -7,10 +7,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 from .utils import process_axis
-from .utils import create_subplots
-from .utils import make_cols_from_cmap
 from .utils import is_dataframe
 from .utils import is_series
+from .utils import create_subplots
+from .utils import make_cols_from_cmap
 
 
 def boxplot(
@@ -23,21 +23,25 @@ def boxplot(
         show:bool = True,
         ax_kws:dict = None,
         share_axes:bool = True,
+        figsize:tuple = None,
         **box_kws,
-)->Tuple[plt.Axes, dict]:
+)->Tuple[Union[plt.Axes, List[plt.Axes]], Union[List[dict], dict]]:
     """
     Draws the box and whiker plot
 
     parameters
     ----------
     data :
-        array or list of arrays
+        array like (list, numpy array, pandas dataframe/series) or list of
+        array likes. If list of array likes, the length of arrays in the list
+        can be different.
     line_color :
-        name of color/colors/cmap lines/boundaries of box
+        name of color/colors/cmap for lines/boundaries of box
     line_width :
-        width of the box lines
+        width of the box lines.
     fill_color :
-        name of color/colors/cmap to fill the boxes
+        name of color/colors/cmap to fill the boxes. It can be any valid
+         matplotlib color or cmap.
     labels : str/list (default=None)
         used for ticklabels of x-axes
     ax : plt.Axes, optional (default=None)
@@ -47,7 +51,9 @@ def boxplot(
     ax_kws : dict (default=None)
         keyword arguments of :func:`process_axis`
     share_axes : bool (default=True)
-        whether to draw all the histograms on one axes or not?
+        whether to draw all the histograms on one axes or not
+    figsize : tuple (default=None)
+        figure size as tuple (width, height)
     **box_kws :
         any additional keyword argument for axes.boxplot_
 
@@ -55,8 +61,9 @@ def boxplot(
     -------
     tuple
         a tuple of two
-            plt.Axes
-            a dictionary which consists of boxes, medians, whiskers, fliers
+            - plt.Axes or list of plt.Axes
+            - a dictionary or list of dictionaries which consists of boxes,
+              medians, whiskers, fliers
 
     Examples
     ---------
@@ -92,24 +99,34 @@ def boxplot(
 
     _box_kws.update(box_kws)
 
-    f, axes = create_subplots(nplots, ax=ax)
+    f, axes = create_subplots(nplots, ax=ax, figsize=figsize)
 
     if isinstance(axes, np.ndarray):
-        axes = axes.flat
+        axes = axes.flatten().tolist()
     elif isinstance(axes, plt.Axes):
         axes = [axes]
+
+    nboxes = len(labels)
+    if len(labels)==1:
+        nboxes = len(labels[0])
+    fill_colors = _unpack_colors(fill_color, nboxes, share_axes)
+    line_colors = _unpack_colors(line_color, nboxes, share_axes)
+    line_widths = _unpack_linewidth(line_width, nboxes, share_axes)
 
     box_outs = []
     for (idx, name), x, ax in zip(enumerate(labels), data, axes):
         box_out = ax.boxplot(x, **_box_kws)
         box_outs.append(box_out)
 
-        _set_box_props(box_out, fill_color, line_color, line_width)
+        _set_box_props(fill_colors[idx], line_colors[idx],
+                       line_widths[idx], box_out)
 
         if name is not None:
             kws = dict()
 
-            if not share_axes:
+            if share_axes:
+                ax.set_xticklabels(name)
+            else:
                 if isinstance(name, (str, int)):
                     ax.set_xticklabels([name])
                 elif isinstance(name, list):
@@ -118,7 +135,6 @@ def boxplot(
             if share_axes and len(name)>7:
                 kws['rotation'] = 90
                 ax.xaxis.set_tick_params(rotation=90)
-
 
         if ax_kws:
             process_axis(ax, **ax_kws)
@@ -136,37 +152,65 @@ def boxplot(
 
 
 def is_rgb(color)->bool:
-    if isinstance(color, list) and len(color)==3 and isinstance(color[0], (int, float)):
+    if isinstance(color, (list, np.ndarray)) and len(color)==3 and isinstance(color[0], (int, float)):
         return True
     return False
 
 
-def _set_box_props(box_out, fill_color, line_color, line_width):
-    if isinstance(fill_color, str) or is_rgb(fill_color):
-        if isinstance(fill_color, str) and fill_color in plt.colormaps():
-            fill_color = make_cols_from_cmap(fill_color, len(box_out['boxes']))  # name of cmap
-        else:
-            fill_color = [fill_color for _ in range(len(box_out['boxes']))]   # name of color
-
-    if isinstance(line_color, str) or is_rgb(line_color):
-        if isinstance(line_color, str) and line_color in plt.colormaps():
-            fill_color = make_cols_from_cmap(fill_color, len(box_out['boxes']))  # name of cmap
-        else:
-            line_color = [line_color for _ in range(len(box_out['boxes']))]
-
+def _unpack_linewidth(line_width, nboxes, share_axes):
     if isinstance(line_width, (float, int)):
-        line_width = [line_width for _ in range(len(box_out['boxes']))]
+        line_widths = [[line_width] for _ in range(nboxes)]
+    elif line_width is None:
+        line_widths = [[None] for _ in range(nboxes)]
+
+    if share_axes:
+       line_widths = [[line_width[0] for line_width in line_widths]]
+
+    return line_widths
+
+
+def _unpack_colors(color, nboxes, share_axes)->list:
+    if isinstance(color, str):
+        if color in plt.colormaps():
+            colors = make_cols_from_cmap(color, nboxes)
+            colors = [[color] for color in colors]
+        else:
+            colors = [[color] for _ in range(nboxes)]
+    elif is_rgb(color):
+        colors = [[color] for _ in range(nboxes)]
+    elif hasattr(color, '__len__'):
+        assert len(color) == nboxes, f"{len(color)} colors for {nboxes} boxes?"
+        colors = [[clr] for clr in color]
+    elif color is None:
+        colors = [[None] for _ in range(nboxes)]
+    else:
+        raise ValueError(f"{color} is not recognized as valid color")
+
+    if share_axes:
+       colors = [[color[0] for color in colors]]
+
+    return colors
+
+
+def _set_box_props(fill_color:list,
+                   line_color:list,
+                   line_width:list,
+                   box_out):
 
     for idx, patch in enumerate(box_out['boxes']):
         if hasattr(patch, 'set_facecolor'):
-            if fill_color is not None:
+            if fill_color[idx] is not None:
                 patch.set_facecolor(fill_color[idx])
+        elif hasattr(patch, 'set_markerfacecolor'):
+            if fill_color[idx] is not None:
+                patch.set_markerfacecolor(fill_color[idx])
 
-        if hasattr(patch, 'set_color') and line_color is not None:
+        if hasattr(patch, 'set_color') and line_color[idx] is not None:
             patch.set_color(line_color[idx])
 
-        if hasattr(patch, 'set_linewidth') and line_width is not None:
+        if hasattr(patch, 'set_linewidth') and line_width[idx] is not None:
             patch.set_linewidth(line_width[idx])
+
     return
 
 

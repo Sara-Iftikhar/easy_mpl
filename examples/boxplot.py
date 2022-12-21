@@ -28,30 +28,30 @@ print(df.shape)
 
 # %%
 # To draw a boxplot we can provide a pandas DataFrame
-boxplot(df[cols])
+_ = boxplot(df[cols])
 
 # We can also provide multiple array
-boxplot(df[cols].values)
+_ = boxplot(df[cols].values)
 
 # %%
 # The fill color can be specificed using any valid matplotlib cmap
-boxplot(df[cols], fill_color="GnBu", patch_artist=True)
+_ = boxplot(df[cols], fill_color="GnBu", patch_artist=True)
 
 # %%
 # change color of median line
-boxplot(df[cols], fill_color="GnBu", patch_artist=True, medianprops={"color": "black"})
+_ = boxplot(df[cols], fill_color="GnBu", patch_artist=True, medianprops={"color": "black"})
 
 # %%
 # show the mean line
-boxplot(df[cols], fill_color="GnBu", patch_artist=True, meanline=True, showmeans=True)
+_ = boxplot(df[cols], fill_color="GnBu", patch_artist=True, meanline=True, showmeans=True)
 
 # %%
 # customize mean line color
-boxplot(df[cols], fill_color="GnBu", patch_artist=True, meanprops={"color": "black"})
+_ = boxplot(df[cols], fill_color="GnBu", patch_artist=True, meanprops={"color": "black"})
 
 # %%
 # show notches
-boxplot(df[cols],
+_ = boxplot(df[cols],
         fill_color="GnBu",
         notch=True,
         patch_artist=True,
@@ -59,15 +59,19 @@ boxplot(df[cols],
 
 # %%
 # don't show outliers
-boxplot(df[cols], fill_color="GnBu", patch_artist=True, showfliers=False)
+_ = boxplot(df[cols], fill_color="GnBu", patch_artist=True, showfliers=False)
 
 # %%
 # change circle size of fliers
-boxplot(df[cols], fill_color="GnBu", flierprops={"ms": 1.0})
+_ = boxplot(df[cols], fill_color="GnBu", flierprops={"ms": 1.0})
 
 # %%
 # don't show whiskers
-boxplot(df[cols], fill_color="GnBu", patch_artist=True, showfliers=False, whis=0.0)
+_ = boxplot(df[cols], fill_color="GnBu", patch_artist=True,
+            showfliers=False, whis=0.0)
 
 # %%
-boxplot(dataframe[cols], share_axes=False)
+# Plot each boxplot on separate axes
+_ = boxplot(dataframe[cols], flierprops={"ms": 1.0},
+            fill_color="GnBu", patch_artist=True,
+            share_axes=False, figsize=(5, 7))
