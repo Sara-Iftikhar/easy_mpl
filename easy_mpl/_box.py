@@ -162,7 +162,7 @@ def _set_ticklabels(ax, share_axes, name, box_kws):
 
         if share_axes and len(name) > 7:
             kws['rotation'] = 90
-            ax.xaxis.set_tick_params(rotation=90, ha="center")
+            ax.xaxis.set_tick_params(rotation=90)
 
     return
 

@@ -87,3 +87,13 @@ ax.set_xticklabels(ax.get_xticks().astype(int), size=12, weight='bold')
 ax.set_yticklabels(ax.get_yticklabels(), size=12, weight='bold')
 plt.tight_layout()
 plt.show()
+
+# %%
+# multipler bar charts
+data = np.random.randint(0, 10, (5, 2))
+_ = bar_chart(data, color=['salmon', 'cadetblue'])
+
+# %%
+# multipler bar charts on separate axes
+data = np.random.randint(0, 10, (5, 2))
+_ = bar_chart(data, color=['salmon', 'cadetblue'], share_axes=False)
