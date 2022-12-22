@@ -86,6 +86,13 @@ class TestBox(unittest.TestCase):
         _assert_output(ax, out)
         return
 
+    def test_labels_df(self):
+        data = np.random.random((100, 3))
+        ax, out = boxplot(pd.DataFrame(data), show=self.show,
+                          labels=['a', 'b', 'c'])
+        _assert_output(ax, out)
+        return
+
 
 class TestShareAxes(unittest.TestCase):
     show = False
@@ -160,6 +167,14 @@ class TestShareAxes(unittest.TestCase):
     def test_labels(self):
         data = np.random.random((100, 3))
         axes, outs = boxplot(data, show=self.show, labels=['a', 'b', 'c'],
+                share_axes=False)
+        _assert_list(axes, outs)
+        return
+
+    def test_labels_df(self):
+        data = np.random.random((100, 3))
+        axes, outs = boxplot(pd.DataFrame(data), show=self.show,
+                             labels=['a', 'b', 'c'],
                 share_axes=False)
         _assert_list(axes, outs)
         return

@@ -7,7 +7,6 @@ p. boxplot
 
 This file shows the usage of :func:`boxplot` function.
 """
-import numpy as np
 import pandas as pd
 
 from easy_mpl import boxplot
@@ -30,7 +29,8 @@ print(f"Our data has {len(df)} rows and {df.shape[1]} columns")
 # To draw a boxplot we can provide a pandas DataFrame
 _ = boxplot(df[cols])
 
-# We can also provide multiple array
+# %%
+# We can also provide multiple (numpy) array
 _ = boxplot(df[cols].values)
 
 # %%
@@ -39,15 +39,18 @@ _ = boxplot(df[cols], fill_color="GnBu", patch_artist=True)
 
 # %%
 # change color of median line
-_ = boxplot(df[cols], fill_color="GnBu", patch_artist=True, medianprops={"color": "black"})
+_ = boxplot(df[cols], fill_color="GnBu", patch_artist=True,
+            medianprops={"color": "black"})
 
 # %%
 # show the mean line
-_ = boxplot(df[cols], fill_color="GnBu", patch_artist=True, meanline=True, showmeans=True)
+_ = boxplot(df[cols], fill_color="GnBu", patch_artist=True,
+            meanline=True, showmeans=True)
 
 # %%
 # customize mean line color
-_ = boxplot(df[cols], fill_color="GnBu", patch_artist=True, meanprops={"color": "black"})
+_ = boxplot(df[cols], fill_color="GnBu", patch_artist=True,
+            meanprops={"color": "black"})
 
 # %%
 # show notches

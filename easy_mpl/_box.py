@@ -237,8 +237,12 @@ def _unpack_data(x, labels, share_axes:bool)->Tuple[list, list]:
             X = [x]
             names = [None]
         else:
-            X = [x[:, i] for i in range(x.shape[1])]
-            names = [f"{i}" for i in range(x.shape[1])]
+            if share_axes:
+                X = [x]
+                names = [[f"{i}" for i in range(x.shape[1])]]
+            else:
+                X = [x[:, i] for i in range(x.shape[1])]
+                names = [f"{i}" for i in range(x.shape[1])]
 
     elif is_dataframe(x):
         if share_axes:
@@ -266,6 +270,8 @@ def _unpack_data(x, labels, share_axes:bool)->Tuple[list, list]:
 
     if labels is not None:
         if isinstance(labels, str):
+            labels = [labels]
+        if share_axes:
             labels = [labels]
         assert len(labels) == len(names), f"{len(names)} does not match data"
         names = labels
