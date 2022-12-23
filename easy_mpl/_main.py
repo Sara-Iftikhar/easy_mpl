@@ -70,7 +70,8 @@ def plot(
     """
 
     plot_kwargs = ('linewidth', 'linestyle', 'marker', 'fillstyle', 'ms', 'color',
-                   'drawstyle', 'y_data', 'url', 'mfc', 'mec', 'mew', 'mfcalt', 'snap', 'markersize',
+                   'drawstyle', 'y_data', 'url', 'mfc', 'mec', 'mew', 'mfcalt',
+                   'snap', 'markersize',
                    'lw', 'ls', 'ds', 'c', 'facecolor', 'markeredgecolor', 'markeredgewidth',
                    'markerfacecolor', 'markerfacesize', 'markerfacecoloralt',
                    )

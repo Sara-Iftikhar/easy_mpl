@@ -34,7 +34,7 @@ _ = bar_chart([1,2,3,4,4,5,3,2,5],
     ['a','b','c','d','e','f','g','h','i'],
           sort=True)
 
-#
+# %%
 # The default color of bars are chosen randomly. We can
 # specify the color in many ways, e.g. a single color for all
 # bars
@@ -90,7 +90,7 @@ plt.show()
 
 # %%
 # multipler bar charts
-data = np.random.randint(0, 10, (5, 2))
+data = np.random.randint(1, 10, (5, 2))
 _ = bar_chart(data, color=['salmon', 'cadetblue'])
 
 # %%
