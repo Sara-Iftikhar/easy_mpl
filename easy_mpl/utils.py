@@ -11,6 +11,7 @@ from matplotlib.transforms import Affine2D
 from matplotlib.projections.polar import PolarAxes
 from matplotlib.patches import Circle, RegularPolygon
 from matplotlib.projections import register_projection
+from mpl_toolkits.axes_grid1 import make_axes_locatable
 
 
 BAR_CMAPS = ['Blues', 'BuGn', 'gist_earth_r',
@@ -468,3 +469,169 @@ def get_layout(naxes):
         else:
             nrows, ncols =  k, k
     return nrows, ncols
+
+
+class AddMarginalPlots(object):
+
+    def __init__(self,
+                 x, y,
+                 ax,
+                 pad=0.25,
+                 size=0.7,
+                 hist:bool = True,
+                 hist_kws=None,
+                 ridge_line_kws=None,
+                 fill_kws=None,
+                 fix_limits:bool = True
+                 ):
+
+        self.ax = ax
+
+        if not isinstance(pad, (list, tuple)):
+            pad = [pad, pad]
+        self.pad = pad
+
+        if not isinstance(size, (list, tuple)):
+            size = [size, size]
+        self.size = size
+
+        self.hist = hist
+
+        HIST_KWS = self.verify_kws(hist_kws)
+        self.ridge_line_kws = self.verify_kws(ridge_line_kws)
+        self.fill_kws = self.verify_kws(fill_kws)
+
+        self.fix_limits = fix_limits
+
+        self.divider = make_axes_locatable(ax)
+
+        axHistx = self.add_ax_marg_x(x, hist_kws=HIST_KWS[0])
+        axHisty = self.add_ax_marg_y(y_data=y, hist_kws=HIST_KWS[1])
+
+        # make some labels invisible
+        plt.setp(axHistx.get_xticklabels() + axHisty.get_yticklabels(),
+                 visible=False)
+
+        despine_axes(ax, keep=["left", "bottom"])
+
+    def add_ax_marg_x(self,
+                      x_data,
+                      hist_kws:dict=None
+                      ):
+
+        line_kws = self._get_line_kws(self.ridge_line_kws[0])
+        fill_kws = self._get_fill_kws(self.ridge_line_kws[1])
+
+        if self.fix_limits:
+            xlim = np.array(self.ax.get_xlim()) * 1.05
+
+        _hist_kws = {"linewidth":0.5, "edgecolor":"k"}
+        if hist_kws is not None:
+            _hist_kws.update(hist_kws)
+
+        new_axes = self.divider.append_axes("top", self.size[0],
+                                       pad=self.pad[0], sharex=self.ax)
+        despine_axes(new_axes, keep="bottom")
+        new_axes.set_yticks([])
+
+        if self.hist:
+            # we draw histogram on old axes so that kde line
+            # comes on top
+            ax2 = new_axes.twinx()
+            new_axes.hist(x_data, **_hist_kws)
+            despine_axes(ax2)
+            ax2.set_yticks([])
+        else:
+            ax2 = new_axes
+
+        ind, data = kde(x_data, cut=0.2)
+        ax2.plot(ind, data, **line_kws)
+
+        if not self.hist:
+            ax2.fill_between(ind, data, **fill_kws)
+
+        if self.fix_limits:
+            self.ax.set_xlim(*xlim.tolist())
+
+        return new_axes
+
+    def add_ax_marg_y(self,
+                      y_data,
+                      hist_kws: dict = None
+                      ):
+
+        line_kws = self._get_line_kws(self.ridge_line_kws[1])
+        fill_kws = self._get_fill_kws(self.fill_kws[1])
+
+        if self.fix_limits:
+            ylim = self.ax.get_ylim()
+
+        _hist_kws = {"linewidth":0.5,
+                     "edgecolor":"k",
+                     'orientation':'horizontal'}
+        if hist_kws is not None:
+            _hist_kws.update(hist_kws)
+
+        new_axes = self.divider.append_axes("right",
+                                       self.size[1],
+                                       pad=self.pad[1],
+                                       sharey=self.ax)
+        despine_axes(new_axes, keep="left")
+        new_axes.set_xticks([])
+
+        if self.hist:
+            ax2 = new_axes.twiny()
+            new_axes.hist(y_data, **_hist_kws)
+            despine_axes(ax2)
+            ax2.set_xticks([])
+        else:
+            ax2 = new_axes
+
+        ind, data = kde(y_data, cut=0.2)
+        ax2.plot(data, ind, **line_kws)
+
+        if not self.hist:
+            ax2.fill_betweenx(ind, data, **fill_kws)
+
+        if self.fix_limits:
+            self.ax.set_ylim(ylim)
+
+        return new_axes
+
+    @staticmethod
+    def _get_line_kws(line_kws)->dict:
+        _line_kws = {'color': 'k', 'lw': 1.0}
+        if line_kws is not None:
+            _line_kws.update(line_kws)
+        return _line_kws
+
+    @staticmethod
+    def _get_fill_kws(fill_kws)->dict:
+        _fill_kws = {"alpha": 0.5, 'color':'r'}
+        if fill_kws is not None:
+            _fill_kws.update(fill_kws)
+        return _fill_kws
+
+    @staticmethod
+    def verify_kws(kws=None):
+        if kws is not None and not isinstance(kws, list):
+            assert isinstance(kws, dict)
+            kws = [kws, kws]
+
+        elif kws is None:
+            kws = [None, None]
+
+        assert len(kws) == 2
+        return kws
+
+
+def despine_axes(axes, keep=None):
+
+    if not isinstance(keep, list):
+        keep = [keep]
+
+    spines = ["top", "bottom", "right", "left"]
+    for s in spines:
+        if s not in keep:
+            axes.spines[s].set_visible(False)
+    return

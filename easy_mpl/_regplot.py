@@ -2,10 +2,12 @@
 __all__ = ["regplot"]
 
 import random
-from typing import Union
+from typing import Union, List
 
 import numpy as np
 import matplotlib.pyplot as plt
+from easy_mpl.utils import process_axis
+from easy_mpl.utils import AddMarginalPlots
 
 
 REGC_COMBS = [
@@ -30,20 +32,25 @@ REGC_COMBS = [
 def regplot(
         x: Union[np.ndarray,  list],
         y: Union[np.ndarray, list],
-        title: str = None,
         annotation_key: str = None,
         annotation_val: float = None,
         line_style='-',
         line_color=None,
         line_kws: dict = None,
-        marker_size: int = 20,
+        marker_size: Union[int, float] = 20,
         marker_color=None,
         scatter_kws: dict = None,
         ci: Union[int, None] = 95,
         fill_color=None,
         figsize: tuple = None,
-        xlabel: str = 'Observed',
-        ylabel: str = 'Predicted',
+        ax_kws:dict = None,
+        marginals: bool = False,
+        marginal_ax_size: Union[float, List[float]] = 0.7,
+        marginal_ax_pad: Union[float, List[float]] = 0.25,
+        ridge_line_kws: Union[dict, List[dict]] = None,
+        fill_kws: Union[dict, List[dict]] = None,
+        hist: bool = True,
+        hist_kws: Union[dict, List[dict]] = None,
         show: bool = True,
         ax: plt.Axes = None
 ) -> plt.Axes:
@@ -79,18 +86,41 @@ def regplot(
         fill_color : optional
             only relevent if ci is not None.
         figsize : tuple, optional
-        title : str, optional
-            name to be used for title
-        xlabel : str, optional
-        ylabel : str, optional
+            figure size (width, height)
+        ax_kws : dict (default=None)
+            keyword arguments for processing axes
+        marginals : bool (default=False)
+            whether to draw the marginal plots or not
+        marginal_ax_size :
+            size of marginal axes. If given as list, the first argument is taken for
+            horizontal marginal axes and second argument for vertical merginal axees.
+            It is only valid if ``marginals`` is set to True.
+        marginal_ax_pad :
+            pad value for marginal axes. If given as list, the first argument is taken for
+            horizontal marginal axes and second argument for vertical merginal axees.
+            It is only valid if ``marginals`` is set to True.
+        ridge_line_kws :
+            keyword arguments for a:obj:`matplotlib.axes.Axes.plot to draw the kde. It can be dictionary
+            or list of two dictionaries, where first dictionary is for hoziontal
+            marginal axes and second dictionary is for vertical marginal axes
+        fill_kws : dict/List[dict] (default=None)
+            keyword arguments for :obj:`matplotlib.axes.Axes.fill_between`. It can be dictionary or list of
+            two dictionaries, where first dictionary is for hoziontal
+            marginal axes and second dictionary is for vertical marginal axes
+        hist : bool
+            whether to draw the histogram or not on marginal axes
+        hist_kws :
+            keyword arguments for :obj:`matplotlib.axes.Axes.hist`. It can be dictionary or list of
+            two dictionaries, where first dictionary is for hoziontal
+            marginal axes and second dictionary is for vertical marginal axes
         ax : plt.Axes, optional
-            matplotlib axes to draw plot on. If not given, current avaialable
-            will be used.
+            matplotlib axes :obj:`matplotlib.axes` to draw plot on. If not given,
+            current avaialable will be used.
 
     Returns
     --------
     matplotlib.pyplot.Axes
-        the matplotlib Axes on which regression plot is drawn.
+        the matplotlib Axes :obj:`matplotlib.axes` on which regression plot is drawn.
 
     Examples
     --------
@@ -168,9 +198,23 @@ def regplot(
              fill_color=fill_color,
              **line_kws)
 
-    plt.xlabel(xlabel, fontsize=14)
-    plt.ylabel(ylabel, fontsize=14)
-    plt.title(title, fontsize=26)
+    if marginals:
+        AddMarginalPlots(x, y, ax,
+                         pad=marginal_ax_pad, size=marginal_ax_size,
+                         hist=hist, hist_kws=hist_kws,
+                         ridge_line_kws=ridge_line_kws,
+                         fill_kws=fill_kws)
+
+    _ax_kws = {'xlabel': 'Observed',
+               'xlabel_kws': {'fontsize': 14},
+               'ylabel': 'Prediction',
+               'ylabel_kws': {'fontsize': 14},
+               }
+
+    if ax_kws is not None:
+        _ax_kws.update(ax_kws)
+
+    process_axis(ax, **_ax_kws)
 
     if show:
         plt.show()
