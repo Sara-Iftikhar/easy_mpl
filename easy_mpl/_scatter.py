@@ -42,7 +42,8 @@ def scatter(
         correspond to respective values in x,y arrays
     text_kws : dict
         only relevant if ``marker_labels`` are provided.
-
+    xoffset : float
+    yoffset : float
     show : bool, optional
         whether to show the plot or not
     ax : plt.Axes, optional

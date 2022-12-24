@@ -21,7 +21,8 @@ def lollipop_plot(
         marker_kws: dict = None,
         show: bool = True,
         ax: plt.Axes = None,
-        **kwargs) -> plt.Axes:
+        **kwargs
+) -> plt.Axes:
     """
     Plot a lollipop plot.
 

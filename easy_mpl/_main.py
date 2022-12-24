@@ -4,32 +4,36 @@ __all__ = ["plot"]
 import numpy as np
 import matplotlib.pyplot as plt
 
-from .utils import process_axes
+from .utils import process_axes, is_dataframe, is_series
 
 
 def plot(
         *args,
         show: bool = True,
         ax: plt.Axes = None,
+        ax_kws:dict = None,
         **kwargs
 ) -> plt.Axes:
     """
-    One liner plot function. It's use is not more complex than `axes.plot()`_ or
-    `plt.plot()`_ . However it accomplishes all in one line what requires multiple
-    lines in matplotlib. args and kwargs can be anything which goes into `plt.plot()`_
-    or `axes.plot()`_.
+    One liner plot function. It's use is not more complex than :obj:`matplotlib.axes.Axes.plot` or
+    :obj:`matplotlib.pyplot.plot` . However it accomplishes all in one line what requires multiple
+    lines in matplotlib. args and kwargs can be anything which goes into :obj:`matplotlib.pyplot.plot`
+    or :obj:`matplotlib.axes.Axes.plot`.
 
     Parameters
     ----------
         *args :
             either a single array or x and y arrays or anything which can go to
-            `axes.plot()`_ or anything which can got to `plt.plot()`_ .
+            :obj:`matplotlib.axes.Axes.plot` or anything which can got to :obj:`matplotlib.pyplot.plot` .
         ax : :obj:`matplotlib.axes`
             matplotlib axes object on which plot is to be drawn. If not given,
             then current active axes will be used.
-        show : bool, optional
+        ax_kws : dict
+            keyword arguments for :func:`easy_mpl.utils.process_axes`
+        show : bool, optional (default=True)
+            If set to True, plt.show() is called.
         **kwargs : optional
-            Anything which goes into `easy_mpl.utils.process_axis`.
+            Any keyword argument for :obj:`matplotlib.pyplot.plot` or :obj:`matplotlib.axes.Axes.plot`
 
     Returns
     -------
@@ -53,28 +57,14 @@ def plot(
         using label keyword
         >>> plot(np.random.random(100), '--*', label='label')
         log transform y-axis
-        >>> plot(np.random.random(100), '--*', logy=True, label='label')
+        >>> plot(np.random.random(100), '--*', ax_kws={'logy':True}, label='label')
 
     See :ref:`sphx_glr_auto_examples_plot.py` for more examples
 
-    .. _axes.plot():
-        https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.plot.html
-
-    .. _plt.plot():
-        https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.plot.html
-
     """
 
-    plot_kwargs = ('linewidth', 'linestyle', 'marker', 'fillstyle', 'ms', 'color',
-                   'drawstyle', 'y_data', 'url', 'mfc', 'mec', 'mew', 'mfcalt',
-                   'snap', 'markersize',
-                   'lw', 'ls', 'ds', 'c', 'facecolor', 'markeredgecolor', 'markeredgewidth',
-                   'markerfacecolor', 'markerfacesize', 'markerfacecoloralt',
-                   )
-    _plot_kwargs = {}
-    for arg in plot_kwargs:
-        if arg in kwargs:
-            _plot_kwargs[arg] = kwargs.pop(arg)
+    if ax_kws is None:
+        ax_kws = {}
 
     plot_args = []
 
@@ -97,40 +87,41 @@ def plot(
 
     if marker:
         plot_args.append(marker)
-        assert 'marker' not in _plot_kwargs  # we have alreay got marker
+        assert 'marker' not in kwargs  # we have alreay got marker
 
     if not ax:
         ax = plt.gca()
 
-    if 'figsize' in kwargs:
-        figsize = kwargs.pop('figsize')
+    if 'figsize' in ax_kws:
+        figsize = ax_kws.pop('figsize')
         ax.figure.set_size_inches(figsize)
 
     s = data[0]
-    if hasattr(s, "index") and hasattr(s, "name"):
-        kwargs['min_xticks'] = kwargs.get('min_xticks', 3)
-        kwargs['max_xticks'] = kwargs.get('max_xticks', 5)
-        kwargs['xlabel'] = kwargs.get('xlabel', s.index.name)
-        kwargs['ylabel'] = kwargs.get('ylabel', s.name)
-    elif hasattr(s, "values") and hasattr(s, "index") and hasattr(s, "columns"):
-        kwargs['min_xticks'] = kwargs.get('min_xticks', 3)
-        kwargs['max_xticks'] = kwargs.get('max_xticks', 5)
+    if is_series(s):
+        ax_kws['min_xticks'] = ax_kws.get('min_xticks', 3)
+        ax_kws['max_xticks'] = ax_kws.get('max_xticks', 5)
+        ax_kws['xlabel'] = ax_kws.get('xlabel', s.index.name)
+        ax_kws['ylabel'] = ax_kws.get('ylabel', s.name)
+    elif is_dataframe(s):
+        ax_kws['min_xticks'] = ax_kws.get('min_xticks', 3)
+        ax_kws['max_xticks'] = ax_kws.get('max_xticks', 5)
         if s.shape[1] == 1:
-            kwargs['xlabel'] = kwargs.get('xlabel', s.index.name)
-            kwargs['ylabel'] = kwargs.get('ylabel', s.columns.tolist()[0])
+            ax_kws['xlabel'] = ax_kws.get('xlabel', s.index.name)
+            ax_kws['ylabel'] = ax_kws.get('ylabel', s.columns.tolist()[0])
         else:
-            kwargs['xlabel'] = kwargs.get('xlabel', s.index.name)
-            kwargs['label'] = kwargs.get('label', s.columns.tolist())
+            ax_kws['xlabel'] = ax_kws.get('xlabel', s.index.name)
+            ax_kws['label'] = ax_kws.get('label', s.columns.tolist())
             for col in s.columns:
-                _plot_kwargs['label'] = col
+                kwargs['label'] = col
                 data[0] = s[col]
-                ax.plot(*data, *plot_args, **_plot_kwargs)
-            return _process_axis(ax, show, kwargs)
+                ax.plot(*data, *plot_args, **kwargs)
+            return _process_axis(ax, show, ax_kws)
 
-    _plot_kwargs['label'] = kwargs.get('label', None)
+    if 'label' in kwargs:
+        ax_kws['label'] = kwargs['label']
 
-    ax.plot(*data, *plot_args, **_plot_kwargs)
-    return _process_axis(ax, show, kwargs)
+    ax.plot(*data, *plot_args, **kwargs)
+    return _process_axis(ax, show, ax_kws)
 
 
 def _process_axis(ax, show, kwargs):

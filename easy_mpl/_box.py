@@ -61,7 +61,7 @@ def boxplot(
     -------
     tuple
         a tuple of two
-            - plt.Axes or list of plt.Axes
+            - plt.Axes or list of :obj:`matplotlib.axes`
             - a dictionary or list of dictionaries which consists of boxes,
               medians, whiskers, fliers
 

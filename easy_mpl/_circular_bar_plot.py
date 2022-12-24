@@ -23,6 +23,7 @@ def circular_bar_plot(
         figsize: tuple = None,
         show: bool = True,
         text_kws: dict = None,
+        ax_kws: dict = None,
         **kwargs
 ) -> plt.Axes:
     """
@@ -52,12 +53,14 @@ def circular_bar_plot(
         Show the plot.
     text_kws : dict, optional (default=None)
         keyword arguments for axes.text()
-    **kwargs : optional
-        Additional keyword arguments to pass to the process_axis function.
+    ax_kws : optional
+        Additional keyword arguments to pass to the :py:func:`easy_mpl.utils.process_axes`.
+    **kwargs
+        go to :obj:`matplotlib.axes.Axes.bar`
 
     Returns
     -------
-    ax : plt.Axes
+    :obj:`matplotlib.axes`
         Axes of the plot.
 
     See :ref:`sphx_glr_auto_examples_circular_bar_plot.py` for more examples
@@ -142,15 +145,17 @@ def circular_bar_plot(
     indexes = list(range(1, len(heights) + 1))
     angles = [element * width for element in indexes]
 
+    _bar_kws = {'linewidth': 2, 'edgecolor': 'white', 'color': color}
+    if kwargs:
+        _bar_kws.update(kwargs)
+
     # Draw bars
     bars = ax.bar(
         x=angles,
         height=heights,
         width=width,
         bottom=lower_limit,
-        linewidth=2,
-        edgecolor="white",
-        color=color,
+        **_bar_kws
     )
 
     # Add labels
@@ -180,8 +185,8 @@ def circular_bar_plot(
             **text_kws
         )
 
-    if kwargs:
-        process_axes(ax, **kwargs)
+    if ax_kws:
+        process_axes(ax, **ax_kws)
 
     if show:
         plt.show()

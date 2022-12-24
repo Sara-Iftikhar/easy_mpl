@@ -8,18 +8,20 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
+from easy_mpl.utils import process_axes
+
 
 def pie(
         vals: Union[list, np.ndarray] = None,
         fractions: Union[list, np.ndarray] = None,
         labels: list = None,
         ax: plt.Axes = None,
-        title: str = None,
         show: bool = True,
+        ax_kws: dict = None,
         **kwargs
 ) -> plt.Axes:
     """
-    pie chart
+    draws the pie chart
 
     Parameters
     ----------
@@ -32,11 +34,12 @@ def pie(
             in vals. Otherwise "unique_value (counts)" will be used for labeling.
         ax : plt.Axes, optional
             the :obj:`matplotlib.axes` on which to draw, if not given current active axes will be used
-        title: str, optional
-            if given, will be used for title
-        show: bool, optional
+        ax_kws : dict, optional
+            keyword arguments for :py:func:`easy_mpl.utils.process_axes`
+        show: bool, optional (default=True)
+            whether to show the plot or not
         **kwargs: optional
-            any keyword argument will go to `axes.pie`_
+            any keyword argument will go to :obj:`matplotlib.axes.Axes.pie`
 
     Returns
     -------
@@ -84,8 +87,9 @@ def pie(
            **kwargs)
 
     ax.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle.
-    if title:
-        plt.title(title, fontsize=20)
+
+    if ax_kws:
+        process_axes(ax, **ax_kws)
 
     if show:
         plt.show()

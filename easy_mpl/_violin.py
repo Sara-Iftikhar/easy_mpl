@@ -91,7 +91,6 @@ def violin_plot(
         matplotlib Axes object :obj:`matplotlib.axes` on which to draw the plot. If not given, then
         the currently available axes from plt.gca will be used.
 
-
     Returns
     -------
     plt.Axes

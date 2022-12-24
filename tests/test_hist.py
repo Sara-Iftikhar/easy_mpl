@@ -36,8 +36,8 @@ class Testhist(unittest.TestCase):
     def test_with_nan_vals(self):
         x = np.random.random((10, 1))
         x.ravel()[np.random.choice(x.size, 5, replace=False)] = np.nan
-        ax = hist(x, show=self.show, title="with_nan_vals")
-        assert isinstance(ax, plt.Axes)
+        out = hist(x, show=self.show, ax_kws={'title':"with_nan_vals"})
+        assert isinstance(out, tuple)
         return
 
     def test_df(self):
@@ -84,7 +84,7 @@ class Testhist(unittest.TestCase):
 
     def test_labels(self):
         data = np.random.random((100, 3))
-        hist(data, title="labels", show=self.show, labels=['a', 'b', 'c'])
+        hist(data, ax_kws={'title':"labels"}, show=self.show, labels=['a', 'b', 'c'])
         return
 
 

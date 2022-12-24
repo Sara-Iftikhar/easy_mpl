@@ -7,6 +7,8 @@ n. spider plot
 This file shows the usage of :func:`spider_plot` function.
 """
 
+# sphinx_gallery_thumbnail_number = -1
+
 import pandas as pd
 import matplotlib.pyplot as plt
 from easy_mpl import spider_plot
