@@ -53,13 +53,13 @@ def ridge(
             color to fill the ridges. It can be any valid matplotlib color or color
             name or cmap name or a list of colors for each ridge.
         fill_kws : dict, (default=None)
-            keyword arguments that will go to axes.fill_between
+            keyword arguments that will go to :obj:`matplotlib.axes.Axes.fill_between`
         line_width : int (default=1.0)
             with of line of ridges.
         line_color : str (default="black")
             color or colors of lines of ridges.
         plot_kws : dict optional
-            any keyword argumenets that will go to axes.plot during plot of kde line
+            any keyword argumenets that will go to :obj:`matplotlib.axes.Axes.plot` during plot of kde line
         xlabel : str, optional
             xlabel for the figure
         title : str, optional
@@ -80,8 +80,8 @@ def ridge(
 
     Returns
     -------
-        list
-            a list of plt.Axes
+    list
+        a list of :obj:`matplotlib.axes`
 
     Examples
     --------

@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 
 from .utils import _rescale
 from .utils import BAR_CMAPS
-from .utils import to_1d_array, make_cols_from_cmap, process_axis
+from .utils import to_1d_array, make_cols_from_cmap, process_axes
 
 
 def circular_bar_plot(
@@ -181,7 +181,7 @@ def circular_bar_plot(
         )
 
     if kwargs:
-        process_axis(ax, **kwargs)
+        process_axes(ax, **kwargs)
 
     if show:
         plt.show()

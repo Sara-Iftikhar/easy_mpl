@@ -6,7 +6,7 @@ from typing import Union, List
 
 import numpy as np
 import matplotlib.pyplot as plt
-from easy_mpl.utils import process_axis
+from easy_mpl.utils import process_axes
 from easy_mpl.utils import AddMarginalPlots
 
 
@@ -63,7 +63,7 @@ def regplot(
             the 'x' value. It can be numpy array, pandas DataFram/Series or a list
         y : array like, optional
              It can be numpy array, pandas DataFram/Series or a list
-        ci : optional
+        ci : int, optional
             confidence interval. Set to None if not required.
         show : bool, optional
             whether to show the plot or not
@@ -88,7 +88,7 @@ def regplot(
         figsize : tuple, optional
             figure size (width, height)
         ax_kws : dict (default=None)
-            keyword arguments for processing axes
+            keyword arguments for :py:func:`easy_mpl.utils.process_axes`
         marginals : bool (default=False)
             whether to draw the marginal plots or not
         marginal_ax_size :
@@ -214,7 +214,7 @@ def regplot(
     if ax_kws is not None:
         _ax_kws.update(ax_kws)
 
-    process_axis(ax, **_ax_kws)
+    process_axes(ax, **_ax_kws)
 
     if show:
         plt.show()

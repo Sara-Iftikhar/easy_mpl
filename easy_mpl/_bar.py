@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 from collections.abc import KeysView, ValuesView
 
 from .utils import BAR_CMAPS
-from .utils import process_axis
+from .utils import process_axes
 from .utils import create_subplots
 from .utils import to_1d_array, make_cols_from_cmap
 
@@ -74,7 +74,8 @@ def bar_chart(
             any keyword arguments for processing of axes that will go to
             :py:func:`easy_mpl.utils.process_axes`
         **kwargs :
-            any additional keyword arguments for `axes.bar`_ or `axes.barh`_
+            any additional keyword arguments for :obj:`matplotlib.axes.Axes.bar`
+            or :obj:`matplotlib.axes.Axes.barh`
 
     Returns
     --------
@@ -251,7 +252,7 @@ def bar_on_axes(ax, orient, ax_kws, *args, **kwargs):
         vertical_bar(ax, *args, **kwargs)
 
     if ax_kws:
-        process_axis(ax, **ax_kws)
+        process_axes(ax, **ax_kws)
 
     return
 

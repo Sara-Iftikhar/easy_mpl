@@ -6,7 +6,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 
-from .utils import process_axis
+from .utils import process_axes
 from .utils import annotate_imshow
 
 
@@ -65,14 +65,14 @@ def imshow(
         cb_tick_params : dict, optional
             tick params for colorbar. for example ``pad`` or ``orientation``
         ax_kws : dict, optional (default=None)
-            any keyword arguments for process_axes function as dictionary
+            any keyword arguments for :py:func:`easy_mpl.utils.process_axes` function as dictionary
         **kwargs : optional
-            any further keyword arguments for `axes.imshow`_
+            any further keyword arguments for :obj:`matplotlib.axes.Axes.imshow`
 
     Returns
     -------
     tuple
-        a tuple whose first vlaue is matplotlib axes and second argument is AxesImage
+        a tuple whose first vlaue is :obj:`matplotlib.axes` and second argument is :obj:`matplotlib.image.AxesImage`
 
     Examples
     --------
@@ -91,8 +91,6 @@ def imshow(
 
     See :ref:`sphx_glr_auto_examples_imshow.py` for more examples
 
-    .. _axes.imshow:
-        https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.imshow.html
     """
 
     if ax is None:
@@ -148,7 +146,7 @@ def imshow(
 
     if not ax_kws:
         ax_kws = dict()
-    process_axis(ax, xlabel=xlabel, ylabel=ylabel, title=title, **ax_kws)
+    process_axes(ax, xlabel=xlabel, ylabel=ylabel, title=title, **ax_kws)
 
     if white_grid:
         # Turn spines off and create white grid.

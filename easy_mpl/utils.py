@@ -18,7 +18,7 @@ BAR_CMAPS = ['Blues', 'BuGn', 'gist_earth_r',
              'GnBu', 'PuBu', 'PuBuGn', 'summer_r']
 
 
-def process_axis(
+def process_axes(
         ax: plt.Axes=None,
         label:str = None,
         legend_kws:dict = None,
@@ -44,6 +44,7 @@ def process_axis(
         title_kws:dict=None,
         grid=None,
         grid_kws:dict = None,
+        tight_layout:bool = False,
 )-> plt.Axes:
     """
     processing of matplotlib Axes
@@ -98,6 +99,8 @@ def process_axis(
         whether to show x-axes or not
     show_yaxis : bool, optional (default=True)
         whether to show y-axes or not
+    tight_layout : bool (default=False)
+        whether to execulte plt.tight_layout() or not
 
     Returns
     -------
@@ -141,13 +144,13 @@ def process_axis(
         xlabel_kws = xlabel_kws or {}
         ax.set_xlabel(xlabel, **xlabel_kws)
 
-    if top_spine:
+    if top_spine is not None:
         ax.spines['top'].set_visible(top_spine)
-    if bottom_spine:
+    if bottom_spine is not None:
         ax.spines['bottom'].set_visible(bottom_spine)
-    if right_spine:
+    if right_spine is not None:
         ax.spines['right'].set_visible(right_spine)
-    if left_spine:
+    if left_spine is not None:
         ax.spines['left'].set_visible(left_spine)
 
     if max_xticks is not None:
@@ -169,6 +172,9 @@ def process_axis(
 
     if not show_yaxis:
         ax.get_yaxis().set_visible(False)
+
+    if tight_layout:
+        plt.tight_layout()
 
     return ax
 

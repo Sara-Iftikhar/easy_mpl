@@ -12,8 +12,6 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 from easy_mpl import plot
-from easy_mpl import scatter
-from easy_mpl import dumbbell_plot
 
 
 class TestPlot(unittest.TestCase):
@@ -129,120 +127,6 @@ class TestPlot(unittest.TestCase):
         assert isinstance(ax, plt.Axes)
         return
 
-
-class TestScatter(unittest.TestCase):
-    show = False
-    def test_basic(self):
-        x = np.random.random(100)
-        y = np.random.random(100)
-        scatter(x, y, show=self.show)
-        return
-
-    def test_return_axes(self):
-        x = np.random.random(100)
-        y = np.random.random(100)
-        ax, _ = scatter(x, y, show=self.show)
-        assert isinstance(ax, plt.Axes)
-        return
-
-    def test_with_colorbar(self):
-        x = np.random.random(100)
-        y = np.random.random(100)
-        scatter(x, y, colorbar=True, show=self.show)
-        return
-
-    def test_with_nan_in_x(self):
-        x = np.random.random(100)
-        # 5 random values are nan
-        x[np.random.choice(x.size, 5, replace=False)] = np.nan
-        y = np.random.random(100)
-        ax, _ = scatter(x, y, show=self.show)
-        assert isinstance(ax, plt.Axes)
-        return
-
-    def test_with_nan_in_y(self):
-        x = np.random.random(100)
-        y = np.random.random(100)
-        # 5 random values are nan
-        y[np.random.choice(y.size, 5, replace=False)] = np.nan
-        ax, _ = scatter(x, y, show=self.show)
-        assert isinstance(ax, plt.Axes)
-        return
-
-    def test_with_nan_in_x_and_y(self):
-        x = np.random.random(100)
-        # 5 random values are nan
-        x[np.random.choice(x.size, 5, replace=False)] = np.nan
-        y = np.random.random(100)
-        # 5 random values are nan
-        y[np.random.choice(y.size, 5, replace=False)] = np.nan
-        ax, _ = scatter(x, y, show=self.show)
-        assert isinstance(ax, plt.Axes)
-        return
-
-
-class TestDumbbell(unittest.TestCase):
-
-    show = False
-    st = np.random.randint(1, 5, 10)
-    en = np.random.randint(11, 20, 10)
-
-    def test_basic(self):
-        ax = dumbbell_plot(self.st, self.en,
-                           title="basic", show=self.show)
-        assert isinstance(ax, plt.Axes)
-        return
-
-    def test_with_line_kws(self):
-        ax = dumbbell_plot(self.st, self.en, show=self.show,
-                           title="with_line_kws", line_kws={'color': 'black'})
-        assert isinstance(ax, plt.Axes)
-        return
-
-    def test_with_st_kws(self):
-        ax = dumbbell_plot(self.st, self.en, show=self.show,
-                           title="with_st_kws", start_kws={'color': 'black'})
-        assert isinstance(ax, plt.Axes)
-        return
-
-    def test_with_end_kws(self):
-        ax = dumbbell_plot(self.st, self.en, show=self.show,
-                           title="with_end_kws", end_kws={'color': 'red'})
-        assert isinstance(ax, plt.Axes)
-        return
-
-    def test_with_labels(self):
-        ax = dumbbell_plot(self.st, self.en, show=self.show,
-                           title="with labels",
-                           labels=[f'GradientBoostingRegressor {i}' for i in range(10)])
-        assert isinstance(ax, plt.Axes)
-        return
-
-    def test_nan_in_st(self):
-        st = self.st.copy().astype("float32")
-        st[0] = np.nan
-        ax = dumbbell_plot(st, self.en, show=self.show,
-                            title="with labels")
-        assert isinstance(ax, plt.Axes)
-        return
-
-    def test_nan_in_en(self):
-        en = self.en.copy().astype("float32")
-        en[0] = np.nan
-        ax = dumbbell_plot(self.st, en, show=self.show,
-                            title="with labels")
-        assert isinstance(ax, plt.Axes)
-        return
-
-    def test_nan_in_st_and_en(self):
-        st = self.st.copy().astype("float32")
-        en = self.en.copy().astype("float32")
-        st[0] = np.nan
-        en[4] = np.nan
-        ax = dumbbell_plot(st, en, show=self.show,
-                            title="with labels")
-        assert isinstance(ax, plt.Axes)
-        return
 
 
 if __name__ == "__main__":

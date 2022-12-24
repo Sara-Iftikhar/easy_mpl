@@ -31,7 +31,7 @@ def pie(
             labels for unique values in vals, if given, must be equal to unique vals
             in vals. Otherwise "unique_value (counts)" will be used for labeling.
         ax : plt.Axes, optional
-            the axes on which to draw, if not given current active axes will be used
+            the :obj:`matplotlib.axes` on which to draw, if not given current active axes will be used
         title: str, optional
             if given, will be used for title
         show: bool, optional
@@ -40,6 +40,7 @@ def pie(
 
     Returns
     -------
+    :obj:`matplotlib.axes`
         a matplotlib axes. This can be used for further processing by making show=False.
 
     Example

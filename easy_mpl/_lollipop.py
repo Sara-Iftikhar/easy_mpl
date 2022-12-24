@@ -4,7 +4,7 @@ __all__ = ["lollipop_plot"]
 import numpy as np
 import matplotlib.pyplot as plt
 
-from .utils import to_1d_array, process_axis
+from .utils import to_1d_array, process_axes
 
 
 def lollipop_plot(
@@ -122,7 +122,7 @@ def lollipop_plot(
         _lollipop_horizontal(ax, x, y, line_style, line_color, line_width, line_kws,
                              marker_style, marker_color, marker_size, marker_kws)
 
-    process_axis(ax=ax, **kwargs)
+    process_axes(ax=ax, **kwargs)
 
     if show:
         plt.show()

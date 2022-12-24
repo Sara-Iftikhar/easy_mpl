@@ -6,7 +6,7 @@ from typing import Union, List, Tuple
 import numpy as np
 import matplotlib.pyplot as plt
 
-from .utils import process_axis
+from .utils import process_axes
 from .utils import is_dataframe
 from .utils import is_series
 from .utils import create_subplots
@@ -49,13 +49,13 @@ def boxplot(
     show : bool (default=show)
         whether to show the plot or not
     ax_kws : dict (default=None)
-        keyword arguments of :func:`process_axis`
+        keyword arguments of :py:func:`easy_mpl.utils.process_axes`
     share_axes : bool (default=True)
         whether to draw all the histograms on one axes or not
     figsize : tuple (default=None)
         figure size as tuple (width, height)
     **box_kws :
-        any additional keyword argument for axes.boxplot_
+        any additional keyword argument for :obj:`matplotlib.axes.Axes.boxplot`
 
     Returns
     -------
@@ -77,8 +77,6 @@ def boxplot(
 
     See :ref:`sphx_glr_auto_examples_boxplot.py` for more examples
 
-    .. _axes.boxplot:
-        https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.boxplot.html
     """
 
     if ax is None:
@@ -124,7 +122,7 @@ def boxplot(
         _set_ticklabels(ax, share_axes, name, _box_kws)
 
         if ax_kws:
-            process_axis(ax, **ax_kws)
+            process_axes(ax, **ax_kws)
 
     if show:
         plt.show()

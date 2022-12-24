@@ -6,7 +6,7 @@ from typing import Union, List
 import numpy as np
 import matplotlib.pyplot as plt
 
-from .utils import process_axis, is_dataframe, create_subplots, is_series
+from .utils import process_axes, is_dataframe, create_subplots, is_series
 
 
 def hist(
@@ -125,7 +125,7 @@ def hist(
 
         n, bins, patches = ax.hist(x, **hist_kws)
 
-        process_axis(ax, grid=grid, **kwargs)
+        process_axes(ax, grid=grid, **kwargs)
 
         if name:
             ax.legend()
