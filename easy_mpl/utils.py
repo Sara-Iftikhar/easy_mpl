@@ -9,7 +9,7 @@ from matplotlib.path import Path
 from matplotlib.spines import Spine
 from matplotlib.transforms import Affine2D
 from matplotlib.projections.polar import PolarAxes
-from matplotlib.patches import Circle, RegularPolygon
+from matplotlib.patches import RegularPolygon
 from matplotlib.projections import register_projection
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 
@@ -472,7 +472,33 @@ def get_layout(naxes):
 
 
 class AddMarginalPlots(object):
+    """
+    Adds marginal plots for an axes.
 
+    parameters
+    -----------
+    x : array like
+    y : array like
+    ax : plt.Axes
+        matplotlib axes on which to add the marginal plots
+    pad :
+    size :
+    hist : bool
+    hist_kws :
+    ridge_line_kws :
+    fill_kws :
+    fix_limits : bool
+
+    Examples
+    ---------
+    >>> from easy_mpl import plot
+    >>> x = np.random.normal(size=100)
+    >>> y = np.random.normal(size=100)
+    >>> e = x-y
+    >>> ax = plot(e, show=False)
+    >>> AddMarginalPlots(x, y, ax, hist=True)
+    >>> plt.show()
+    """
     def __init__(self,
                  x, y,
                  ax,

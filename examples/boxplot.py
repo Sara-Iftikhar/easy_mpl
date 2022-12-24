@@ -12,7 +12,7 @@ import pandas as pd
 from easy_mpl import boxplot
 from easy_mpl.utils import _rescale
 
-# sphinx_gallery_thumbnail_number = -3
+# sphinx_gallery_thumbnail_number = 7
 
 # %%
 

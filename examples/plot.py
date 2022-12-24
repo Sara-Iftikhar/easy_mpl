@@ -6,10 +6,12 @@ a. plot
 
 This file shows the usage of :func:`plot` function.
 """
-import matplotlib.pyplot as plt
+
 import numpy as np
 import pandas as pd
 from easy_mpl import plot
+import matplotlib.pyplot as plt
+from easy_mpl.utils import AddMarginalPlots
 
 # sphinx_gallery_thumbnail_number = 4
 
@@ -124,9 +126,11 @@ _ = plot(x, '.', title="with_nan_vals")
 # %%
 # The ``plot`` function returns matplotlib Axes object, which can be used for further
 # processing.
-
+x = np.random.normal(size=100)
+y = np.random.normal(size=100)
+e = x-y
 ax = plot(
-    np.random.normal(size=100),
+    e,
     'o',
     show=False,
     xlabel="Predicted",
@@ -140,6 +144,25 @@ ax = plot(
 # draw horizontal line on y=0
 ax.axhline(0.0)
 plt.show()
+
+# %%
+ax = plot(
+    e,
+    'o',
+    show=False,
+    xlabel="Predicted",
+    ylabel="Residual",
+    markerfacecolor=np.array([225, 121, 144])/256.0,
+    markeredgecolor="black", markeredgewidth=0.5,
+    xlabel_kws={"fontsize": 14},
+    ylabel_kws={"fontsize": 14},
+     )
+
+# draw horizontal line on y=0
+ax.axhline(0.0)
+AddMarginalPlots(x, y, ax)
+plt.show()
+
 
 # %%
 # We can also provide an already existing axes to ``plot`` functio
