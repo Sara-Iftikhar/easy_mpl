@@ -11,6 +11,9 @@ This file shows the usage of :func:`ridge` function.
 import numpy as np
 from easy_mpl import ridge
 import matplotlib.pyplot as plt
+from easy_mpl.utils import version_info
+
+version_info()
 
 #############################
 

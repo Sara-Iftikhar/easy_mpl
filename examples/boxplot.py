@@ -11,6 +11,9 @@ import pandas as pd
 
 from easy_mpl import boxplot
 from easy_mpl.utils import _rescale
+from easy_mpl.utils import version_info
+
+version_info()
 
 # sphinx_gallery_thumbnail_number = 7
 

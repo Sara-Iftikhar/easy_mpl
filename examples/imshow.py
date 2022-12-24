@@ -13,6 +13,9 @@ This file shows the usage of :func:`imshow` function.
 
 import numpy as np
 from easy_mpl import imshow
+from easy_mpl.utils import version_info
+
+version_info()
 
 #############################
 

@@ -9,6 +9,9 @@ This file shows the usage of :func:`pie` function.
 
 import numpy as np
 from easy_mpl import pie
+from easy_mpl.utils import version_info
+
+version_info()
 
 # sphinx_gallery_thumbnail_number = 3
 

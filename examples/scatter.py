@@ -10,6 +10,9 @@ This file shows the usage of :func:`scatter` function.
 from easy_mpl import scatter
 import numpy as np
 import matplotlib.pyplot as plt
+from easy_mpl.utils import version_info
+
+version_info()
 
 
 #############################

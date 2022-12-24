@@ -12,6 +12,9 @@ import pandas as pd
 from easy_mpl import plot
 import matplotlib.pyplot as plt
 from easy_mpl.utils import AddMarginalPlots
+from easy_mpl.utils import version_info
+
+version_info()
 
 # sphinx_gallery_thumbnail_number = 4
 

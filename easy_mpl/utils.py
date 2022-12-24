@@ -386,9 +386,10 @@ def _rescale(y:np.ndarray, _min=0.0, _max=1.0)->np.ndarray:
 
 def version_info():
     import matplotlib
-
+    from . import __version__
     info = dict()
-    info['matplotlib'] = matplotlib._version
+    info['easy_mpl'] = __version__
+    info['matplotlib'] = matplotlib._get_version()
     info['numpy'] = np.__version__
 
     try:
@@ -397,7 +398,7 @@ def version_info():
     except Exception:
         pass
 
-    return version_info()
+    return info
 
 
 def is_dataframe(obj)->bool:
@@ -480,7 +481,7 @@ class AddMarginalPlots(object):
     x : array like
     y : array like
     ax : plt.Axes
-        matplotlib axes on which to add the marginal plots
+        :obj:`matplotlib.axes` on which to add the marginal plots
     pad :
     size :
     hist : bool

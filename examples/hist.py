@@ -10,6 +10,9 @@ This file shows the usage of :func:`hist` function.
 from easy_mpl import hist
 import pandas as pd
 import numpy as np
+from easy_mpl.utils import version_info
+
+version_info()
 
 f = "https://raw.githubusercontent.com/AtrCheema/AI4Water/master/ai4water/datasets/arg_busan.csv"
 df = pd.read_csv(f, index_col='index')

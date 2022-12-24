@@ -10,6 +10,9 @@ This file shows the usage of :func:`regplot` function.
 
 import numpy as np
 from easy_mpl import regplot
+from easy_mpl.utils import version_info
+
+version_info()
 
 #%%
 

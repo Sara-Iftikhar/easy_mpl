@@ -60,7 +60,7 @@ def spider_plot(
     Returns
     -------
     plt.Axes
-        matplotlib axes on which plot is drawn
+       :obj:`matplotlib.axes` on which plot is drawn
 
     Examples
     --------
@@ -168,7 +168,7 @@ def spider_plot(
                         zorder=10)
 
     plt.gca().set_rmax(np.max(data) + np.max(data)*0.2)
-    plt.gca().set_rmax(np.min(data) - np.min(data) * 0.2)
+    plt.gca().set_rmin(np.min(data) - abs(np.min(data) * 0.2))
 
     _leg_kws = {'labelspacing': 0.1, 'fontsize': 12, 'bbox_to_anchor': (1.3, 1.1)}
     leg_kws = leg_kws or {}
