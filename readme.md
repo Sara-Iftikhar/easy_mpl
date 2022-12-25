@@ -69,7 +69,7 @@ from easy_mpl import plot
 x = np.random.randint(2, 10, 10)
 
 plot(x, '--o', color=np.array([35, 81, 53]) / 256.0,
-     xlabel="Days", ylabel="Values")
+     ax_kws=(xlabel="Days", ylabel="Values"))
 ```
 <p float="left">
   <img src="/docs/source/imgs/plot.png"  />
@@ -84,11 +84,8 @@ from easy_mpl import scatter
 import matplotlib.pyplot as plt
 x = np.random.random(100)
 y = np.random.random(100)
-scatter(x, y, show=False)
-# show colorbar
-scatter(x, y, colorbar=True, show=False)
-# retrieve axes for further processing
-ax, _ = scatter(x, y, show=False)
+ax, _ = scatter(x, y, colorbar=True)
+
 assert isinstance(ax, plt.Axes)
 ```
 <p float="left">
@@ -138,7 +135,7 @@ from easy_mpl import hist
 
 data = np.random.randn(1000)
 
-hist(data, hist_kws={'bins':100})
+hist(data, bins = 100)
 ```
 <p float="left">
   <img src="/docs/source/imgs/hist.png"  />

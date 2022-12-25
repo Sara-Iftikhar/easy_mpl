@@ -225,7 +225,16 @@ def kde(
         bins:int = 1000,
         cut:Union[float, Tuple[float]] = 0.5,
 )->Tuple[Union[np.ndarray, Tuple[np.ndarray, Optional[float]]], Any]:
-    """Generate Kernel Density Estimate plot using Gaussian kernels."""
+    """
+    Generate Kernel Density Estimate plot using Gaussian kernels.
+
+    parameters
+    ----------
+    y :
+    bw_method :
+    bins :
+    cut :
+    """
 
     # don't want to make whole easy_mpl dependent upon scipy
     from scipy.stats import gaussian_kde

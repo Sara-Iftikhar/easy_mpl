@@ -7,6 +7,8 @@ a. plot
 This file shows the usage of :func:`plot` function.
 """
 
+# sphinx_gallery_thumbnail_number = 4
+
 import numpy as np
 import pandas as pd
 from easy_mpl import plot
@@ -14,106 +16,103 @@ import matplotlib.pyplot as plt
 from easy_mpl.utils import AddMarginalPlots
 from easy_mpl.utils import version_info
 
-version_info()
-
-# sphinx_gallery_thumbnail_number = 4
+version_info()  # print version information of all the packages being used
 
 #############################
 # A basic plot can be drawn just by providing a sequence of numbers to the ``plot``
 # function.
 
-_ = plot(np.random.random(50))
+x = np.linspace(0, 10, 50)
+y = np.sin(x)
+_ = plot(y)
 
 # %%
 # We can however set the style of the plot/marker using the second argument.
 
-_ = plot(np.random.random(50), '--.')
+_ = plot(y, '--.')
 
 #############################
+# The complete list of available marker styles can be seen `here <https://matplotlib.org/stable/api/markers_api.html>_`
+#
+#
 # The color can be specified by making use of ``c`` or ``color``
 # argument to ``plot`` function.
 
-x = np.random.randint(2, 10, 10)
-
-_ = plot(x, '--o', color='darkcyan')
+_ = plot(y, '--o', color='darkcyan')
 # %%
 # You can refer to `this <https://matplotlib.org/stable/gallery/color/named_colors.html>`_
 # page to see names of all valid matplotlib color names.
 #
 # We can explicitly provide rgb values of a color.
 
-_ = plot(x, '--o', color=np.array([35, 81, 53]) / 256.0)
+_ = plot(y, '--o', color=np.array([35, 81, 53]) / 256.0)
 
 #############################
 # We can set the show=False in order to further work the current active axes
 
-x2 = np.random.randint(2, 10, 10)
-plot(x, '--o', color=np.array([35, 81, 53]) / 256.0, show=False)
-_ = plot(x2, '--*', color=np.array([15, 151, 123]) / 256.0)
+y2 = np.cos(x)
+plot(y, '--o', color=np.array([35, 81, 53]) / 256.0, show=False)
+_ = plot(y2, '--*', color=np.array([15, 151, 123]) / 256.0)
 
 #############################
-# If we provide arrays to ``plot``, the first array is used for the horizontal axis
+# If we provide two arrays to ``plot``, the first array is used for the horizontal axis
 # and second argument/array is used as corresponding y values.
 # In this case, the second argument is not used to define marker style.
-x = np.arange(50, 60)
-y = np.arange(150, 160)
-_ = plot(x, y, title="2 array")
+
+_ = plot(x, y)
 
 #############################
 # However, when we give just one array, the second argument is interpreted as marker style.
 
-_ = plot(np.random.random(100), '--*', title="1array_marker")
+_ = plot(y, '--*')
 
 #############################
 # When we provide two arrays, the third argument is interpreted as marker style.
 
-_ = plot(np.arange(100), np.random.random(100), '.', title="2 array_marker")
+_ = plot(x, y, '.')
 
 #############################
 # The legend can be set by making use of ``label`` argument.
 
-_ = plot(np.random.random(100), '--*', label='1array_marker_label')
+_ = plot(y, '--*', label="Sin (x)")
 
 #############################
-# If we want the y-axis to be on log scale, we can set ``logy`` to True.
+# If we want the y-axis to be on log scale, we can set ``logy`` to True
+# and pass it as ``ax_kws`` dictionary.
 
-_ = plot(np.arange(100), np.random.random(100), '--.', title="logy",
-              logy=True)
+_ = plot(x, y+2, '--.',  ax_kws={'logy':True})
 
 #############################
 # The width of the line can be set using ``lw`` or ``linewidth`` argument.
 
-_ = plot(np.arange(10), linewidth=3., title="linewidth")
+_ = plot(y, linewidth=3.)
 
 # %%
-_ = plot(np.random.random(10), marker=".", lw=2, title="lw")
+_ = plot(y, marker=".", lw=2)
 
 #############################
 # We can also provide three arrays to ``plot`` function.
 
-x = np.arange(100)
-y1 = np.random.random(100)
-y2 = np.random.random(100)
-_ = plot(x, y1, y2, title="3 arrays")
+_ = plot(x, y, y2)
 
 #############################
 # In such a case, the fourth argument is interpreted as marker style.
 
-_ = plot(x, y1, y2, '.', title="3array_with_marker")
+_ = plot(x, y, y2, '.')
 
 #############################
 # Instead of numpy array, we can also provide pandas Series
 
-x = pd.Series(np.random.random(100), name="Series",
-              index=pd.date_range("20100101", periods=100, freq="D"))
-_ = plot(x, '.', title="series")
+x = pd.Series(y, name="Series",
+              index=pd.date_range("20100101", periods=len(y), freq="D"))
+_ = plot(x, '.')
 
 #############################
 # or a pandas DataFrame with 1 column
 
-x = pd.DataFrame(np.random.random(100), columns=["first_col"],
-                 index=pd.date_range("20100101", periods=100, freq="D"))
-_ = plot(x, '.', title="df_1col")
+x = pd.DataFrame(y, columns=["sin"],
+                 index=pd.date_range("20100101", periods=len(y), freq="D"))
+_ = plot(x, '.')
 
 #############################
 # It should be noted that the index of pandas Series or DataFrame, which is
@@ -121,22 +120,21 @@ _ = plot(x, '.', title="df_1col")
 #
 # If we provide pandas DataFrame with two columns, both columns are plotted.
 
-x = pd.DataFrame(np.random.random((20, 2)),
-                 columns=[f"col_{i}" for i in range(2)],
-                 index=pd.date_range("20100101", periods=20, freq="D"))
-_ = plot(x, '-o', color=np.array([35, 81, 53]) / 256.0, title="df 2cols")
+x = pd.DataFrame(np.column_stack([y, y2]),
+                 columns=["sin", "cos"],
+                 index=pd.date_range("20100101", periods=len(y), freq="D"))
+_ = plot(x, '-o', color=np.array([35, 81, 53]) / 256.0)
 
 #############################
 # The marker size can be set using ``markersize`` or ``ms`` argument.
 
-_ = plot(np.random.random(10), marker=".", markersize=10,
-          title="markersize")
+_ = plot(y, marker=".", markersize=10)
 
 #############################
 # If the array contains nans, they are simply notplotted
 
 x = np.append(np.random.random(10), np.nan)
-_ = plot(x, '.', title="with_nan_vals")
+_ = plot(x, '.')
 
 # %%
 # The ``plot`` function returns matplotlib Axes object, which can be used for further
@@ -148,12 +146,13 @@ ax = plot(
     e,
     'o',
     show=False,
-    xlabel="Predicted",
-    ylabel="Residual",
     markerfacecolor=np.array([225, 121, 144])/256.0,
     markeredgecolor="black", markeredgewidth=0.5,
+    ax_kws=dict(
+    xlabel="Predicted",
+    ylabel="Residual",
     xlabel_kws={"fontsize": 14},
-    ylabel_kws={"fontsize": 14},
+    ylabel_kws={"fontsize": 14}),
      )
 
 print(f"Type of ax is: {type(ax)}")
@@ -172,12 +171,13 @@ ax = plot(
     e,
     'o',
     show=False,
-    xlabel="Predicted",
-    ylabel="Residual",
     markerfacecolor=np.array([225, 121, 144])/256.0,
     markeredgecolor="black", markeredgewidth=0.5,
+    ax_kws=dict(
+    xlabel="Predicted",
+    ylabel="Residual",
     xlabel_kws={"fontsize": 14},
-    ylabel_kws={"fontsize": 14},
+    ylabel_kws={"fontsize": 14}),
      )
 
 # draw horizontal line on y=0
@@ -211,12 +211,28 @@ y2 = [4.81, 2.92, 1.73, 0.98, 0.51, 0.21, 0.02,
 
 plot(y1, '-*', lw=2.0, ms=8, label="Na", show=False)
 
-ax = plot(y2, '-*', label="Ca", show=False,
+_ = plot(y2, '-*', label="Ca",
+     ax_kws=dict(
      legend_kws = {"loc": "upper center", 'prop':{"weight": "bold", 'size': 14}},
      xlabel="Distance", xlabel_kws={"fontsize": 14, 'weight': "bold"},
      ylabel="Energy", ylabel_kws={"fontsize": 14, 'weight': 'bold'},
      xtick_kws = {'labelsize': 12},
-     ytick_kws = {'labelsize': 12},
+     ytick_kws = {'labelsize': 12}),
+     )
+
+
+# %%
+# We can add text to a plot using the axes object returned by the ``plot`` function.
+
+plot(y1, '-*', lw=2.0, ms=8, label="Na", show=False)
+
+ax = plot(y2, '-*', label="Ca", show=False,
+          ax_kws=dict(
+     legend_kws = {"loc": "upper center", 'prop':{"weight": "bold", 'size': 14}},
+     xlabel="Distance", xlabel_kws={"fontsize": 14, 'weight': "bold"},
+     ylabel="Energy", ylabel_kws={"fontsize": 14, 'weight': 'bold'},
+     xtick_kws = {'labelsize': 12},
+     ytick_kws = {'labelsize': 12}),
      )
 
 # Add line conecting mean value and its label

@@ -12,9 +12,6 @@ from .utils import annotate_imshow
 
 def imshow(
         values,
-        xlabel=None,
-        title=None,
-        ylabel=None,
         yticklabels=None,
         xticklabels=None,
         show=True,
@@ -26,7 +23,7 @@ def imshow(
         cb_tick_params: dict = None,
         ax_kws: dict = None,
         **kwargs
-) -> tuple:
+):
     """
     One stop shop for matplotlib's imshow function
 
@@ -35,9 +32,6 @@ def imshow(
         values: 2d array
             the image/data to show. It must bt 2 dimensional. It can also
             be dataframe.
-        xlabel:  str, optional
-        ylabel : str, optional
-        title : str, optional
         show : bool, optional
             whether to show the plot or not
         annotate : bool, optional
@@ -71,8 +65,8 @@ def imshow(
 
     Returns
     -------
-    tuple
-        a tuple whose first vlaue is :obj:`matplotlib.axes` and second argument is :obj:`matplotlib.image.AxesImage`
+    matplotlib.image.AxesImage
+        a :obj:`matplotlib.image.AxesImage`
 
     Examples
     --------
@@ -144,9 +138,8 @@ def imshow(
             ax.set_xticklabels(xticklabels, rotation=70)
         ax.set_xticklabels(xticklabels)
 
-    if not ax_kws:
-        ax_kws = dict()
-    process_axes(ax, xlabel=xlabel, ylabel=ylabel, title=title, **ax_kws)
+    if ax_kws:
+        process_axes(ax, **ax_kws)
 
     if white_grid:
         # Turn spines off and create white grid.
@@ -172,4 +165,4 @@ def imshow(
     if show:
         plt.show()
 
-    return ax, im
+    return im
