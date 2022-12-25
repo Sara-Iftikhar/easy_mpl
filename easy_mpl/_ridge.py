@@ -10,6 +10,7 @@ import matplotlib.pyplot as plt
 from .utils import kde
 from .utils import is_dataframe
 from .utils import make_cols_from_cmap
+from .utils import despine_axes
 
 
 # colormaps for ridge plot
@@ -47,7 +48,7 @@ def ridge(
     ----------
         data : array, DataFrame
             array or list of arrays or pandas DataFrame/Series
-        bw_method : optional
+        bw_method : str, optional
         cut : float (default=0.5)
         color : str, optional
             color to fill the ridges. It can be any valid matplotlib color or color
@@ -163,8 +164,8 @@ def ridge(
                                  gridspec_kw={"hspace": hspace})
     else:
         share_axes = True
-        fig = ax.get_figure()
         axes = ax
+        nrows = 1
 
     if not isinstance(axes, np.ndarray):
         axes = np.array([axes])
@@ -227,12 +228,12 @@ def ridge(
         if nrows > 1:
             ax.set_yticklabels([])
             ax.set_yticks([])
+        else:
+            ax.tick_params(axis="y", labelsize=20)
 
-        spines = ["top", "right", "left", "bottom"]
-        for s in spines:
-            ax.spines[s].set_visible(False)
+        despine_axes(ax)
 
-        if not share_axes:
+        if not share_axes and nrows>1:
             ax.text(xs[col][0],
                              0.2,
                              col,

@@ -7,7 +7,9 @@ a. plot
 This file shows the usage of :func:`plot` function.
 """
 
-# sphinx_gallery_thumbnail_number = 4
+# todo, what happens when we pass three or more arrays!
+
+# sphinx_gallery_thumbnail_number = 5
 
 import numpy as np
 import pandas as pd
@@ -89,16 +91,6 @@ _ = plot(y, linewidth=3.)
 
 # %%
 _ = plot(y, marker=".", lw=2)
-
-#############################
-# We can also provide three arrays to ``plot`` function.
-
-_ = plot(x, y, y2)
-
-#############################
-# In such a case, the fourth argument is interpreted as marker style.
-
-_ = plot(x, y, y2, '.')
 
 #############################
 # Instead of numpy array, we can also provide pandas Series

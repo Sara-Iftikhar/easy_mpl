@@ -17,6 +17,18 @@ of matplotlib intact. Using these one liners will save the time and will not hur
 Moreover, you can swap every function of this library with that of matplotlib and 
 vice versa.
 
+``easy_mpl`` contains two kinds of functions, one which are just wrappers around their 
+matplotlib alternatives. These include [plot](#plot), [scatter](#scatter), [bar_chart](#bar_chart), [pie](#pie),
+[hist](#hist), [imshow](#imshow) and [boxplot](#boxplot). As the name suggests, these are just alternatives
+to their matplotlib aliases. All of these functions take same input arguments as taken by
+corresponding matplotlib functions. All these functions take three further input
+arguments. These are ``ax``, ``ax_kws`` and ``show``. Moreover these functions also take
+some input arguments which can be used for further manipulation of these plots. The other
+kinds of functions are helper functions to data visualization e.g., [regplot](#regplot), 
+[dumbbell_plot](#dumbbell_plot), [ridge](#ridge), [parallel_coordinates](#parallel_coordinates), 
+[taylor_plot](#taylor_plot), [lollipop_plot](#lollipop_plot), [circular_bar_plot](#circular_bar_plot),
+[violin_plot](#violin_plot) and [spider_plot](#spider_plot)
+
 # Installation
 
 This package can be installed using pip from pypi using following command
@@ -47,6 +59,8 @@ This package can be installed using pip from pypi using following command
 
 [parallel_coordinates](#parallel_coordinates)
 
+[spider_plot](#spider_plot)
+
 [taylor_plot](#taylor_plot)
 
 [lollipop_plot](#lollipop_plot)
@@ -59,6 +73,7 @@ This package can be installed using pip from pypi using following command
 
 
 # Usage
+For a wide range of usage examples see [gallery of examples](https://easy-mpl.readthedocs.io/en/latest/auto_examples/index.html)
 
 ## plot
 
