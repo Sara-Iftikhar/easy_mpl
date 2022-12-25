@@ -401,3 +401,6 @@ plt.show()
 <p float="left">
   <img src="/docs/source/imgs/violin.png"  />
 </p>
+
+# Code Structure
+![Visualization of this repo](./diagram.svg)
