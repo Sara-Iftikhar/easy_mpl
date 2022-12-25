@@ -4,7 +4,7 @@ __all__ = ["contour"]
 import numpy as np
 import matplotlib.pyplot as plt
 
-from .utils import process_axis
+from .utils import process_axes
 
 
 def contour(
@@ -119,7 +119,7 @@ def contour(
         kws = show_points_kws or {'color': 'k', 'marker': 'o', 'ms': 3, "linestyle": ""}
         ax.plot(x, y, **kws)
 
-    process_axis(ax, **kwargs)
+    process_axes(ax, **kwargs)
 
     if label_contours:
         kws = label_contour_kws or {"colors": "black"}

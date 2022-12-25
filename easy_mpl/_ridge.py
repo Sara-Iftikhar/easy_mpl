@@ -10,6 +10,7 @@ import matplotlib.pyplot as plt
 from .utils import kde
 from .utils import is_dataframe
 from .utils import make_cols_from_cmap
+from .utils import despine_axes
 
 
 # colormaps for ridge plot
@@ -47,19 +48,19 @@ def ridge(
     ----------
         data : array, DataFrame
             array or list of arrays or pandas DataFrame/Series
-        bw_method : optional
-        cut : float (default=None)
+        bw_method : str, optional
+        cut : float (default=0.5)
         color : str, optional
             color to fill the ridges. It can be any valid matplotlib color or color
-             name or cmap name or a list of colors for each ridge.
+            name or cmap name or a list of colors for each ridge.
         fill_kws : dict, (default=None)
-            keyword arguments that will go to axes.fill_between
+            keyword arguments that will go to :obj:`matplotlib.axes.Axes.fill_between`
         line_width : int (default=1.0)
             with of line of ridges.
         line_color : str (default="black")
             color or colors of lines of ridges.
         plot_kws : dict optional
-            any keyword argumenets that will go to axes.plot during plot of kde line
+            any keyword argumenets that will go to :obj:`matplotlib.axes.Axes.plot` during plot of kde line
         xlabel : str, optional
             xlabel for the figure
         title : str, optional
@@ -75,13 +76,13 @@ def ridge(
         share_axes : bool, optional (default=False)
             whether to draw all ridges on same axes or separate axes
         ax : plt.Axes, optional (default=None)
-            matplotlib axes object on which to draw the ridges. If given
-            all ridges will be drawn on this axes.
+            matplotlib axes object :obj:`matplotlib.axes` on which to draw the ridges.
+             If given all ridges will be drawn on this axes.
 
     Returns
     -------
-        list
-            a list of plt.Axes
+    list
+        a list of :obj:`matplotlib.axes`
 
     Examples
     --------
@@ -163,8 +164,8 @@ def ridge(
                                  gridspec_kw={"hspace": hspace})
     else:
         share_axes = True
-        fig = ax.get_figure()
         axes = ax
+        nrows = 1
 
     if not isinstance(axes, np.ndarray):
         axes = np.array([axes])
@@ -227,12 +228,12 @@ def ridge(
         if nrows > 1:
             ax.set_yticklabels([])
             ax.set_yticks([])
+        else:
+            ax.tick_params(axis="y", labelsize=20)
 
-        spines = ["top", "right", "left", "bottom"]
-        for s in spines:
-            ax.spines[s].set_visible(False)
+        despine_axes(ax)
 
-        if not share_axes:
+        if not share_axes and nrows>1:
             ax.text(xs[col][0],
                              0.2,
                              col,

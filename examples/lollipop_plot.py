@@ -9,6 +9,9 @@ This file shows the usage of :func:`lollipop_plot` function.
 
 import numpy as np
 from easy_mpl import lollipop_plot
+from easy_mpl.utils import version_info
+
+version_info()
 
 #############################
 

@@ -46,8 +46,12 @@ def violin_plot(
 
     parameters
     ----------
-    data
+    data :
+        It can array like or list of arrays. The length of each array need
+        not be equal. If multiple arrays are given, then violin is
+        drawn for each array
     X :
+        indices for x-axes for each of the array in data. It can be
         array or list of arrays. If list of arrays is given, the length of
         arrays can be unequal.
     fill : bool, optional (default=True)
@@ -66,7 +70,7 @@ def violin_plot(
     show_boxplot : bool (default=False)
         whether to show the boxplot inside the voilin or not?
     box_kws : dict (default=None)
-        keyword arguments for axes.boxplot. This will only be valid if
+        keyword arguments for :obj:`matplotlib.axes.Axes.boxplot`. This will only be valid if
         ``show_boxplot`` is True.
     label_violin : bool (default=False)
         whether to label mean value of each violin or not
@@ -84,9 +88,8 @@ def violin_plot(
     show : bool (default=True)
         whether to show the plot or not
     ax : plt.Axes (default=None)
-        matplotlib Axes object on which to draw the plot. If not given, then
+        matplotlib Axes object :obj:`matplotlib.axes` on which to draw the plot. If not given, then
         the currently available axes from plt.gca will be used.
-
 
     Returns
     -------

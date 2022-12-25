@@ -13,23 +13,26 @@ This file shows the usage of :func:`imshow` function.
 
 import numpy as np
 from easy_mpl import imshow
+from easy_mpl.utils import version_info
+
+version_info()  # print version information of all the packages being used
 
 #############################
 
 x = np.random.random((10, 8))
-imshow(x, annotate=True)
+_ = imshow(x, annotate=True)
 
 #############################
 # show colorbar
 
-imshow(x, colorbar=True)
+_ = imshow(x, colorbar=True)
 
 #%%
 # Annotation
 
 data = np.random.random((4, 10))
 
-imshow(data, cmap="YlGn",
+_ = imshow(data, cmap="YlGn",
        xticklabels=[f"Feature {i}" for i in range(data.shape[1])],
        white_grid=True, annotate=True,
        colorbar=True)
@@ -41,7 +44,7 @@ imshow(data, cmap="YlGn",
 
 data = np.arange(9).reshape((3,3))
 
-imshow(data, cmap="Blues",
+_ = imshow(data, cmap="Blues",
        annotate=True,
        annotate_kws={
               "textcolors": np.array([['black', 'black', 'black'],

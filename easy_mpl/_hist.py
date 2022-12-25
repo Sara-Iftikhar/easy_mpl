@@ -6,20 +6,20 @@ from typing import Union, List
 import numpy as np
 import matplotlib.pyplot as plt
 
-from .utils import process_axis, is_dataframe, create_subplots
+from .utils import process_axes, is_dataframe, create_subplots, is_series
 
 
 def hist(
         x: Union[list, np.ndarray],
-        hist_kws: dict = None,
         labels:Union[str, List[str]] = None,
         share_axes:bool = True,
         grid: bool = True,
         ax: plt.Axes = None,
         subplots_kws:dict = None,
         show: bool = True,
+        ax_kws: dict = None,
         **kwargs
-) -> plt.Axes:
+):
     """
     one stop shop for histogram
 
@@ -27,8 +27,6 @@ def hist(
     -----------
         x : list, array, optional
             array like, numpy ndarray or pandas DataFrame, or list of arrays
-        hist_kws : dict, optional
-            any keyword arguments for `axes.hist`_
         labels : list/str optional
             names of the arrays, used for setting the legend
         share_axes : bool (default=True)
@@ -41,12 +39,14 @@ def hist(
             axes on which to draw the plot
         subplots_kws : dict
             kws which go to plt.subplots() such as figure size (width, height)
+        ax_kws : dict
+            keyword arguments for :py:func:`easy_mpl.utils.process_axes`
         **kwargs : optional
-            any keyword arguments for axes manipulation such as title, xlable, ylable etc
+            any keyword arguments for :obj:`matplotlib.axes.Axes.hist`
 
-    matplotlib.pyplot.Axes
-        matplotlib Axes on which the histogram is drawn. If ``show`` is False, this axes
-        can be used for further processing
+    Returns
+    -------
+        same what is returned by :obj:`matplotlib.axes.Axes.hist`
 
     Example
     --------
@@ -59,9 +59,6 @@ def hist(
     .. _axes.hist:
         https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.hist.html
     """
-
-
-    hist_kws = hist_kws or {}
 
     if isinstance(x, np.ndarray):
         if len(x) == x.size:
@@ -113,9 +110,11 @@ def hist(
     if isinstance(axes, np.ndarray):
         axes = axes.flat
 
+    outs = []
+
     for idx, x, name in zip(range(len(names)), X, names):
         if name:
-            hist_kws['label'] = name
+            kwargs['label'] = name
 
         if share_axes:
             assert isinstance(axes, plt.Axes)
@@ -123,9 +122,13 @@ def hist(
         else:
             ax = axes[idx]
 
-        n, bins, patches = ax.hist(x, **hist_kws)
+        out = ax.hist(x, **kwargs)
+        outs.append(out)
 
-        process_axis(ax, grid=grid, **kwargs)
+        _ax_kws = dict(grid=grid)
+        if ax_kws:
+            _ax_kws.update(ax_kws)
+        process_axes(ax, **_ax_kws)
 
         if name:
             ax.legend()
@@ -133,10 +136,7 @@ def hist(
     if show:
         plt.show()
 
-    return ax
+    if len(outs)==1:
+        outs = outs[0]
 
-
-def is_series(x):
-    if all([hasattr(x, attr) for attr in ["name", "index", "values"]]):
-        return True
-    return False
+    return outs

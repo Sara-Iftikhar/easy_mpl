@@ -11,6 +11,9 @@ import random
 import numpy as np
 import pandas as pd
 from easy_mpl import parallel_coordinates
+from easy_mpl.utils import version_info
+
+version_info()
 
 #############################
 

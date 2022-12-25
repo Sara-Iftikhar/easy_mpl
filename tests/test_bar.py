@@ -17,6 +17,8 @@ from easy_mpl.utils import BAR_CMAPS, make_cols_from_cmap
 
 def get_chart_data(n):
     d = np.random.randint(2, 50, n)
+    if isinstance(n, tuple):
+        return d, [f'Feature {i}' for i in range(len(d))]
     return d, [f'feature_{i}' for i in d]
 
 
@@ -30,7 +32,19 @@ class TestBarChart(unittest.TestCase):
 
         plt.close('all')
         _, ax = plt.subplots()
-        ax = bar_chart(values=d, labels=names, ax=ax, color=cm, show=self.show)
+        ax = bar_chart(values=d, labels=names, ax=ax, color=cm,
+                       show=self.show)
+        assert isinstance(ax, plt.Axes)
+        return
+
+    def test_bar_h_3(self):
+        d, names = get_chart_data((5, 3))
+        cm = make_cols_from_cmap(random.choice(BAR_CMAPS), len(d), 0.2)
+
+        plt.close('all')
+        _, ax = plt.subplots()
+        ax = bar_chart(values=d, labels=names, ax=ax, color=cm,
+                       show=self.show)
         assert isinstance(ax, plt.Axes)
         return
 
@@ -46,14 +60,24 @@ class TestBarChart(unittest.TestCase):
         d, names = get_chart_data(5)
         cm = make_cols_from_cmap(random.choice(BAR_CMAPS), len(d), 0.2)
 
-        ax = bar_chart(values=d, labels=names, color=cm, orient='v', show=self.show)
+        ax = bar_chart(values=d, labels=names, color=cm, orient='v',
+                       show=self.show, sort=True)
+        assert isinstance(ax, plt.Axes)
+        return
+
+    def test_h_sorted_3(self):
+        d, names = get_chart_data((5, 3))
+        cm = make_cols_from_cmap(random.choice(BAR_CMAPS), len(d), 0.2)
+
+        ax = bar_chart(values=d, labels=names, color=cm, orient='v',
+                       show=self.show, sort=True)
         assert isinstance(ax, plt.Axes)
         return
 
     def test_vertical_without_axis(self):
         d, names = get_chart_data(5)
         cm = make_cols_from_cmap(random.choice(BAR_CMAPS), len(d), 0.2)
-        ax = bar_chart(values=d, labels=names, color=cm, sort=True,
+        ax = bar_chart(values=d, labels=names, color=cm,
                        orient='v', show=self.show)
         assert isinstance(ax, plt.Axes)
         return
@@ -121,12 +145,93 @@ class TestBarChart(unittest.TestCase):
         assert isinstance(ax, plt.Axes)
         return
 
+    def test_color_3(self):
+        ax = bar_chart(np.random.randint(1, 10, (10, 3)),
+                       color=["Blue", 'salmon', 'cadetblue'], show=self.show)
+        assert isinstance(ax, plt.Axes)
+        return
+
     def test_cmap(self):
         ax = bar_chart(np.random.randint(1, 10, 10),
                        cmap="GnBu",
                   show=self.show)
         assert isinstance(ax, plt.Axes)
         return
+
+    def test_cmap_3(self):
+        ax = bar_chart(np.random.randint(1, 10, (10, 3)),
+                       cmap=['GnBu', 'PuBu', 'PuBuGn'],
+                  show=self.show)
+        assert isinstance(ax, plt.Axes)
+        return
+
+
+class TestShareAxesFalse(unittest.TestCase):
+
+    show = False
+
+    def test_bar_h_3(self):
+        d, names = get_chart_data((5, 3))
+        cm = make_cols_from_cmap(random.choice(BAR_CMAPS), len(d), 0.2)
+
+        plt.close('all')
+        _, ax = plt.subplots()
+        ax_list = bar_chart(values=d, labels=names, ax=ax, color=cm,
+                       show=self.show, share_axes=False)
+        for ax in ax_list:
+            assert isinstance(ax, plt.Axes)
+        return
+
+    def test_bar_v_3(self):
+        d, names = get_chart_data((5, 3))
+        cm = make_cols_from_cmap(random.choice(BAR_CMAPS), len(d), 0.2)
+
+        plt.close('all')
+        _, ax = plt.subplots()
+        ax_list = bar_chart(values=d, labels=names, ax=ax, color=cm,
+                            show=self.show, share_axes=False,
+                            orient='v'
+                            )
+        for ax in ax_list:
+            assert isinstance(ax, plt.Axes)
+        return
+
+    def test_h_sorted_3(self):
+        d, names = get_chart_data((5, 3))
+        cm = make_cols_from_cmap(random.choice(BAR_CMAPS), len(d), 0.2)
+
+        ax_list = bar_chart(values=d, labels=names, color=cm,
+                       show=self.show, sort=True, share_axes=False)
+        for ax_list in ax_list:
+            assert isinstance(ax_list, plt.Axes)
+        return
+
+    def test_v_sorted_3(self):
+        d, names = get_chart_data((5, 3))
+        cm = make_cols_from_cmap(random.choice(BAR_CMAPS), len(d), 0.2)
+
+        ax_list = bar_chart(values=d, labels=names, color=cm, orient='v',
+                       show=self.show, sort=True, share_axes=False)
+        for ax_list in ax_list:
+            assert isinstance(ax_list, plt.Axes)
+        return
+
+    def test_color_3(self):
+        ax_list = bar_chart(np.random.randint(1, 10, (10, 3)),
+                       color=["Blue", 'salmon', 'cadetblue'],
+                       show=self.show, share_axes=False)
+        for ax in ax_list:
+            assert isinstance(ax, plt.Axes)
+        return
+
+    def test_cmap_3(self):
+        ax_list = bar_chart(np.random.randint(1, 10, (10, 3)),
+                       cmap=['GnBu', 'PuBu', 'PuBuGn'],
+                  show=self.show, share_axes=False)
+        for ax in ax_list:
+            assert isinstance(ax, plt.Axes)
+        return
+
 
 
 if __name__ == "__main__":

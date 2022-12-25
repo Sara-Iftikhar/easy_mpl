@@ -60,7 +60,7 @@ def spider_plot(
     Returns
     -------
     plt.Axes
-        matplotlib axes on which plot is drawn
+       :obj:`matplotlib.axes` on which plot is drawn
 
     Examples
     --------
@@ -111,20 +111,19 @@ def spider_plot(
     assert N == len(data)
 
     if not isinstance(plot_kws, list):
-        plot_kws = [plot_kws for _ in range(N)]
+        plot_kws = [plot_kws for _ in range(data.shape[1])]
 
     def_color = plt.cm.get_cmap('Set2', data.shape[1])
 
     if color is None:
         color = [def_color(i) for i in range(data.shape[1])]
+    elif not isinstance(color, list):
+        color = [color for _ in range(data.shape[1])]
+
     if fill_color is None:
         fill_color = [def_color(i) for i in range(data.shape[1])]
-
-    if not isinstance(color, list):
-        color = [color for _ in range(N)]
-
-    if not isinstance(fill_color, list):
-        fill_color = [fill_color for _ in range(N)]
+    elif not isinstance(fill_color, list):
+        fill_color = [fill_color for _ in range(data.shape[1])]
 
     angles = [n / float(N) * 2 * math.pi for n in range(N)]
     angles += angles[:1]
@@ -168,7 +167,8 @@ def spider_plot(
                         color='red',
                         zorder=10)
 
-    plt.gca().set_rmax(np.max(data) + np.max(data)*0.3)
+    plt.gca().set_rmax(np.max(data) + np.max(data)*0.2)
+    plt.gca().set_rmin(np.min(data) - abs(np.min(data) * 0.2))
 
     _leg_kws = {'labelspacing': 0.1, 'fontsize': 12, 'bbox_to_anchor': (1.3, 1.1)}
     leg_kws = leg_kws or {}

@@ -38,14 +38,14 @@ class TestPie(unittest.TestCase):
 
     def test_nan_in_fraction(self):
         ax = pie([0.1, 0.2, np.nan, 0.2], show=self.show,
-                 title="nan_in_fraction")
+                 ax_kws={'title':"nan_in_fraction"})
         assert isinstance(ax, plt.Axes)
         return
 
     def test_nan_in_vals(self):
         vals = np.random.randint(0, 5, 100).astype("float32")
         vals[np.random.choice(vals.size, 5, replace=False)] = np.nan
-        ax = pie(vals, show=self.show, title="nan_in_vals")
+        ax = pie(vals, show=self.show, ax_kws={'title':"nan_in_vals"})
         assert isinstance(ax, plt.Axes)
         return
 

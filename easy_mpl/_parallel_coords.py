@@ -1,5 +1,4 @@
 
-
 __all__ = ["parallel_coordinates"]
 
 
@@ -21,7 +20,7 @@ def parallel_coordinates(
         names: list = None,
         cmap: str = None,
         linestyle: str = "bezier",
-        names_fontsize: int = 14,
+        coord_title_kws: dict = None,
         title: str = 'Parallel Coordinates Plot',
         figsize: tuple = None,
         ticklabel_kws: dict = None,
@@ -46,8 +45,9 @@ def parallel_coordinates(
             oclumns in data.
         cmap : str, optional
             colormap to be used
-        names_fontsize : int, optional
-            fontsize for names
+        coord_title_kws : dict, optional
+            keyword arguments for coodinate titles. All of these arguments will go to
+            :obj:`matplotlib.axes.Axes.set_xticklabels`
         linestyle : str, optional
             either "straight" or "bezier". Default is "bezier".
         title : str, optional
@@ -209,9 +209,16 @@ def parallel_coordinates(
             ax.set_yticks(ax.get_yticks().tolist())
             ax.set_yticklabels([label_format(x) for x in ticks_loc], **ticklabel_kws)
 
+    if coord_title_kws is None:
+        coord_title_kws = dict()
+
+    _coord_title_kws = {'fontsize': 14}
+
+    _coord_title_kws.update(coord_title_kws)
+
     host.set_xlim(0, num_cols - 1)
     host.set_xticks(range(num_cols))
-    host.set_xticklabels(names, fontsize=names_fontsize)
+    host.set_xticklabels(names, **_coord_title_kws)
     host.tick_params(axis='x', which='major', pad=7)
     host.spines['right'].set_visible(False)
     host.xaxis.tick_top()

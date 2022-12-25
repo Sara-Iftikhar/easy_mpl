@@ -6,7 +6,10 @@ from typing import Union, List, Tuple
 import numpy as np
 import matplotlib.pyplot as plt
 
-from .utils import process_axis
+from .utils import process_axes
+from .utils import is_dataframe
+from .utils import is_series
+from .utils import create_subplots
 from .utils import make_cols_from_cmap
 
 
@@ -19,21 +22,26 @@ def boxplot(
         ax:plt.Axes = None,
         show:bool = True,
         ax_kws:dict = None,
+        share_axes:bool = True,
+        figsize:tuple = None,
         **box_kws,
-)->Tuple[plt.Axes, dict]:
+)->Tuple[Union[plt.Axes, List[plt.Axes]], Union[List[dict], dict]]:
     """
     Draws the box and whiker plot
 
     parameters
     ----------
     data :
-        array or list of arrays
+        array like (list, numpy array, pandas dataframe/series) or list of
+        array likes. If list of array likes, the length of arrays in the list
+        can be different.
     line_color :
-        name of color/colors/cmap lines/boundaries of box
+        name of color/colors/cmap for lines/boundaries of box
     line_width :
-        width of the box lines
+        width of the box lines.
     fill_color :
-        name of color/colors/cmap to fill the boxes
+        name of color/colors/cmap to fill the boxes. It can be any valid
+         matplotlib color or cmap.
     labels : str/list (default=None)
         used for ticklabels of x-axes
     ax : plt.Axes, optional (default=None)
@@ -41,16 +49,21 @@ def boxplot(
     show : bool (default=show)
         whether to show the plot or not
     ax_kws : dict (default=None)
-        keyword arguments of :func:`process_axis`
+        keyword arguments of :py:func:`easy_mpl.utils.process_axes`
+    share_axes : bool (default=True)
+        whether to draw all the histograms on one axes or not
+    figsize : tuple (default=None)
+        figure size as tuple (width, height)
     **box_kws :
-        any additional keyword argument for axes.boxplot_
+        any additional keyword argument for :obj:`matplotlib.axes.Axes.boxplot`
 
     Returns
     -------
     tuple
         a tuple of two
-            plt.Axes
-            a dictionary which consists of boxes, medians, whiskers, fliers
+            - plt.Axes or list of :obj:`matplotlib.axes`
+            - a dictionary or list of dictionaries which consists of boxes,
+              medians, whiskers, fliers
 
     Examples
     ---------
@@ -64,8 +77,6 @@ def boxplot(
 
     See :ref:`sphx_glr_auto_examples_boxplot.py` for more examples
 
-    .. _axes.boxplot:
-        https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.boxplot.html
     """
 
     if ax is None:
@@ -74,64 +85,193 @@ def boxplot(
     _box_kws = {
     }
 
-    if labels is None and hasattr(data, "columns"):
-        labels = data.columns.tolist()
-    elif labels is not None:
-        assert isinstance(labels, list), f"labels should be list not {type(labels)}"
-        labels = labels.copy()
+    data, labels = _unpack_data(data, labels, share_axes)
 
+    if share_axes:
+        nplots = 1
+    else:
+        nplots = len(labels)
 
     if box_kws is None:
         box_kws = dict()
 
     _box_kws.update(box_kws)
 
-    box_out = ax.boxplot(data, **_box_kws)
+    f, axes = create_subplots(nplots, ax=ax, figsize=figsize)
 
-    if isinstance(fill_color, str) or is_rgb(fill_color):
-        if isinstance(fill_color, str) and fill_color in plt.colormaps():
-            fill_color = make_cols_from_cmap(fill_color, len(box_out['boxes']))  # name of cmap
-        else:
-            fill_color = [fill_color for _ in range(len(box_out['boxes']))]   # name of color
+    if isinstance(axes, np.ndarray):
+        axes = axes.flatten().tolist()
+    elif isinstance(axes, plt.Axes):
+        axes = [axes]
 
-    if isinstance(line_color, str) or is_rgb(line_color):
-        if isinstance(line_color, str) and line_color in plt.colormaps():
-            fill_color = make_cols_from_cmap(fill_color, len(box_out['boxes']))  # name of cmap
-        else:
-            line_color = [line_color for _ in range(len(box_out['boxes']))]
+    nboxes = len(labels)
+    if len(labels)==1:
+        nboxes = len(labels[0])
+    fill_colors = _unpack_colors(fill_color, nboxes, share_axes)
+    line_colors = _unpack_colors(line_color, nboxes, share_axes)
+    line_widths = _unpack_linewidth(line_width, nboxes, share_axes)
 
-    if isinstance(line_width, (float, int)):
-        line_width = [line_width for _ in range(len(box_out['boxes']))]
+    box_outs = []
+    for (idx, name), x, ax in zip(enumerate(labels), data, axes):
+        box_out = ax.boxplot(x, **_box_kws)
+        box_outs.append(box_out)
 
-    for idx, patch in enumerate(box_out['boxes']):
-        if hasattr(patch, 'set_facecolor'):
-            if fill_color is not None:
-                patch.set_facecolor(fill_color[idx])
+        _set_box_props(fill_colors[idx], line_colors[idx],
+                       line_widths[idx], box_out)
 
-        if hasattr(patch, 'set_color') and line_color is not None:
-            patch.set_color(line_color[idx])
+        _set_ticklabels(ax, share_axes, name, _box_kws)
 
-        if hasattr(patch, 'set_linewidth') and line_width is not None:
-            patch.set_linewidth(line_width[idx])
-
-    if labels is not None:
-        kws = dict()
-        if len(labels)>7:
-            kws['rotation'] = 90
-        ax.set_xticks(range(len(labels) + 1))
-        labels.insert(0, '')
-        ax.set_xticklabels(labels, **kws)
-
-    if ax_kws:
-        process_axis(ax, **ax_kws)
+        if ax_kws:
+            process_axes(ax, **ax_kws)
 
     if show:
         plt.show()
 
-    return ax, box_out
+    if len(box_outs)==1:
+        box_outs = box_outs[0]
+
+    if len(axes)==1:
+        axes = axes[0]
+
+    return axes, box_outs
+
+
+def _set_ticklabels(ax, share_axes, name, box_kws):
+
+    if name is not None:
+        kws = dict()
+
+        if share_axes:
+            if box_kws.get('vert', True):
+                ax.set_xticklabels(name)
+            else:
+                ax.set_yticklabels(name)
+        else:
+            if isinstance(name, (str, int)):
+                if box_kws.get('vert', True):
+                    ax.set_xticklabels([name])
+                else:
+                    ax.set_yticklabels([name], rotation=90, va='center')
+            elif isinstance(name, list):
+                if box_kws.get('vert', True):
+                    ax.set_xticklabels(name)
+                else:
+                    ax.set_yticklabels(name, rotation=90, va='center')
+
+        if share_axes and len(name) > 7:
+            kws['rotation'] = 90
+            ax.xaxis.set_tick_params(rotation=90)
+
+    return
 
 
 def is_rgb(color)->bool:
-    if isinstance(color, list) and len(color)==3 and isinstance(color[0], (int, float)):
+    if isinstance(color, (list, np.ndarray)) and len(color)==3 and isinstance(color[0], (int, float)):
         return True
     return False
+
+
+def _unpack_linewidth(line_width, nboxes, share_axes):
+    if isinstance(line_width, (float, int)):
+        line_widths = [[line_width] for _ in range(nboxes)]
+    elif line_width is None:
+        line_widths = [[None] for _ in range(nboxes)]
+
+    if share_axes:
+       line_widths = [[line_width[0] for line_width in line_widths]]
+
+    return line_widths
+
+
+def _unpack_colors(color, nboxes, share_axes)->list:
+    if isinstance(color, str):
+        if color in plt.colormaps():
+            colors = make_cols_from_cmap(color, nboxes)
+            colors = [[color] for color in colors]
+        else:
+            colors = [[color] for _ in range(nboxes)]
+    elif is_rgb(color):
+        colors = [[color] for _ in range(nboxes)]
+    elif hasattr(color, '__len__'):
+        assert len(color) == nboxes, f"{len(color)} colors for {nboxes} boxes?"
+        colors = [[clr] for clr in color]
+    elif color is None:
+        colors = [[None] for _ in range(nboxes)]
+    else:
+        raise ValueError(f"{color} is not recognized as valid color")
+
+    if share_axes:
+       colors = [[color[0] for color in colors]]
+
+    return colors
+
+
+def _set_box_props(fill_color:list,
+                   line_color:list,
+                   line_width:list,
+                   box_out):
+
+    for idx, patch in enumerate(box_out['boxes']):
+        if hasattr(patch, 'set_facecolor'):
+            if fill_color[idx] is not None:
+                patch.set_facecolor(fill_color[idx])
+        elif hasattr(patch, 'set_markerfacecolor'):
+            if fill_color[idx] is not None:
+                patch.set_markerfacecolor(fill_color[idx])
+
+        if hasattr(patch, 'set_color') and line_color[idx] is not None:
+            patch.set_color(line_color[idx])
+
+        if hasattr(patch, 'set_linewidth') and line_width[idx] is not None:
+            patch.set_linewidth(line_width[idx])
+
+    return
+
+
+def _unpack_data(x, labels, share_axes:bool)->Tuple[list, list]:
+
+    if isinstance(x, np.ndarray):
+        if len(x) == x.size:
+            X = [x]
+            names = [None]
+        else:
+            if share_axes:
+                X = [x]
+                names = [[f"{i}" for i in range(x.shape[1])]]
+            else:
+                X = [x[:, i] for i in range(x.shape[1])]
+                names = [f"{i}" for i in range(x.shape[1])]
+
+    elif is_dataframe(x):
+        if share_axes:
+            names = [x.columns.tolist()]
+            X = [x]
+        else:
+            X = []
+            for col in x.columns:
+                X.append(x[col].values)
+            names = x.columns.tolist()
+
+    elif is_series(x):
+        X = x.values
+        names = [x.name]
+
+    elif isinstance(x, (list, tuple)) and isinstance(x[0], (list, tuple, np.ndarray)):
+        X = [x_ for x_ in x]
+        names = [None]*len(X)
+
+    elif isinstance(x, (list, tuple)) and not is_dataframe(x[0]):
+        X = [x]
+        names = [None]
+    else:
+        raise ValueError(f"unrecognized type of x {type(x)}")
+
+    if labels is not None:
+        if isinstance(labels, str):
+            labels = [labels]
+        if share_axes:
+            labels = [labels]
+        assert len(labels) == len(names), f"{len(names)} does not match data"
+        names = labels
+
+    return X, names

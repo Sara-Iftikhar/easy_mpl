@@ -47,14 +47,16 @@ class TestRegplot(unittest.TestCase):
         x[10] = np.nan
         y = np.random.random(100)
         y[5] = np.nan
-        ax = regplot(x, y, show=self.show, title='test_with_nan_vals')
+        ax = regplot(x, y, show=self.show,
+                     ax_kws={'title':'test_with_nan_vals'})
         assert isinstance(ax, plt.Axes)
         return
 
     def test_nan_in_x(self):
         x = np.append(self.x, np.nan)
         y = np.append(self.y, 0.5)
-        ax = regplot(x, y, show=self.show, title='test_with_nan_vals')
+        ax = regplot(x, y, show=self.show,
+                     ax_kws={'title':'test_with_nan_vals'})
         assert isinstance(ax, plt.Axes)
         return
 
@@ -76,9 +78,16 @@ class TestRegplot(unittest.TestCase):
         regplot(self.x, self.y, line_color=np.random.random(3), show=self.show)
         return
 
-
     def test_fillcolor_as_rgb(self):
         regplot(self.x, self.y, fill_color=np.random.random(3), show=self.show)
+        return
+
+    def test_hist_on_marginals(self):
+        regplot(self.x, self.y, marginals=True, show=self.show)
+        return
+
+    def test_ridge_on_marginals(self):
+        regplot(self.x, self.y, marginals=True, hist=False, show=self.show)
         return
 
 if __name__ == "__main__":
