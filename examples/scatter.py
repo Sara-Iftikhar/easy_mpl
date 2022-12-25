@@ -11,6 +11,8 @@ it provides some functionalities which are not available for ``plot`` function.
 
 """
 
+# sphinx_gallery_thumbnail_number = 4
+
 from easy_mpl import scatter
 import numpy as np
 import matplotlib.pyplot as plt
