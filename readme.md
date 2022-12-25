@@ -69,7 +69,7 @@ from easy_mpl import plot
 x = np.random.randint(2, 10, 10)
 
 plot(x, '--o', color=np.array([35, 81, 53]) / 256.0,
-     ax_kws=(xlabel="Days", ylabel="Values"))
+     ax_kws=dict(xlabel="Days", ylabel="Values"))
 ```
 <p float="left">
   <img src="/docs/source/imgs/plot.png"  />

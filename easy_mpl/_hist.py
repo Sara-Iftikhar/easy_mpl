@@ -125,8 +125,10 @@ def hist(
         out = ax.hist(x, **kwargs)
         outs.append(out)
 
+        _ax_kws = dict(grid=grid)
         if ax_kws:
-            process_axes(ax, grid=grid, **ax_kws)
+            _ax_kws.update(ax_kws)
+        process_axes(ax, **_ax_kws)
 
         if name:
             ax.legend()
