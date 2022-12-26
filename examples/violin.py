@@ -27,7 +27,7 @@ for col in df.columns:
 # %%
 # The basic violin plot can be drawn by passing a pandas DataFrame with one or more columns.
 
-violin_plot(df[cols])
+_ = violin_plot(df[cols])
 
 # %%
 # The function `:func:`violin_plot` always returns a matplotlib axes object.

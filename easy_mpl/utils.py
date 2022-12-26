@@ -404,7 +404,7 @@ def version_info():
     from . import __version__
     info = dict()
     info['easy_mpl'] = __version__
-    info['matplotlib'] = matplotlib._get_version()
+    info['matplotlib'] = matplotlib.__version__
     info['numpy'] = np.__version__
 
     try:
@@ -528,6 +528,7 @@ class AddMarginalPlots(object):
                  ):
 
         self.ax = ax
+        self._n = len(x)
 
         if not isinstance(pad, (list, tuple)):
             pad = [pad, pad]
@@ -562,7 +563,7 @@ class AddMarginalPlots(object):
                       ):
 
         line_kws = self._get_line_kws(self.ridge_line_kws[0])
-        fill_kws = self._get_fill_kws(self.ridge_line_kws[1])
+
 
         if self.fix_limits:
             xlim = np.array(self.ax.get_xlim()) * 1.05
@@ -590,6 +591,8 @@ class AddMarginalPlots(object):
         ax2.plot(ind, data, **line_kws)
 
         if not self.hist:
+            fill_kws = self._get_fill_kws(self.fill_kws[0], n=len(ind))
+
             ax2.fill_between(ind, data, **fill_kws)
 
         if self.fix_limits:
@@ -603,7 +606,6 @@ class AddMarginalPlots(object):
                       ):
 
         line_kws = self._get_line_kws(self.ridge_line_kws[1])
-        fill_kws = self._get_fill_kws(self.fill_kws[1])
 
         if self.fix_limits:
             ylim = self.ax.get_ylim()
@@ -633,6 +635,7 @@ class AddMarginalPlots(object):
         ax2.plot(data, ind, **line_kws)
 
         if not self.hist:
+            fill_kws = self._get_fill_kws(self.fill_kws[1], n=len(ind))
             ax2.fill_betweenx(ind, data, **fill_kws)
 
         if self.fix_limits:
@@ -648,8 +651,10 @@ class AddMarginalPlots(object):
         return _line_kws
 
     @staticmethod
-    def _get_fill_kws(fill_kws)->dict:
-        _fill_kws = {"alpha": 0.5, 'color':'r'}
+    def _get_fill_kws(fill_kws, n)->dict:
+        _fill_kws = {"alpha": 0.5, 'color':'r',
+                     'where': np.array([True for _ in range(n)])
+                     }
         if fill_kws is not None:
             _fill_kws.update(fill_kws)
         return _fill_kws

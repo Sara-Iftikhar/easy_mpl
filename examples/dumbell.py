@@ -19,9 +19,9 @@ version_info()
 
 st = np.random.randint(1, 5, 10)
 en = np.random.randint(11, 20, 10)
-dumbbell_plot(st, en)
+_ = dumbbell_plot(st, en)
 
 #############################
 
 # modify line color
-dumbbell_plot(st, en, line_kws={'color':"black"})
+_ = dumbbell_plot(st, en, line_kws={'color':"black"})

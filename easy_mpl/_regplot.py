@@ -273,5 +273,7 @@ def _regplot(x, y, ax, ci=None,
     if ci:
         ax.fill_between(grid[:, 1], *err_bands,
                         facecolor=fill_color,
-                        alpha=.15)
+                        alpha=.15,
+                        where=np.array([True for _ in range(len(grid))])
+                        )
     return ax

@@ -20,25 +20,25 @@ rng = np.random.default_rng(313)
 
 x = rng.uniform(0, 10, size=100)
 y = x + rng.normal(size=100)
-regplot(x, y)
+_ = regplot(x, y)
 
 
 #%%
 # customizing marker style
-regplot(x, y, marker_color='black')
+_ = regplot(x, y, marker_color='black')
 
 
 #%%
 # customizing line style
-regplot(x, y, line_color='black')
+_ = regplot(x, y, line_color='black')
 
 #%%
 # customizing fill color
-regplot(x, y, fill_color='black')
+_ = regplot(x, y, fill_color='black')
 
 #%%
 
-regplot(x, y, ci=None, line_color='green')
+_ = regplot(x, y, ci=None, line_color='green')
 
 # %%
 # We can show distribution of x and y along the marginals
@@ -47,7 +47,7 @@ regplot(x, y, ci=None, line_color='green')
 RIDGE_LINE_KWS = [{'color': 'k', 'lw': 1.0}, {'color': 'crimson', 'lw': 1.0}]
 HIST_KWS = [{'color': 'darkcyan'}, {'color': 'tab:brown'}]
 
-regplot(x, y,
+_ = regplot(x, y,
              marker_size = 28,
              marker_color='crimson',
              line_color='k',

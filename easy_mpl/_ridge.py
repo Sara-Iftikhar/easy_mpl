@@ -192,7 +192,8 @@ def ridge(
                          linewidth=line_width[idx], **plot_kws)
 
         _fill_kws = {
-            "alpha": 1.0
+            "alpha": 1.0,
+            'where': np.array([True for _ in range(len(xs[col]))])
         }
 
         if fill_kws is None:

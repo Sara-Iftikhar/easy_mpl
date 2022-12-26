@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 
 from easy_mpl.utils import create_subplots
 from easy_mpl.utils import to_1d_array, has_multi_cols
+from easy_mpl.utils import version_info
 
 
 class Testto1darray(unittest.TestCase):
@@ -84,6 +85,10 @@ class TestMisc(unittest.TestCase):
 
     def test_multi_col_2d_array(self):
         assert has_multi_cols(np.array([1,2,3, 4]).reshape(-1, 2))
+        return
+
+    def test_version_info(self):
+        version_info()
         return
 
 
