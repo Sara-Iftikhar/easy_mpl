@@ -16,8 +16,8 @@ def pie(
         fractions: Union[list, np.ndarray] = None,
         labels: list = None,
         ax: plt.Axes = None,
-        show: bool = True,
         ax_kws: dict = None,
+        show: bool = True,
         **kwargs
 ) -> plt.Axes:
     """
@@ -63,10 +63,14 @@ def pie(
         https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.pie.html
     """
     # todo, add example for and partial pie chart
+
+    if ax_kws is None:
+        ax_kws = dict()
+
     if ax is None:
         ax = plt.gca()
-        if 'figsize' in kwargs:
-            figsize = kwargs.pop('figsize')
+        if 'figsize' in ax_kws:
+            figsize = ax_kws.pop('figsize')
             ax.figure.set_size_inches(figsize)
 
     if fractions is None:

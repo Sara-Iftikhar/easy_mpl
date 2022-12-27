@@ -15,8 +15,9 @@ def dumbbell_plot(
         start_kws: dict = None,
         end_kws: dict = None,
         line_kws: dict = None,
-        show: bool = True,
         ax: plt.Axes = None,
+        ax_kws:dict = None,
+        show: bool = True,
         **kwargs
 ) -> plt.Axes:
     """
@@ -41,13 +42,15 @@ def dumbbell_plot(
         line_kws : dict, optional
             any additional keyword arguments for `lines.Line2D`_ to modify line
             style/color which connects dumbbells.
-        show : bool, optional
-            whether to show the plot or not
         ax : plt.Axes, optional
             matplotlib axes object to work with. If not given then currently available
             axes will be used.
+        ax_kws : dict optional
+            any keyword arguments for :py:func:`easy_mpl.utils.process_axes`.
+        show : bool, optional
+            whether to show the plot or not
         **kwargs :
-            any additional keyword arguments for :py:func:`easy_mpl.utils.process_axes`.
+            any additional keyword arguments for
 
     Returns
     -------
@@ -70,10 +73,14 @@ def dumbbell_plot(
         https://matplotlib.org/stable/api/_as_gen/matplotlib.lines.Line2D.html
 
     """
+
+    if ax_kws is None:
+        ax_kws = dict()
+
     if ax is None:
         ax = plt.gca()
-        if 'figsize' in kwargs:
-            figsize = kwargs.pop('figsize')
+        if 'figsize' in ax_kws:
+            figsize = ax_kws.pop('figsize')
             ax.figure.set_size_inches(figsize)
 
     # convert starting and ending values to 1d array
@@ -87,11 +94,13 @@ def dumbbell_plot(
     if labels is None:
         labels = np.arange(len(index))
 
-    line_kws = line_kws or {'color': 'skyblue'}
+    _line_kws = {'color': 'skyblue'}
+    if line_kws is not None:
+        _line_kws.update(line_kws)
 
     # draw line segment
     def lien_segment(p1, p2, axes):
-        l = mlines.Line2D([p1[0], p2[0]], [p1[1], p2[1]], **line_kws)
+        l = mlines.Line2D([p1[0], p2[0]], [p1[1], p2[1]], **_line_kws)
         axes.add_line(l)
         return
 
@@ -113,8 +122,9 @@ def dumbbell_plot(
     ax.set_yticks(index)
     ax.set_yticklabels(labels)
 
-    if kwargs:
-        process_axes(ax=ax, **kwargs)
+    if ax_kws:
+        process_axes(ax=ax, **ax_kws)
+
     # show plot if show=True
     if show:
         plt.tight_layout()  # todo should we put it outside of if?

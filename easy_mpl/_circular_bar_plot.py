@@ -21,9 +21,9 @@ def circular_bar_plot(
         min_max_range: tuple = None,
         label_padding: int = 4,
         figsize: tuple = None,
-        show: bool = True,
         text_kws: dict = None,
         ax_kws: dict = None,
+        show: bool = True,
         **kwargs
 ) -> plt.Axes:
     """

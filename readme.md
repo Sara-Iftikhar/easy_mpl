@@ -14,20 +14,8 @@ do ```plot(data)``` or ```imshow(img)```. This motivation gave birth to this lib
 `easy_mpl` stands for easy maplotlib. The purpose of this is to ease the use of 
 matplotlib while keeping the flexibility of object oriented programming paradigm 
 of matplotlib intact. Using these one liners will save the time and will not hurt. 
-Moreover, you can swap every function of this library with that of matplotlib and 
-vice versa.
-
-``easy_mpl`` contains two kinds of functions, one which are just wrappers around their 
-matplotlib alternatives. These include [plot](#plot), [scatter](#scatter), [bar_chart](#bar_chart), [pie](#pie),
-[hist](#hist), [imshow](#imshow) and [boxplot](#boxplot). As the name suggests, these are just alternatives
-to their matplotlib aliases. All of these functions take same input arguments as taken by
-corresponding matplotlib functions. All these functions take three further input
-arguments. These are ``ax``, ``ax_kws`` and ``show``. Moreover these functions also take
-some input arguments which can be used for further manipulation of these plots. The other
-kinds of functions are helper functions to data visualization e.g., [regplot](#regplot), 
-[dumbbell_plot](#dumbbell_plot), [ridge](#ridge), [parallel_coordinates](#parallel_coordinates), 
-[taylor_plot](#taylor_plot), [lollipop_plot](#lollipop_plot), [circular_bar_plot](#circular_bar_plot),
-[violin_plot](#violin_plot) and [spider_plot](#spider_plot)
+Moreover, you can swap most functions of this library with that of matplotlib and 
+vice versa. For more detailed description see [introduction](https://easy-mpl.readthedocs.io/en/latest/auto_examples/intro.html)
 
 # Installation
 

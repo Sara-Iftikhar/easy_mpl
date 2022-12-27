@@ -19,9 +19,9 @@ def scatter(
         text_kws : dict = None,
         xoffset = 0.1,
         yoffset = 0.1,
-        show: bool = True,
         ax: plt.Axes = None,
         ax_kws:dict = None,
+        show: bool = True,
         **kwargs
 ) -> Tuple[plt.Axes, mpl.collections.PathCollection]:
     """

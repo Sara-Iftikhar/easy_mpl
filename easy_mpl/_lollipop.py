@@ -8,7 +8,8 @@ from .utils import to_1d_array, process_axes
 
 
 def lollipop_plot(
-        y, x=None,
+        y,
+        x=None,
         orientation: str = "vertical",
         sort: bool = False,
         line_style: str = '-',
@@ -19,8 +20,9 @@ def lollipop_plot(
         marker_color: str = 'teal',
         marker_size: int = 30,
         marker_kws: dict = None,
-        show: bool = True,
         ax: plt.Axes = None,
+        ax_kws:dict = None,
+        show: bool = True,
         **kwargs
 ) -> plt.Axes:
     """
@@ -94,11 +96,13 @@ def lollipop_plot(
     .. _matplotlib.axes.Axes.scatter:
         https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.scatter.html
     """
+    if ax_kws is None:
+        ax_kws = dict()
 
     if ax is None:
         ax = plt.gca()
-        if 'figsize' in kwargs:
-            figsize = kwargs.pop('figsize')
+        if 'figsize' in ax_kws:
+            figsize = ax_kws.pop('figsize')
             ax.figure.set_size_inches(figsize)
 
     y = to_1d_array(y)

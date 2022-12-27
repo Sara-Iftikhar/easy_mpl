@@ -8,6 +8,7 @@ Welcome to easy_mpl's documentation!
    :maxdepth: 2
    :caption: contents
 
+   intro
    plots
    auto_examples/index
 

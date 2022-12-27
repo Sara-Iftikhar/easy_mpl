@@ -51,8 +51,8 @@ def regplot(
         fill_kws: Union[dict, List[dict]] = None,
         hist: bool = True,
         hist_kws: Union[dict, List[dict]] = None,
+        ax: plt.Axes = None,
         show: bool = True,
-        ax: plt.Axes = None
 ) -> plt.Axes:
     """
     Regpression plot with regression line and confidence interval

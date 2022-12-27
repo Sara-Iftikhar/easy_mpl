@@ -29,7 +29,7 @@ class TestImshow(unittest.TestCase):
 
     def test_figsize(self):
         img = imshow(np.random.random((10, 10)), colorbar=True,
-            ax_kws=dict(title="figsize"), figsize=(10, 10),
+            ax_kws=dict(title="figsize", figsize=(10, 10)),
                        show=self.show)
         assert isinstance(img, matplotlib.image.AxesImage)
         plt.close('all')

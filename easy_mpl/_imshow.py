@@ -14,14 +14,14 @@ def imshow(
         values,
         yticklabels=None,
         xticklabels=None,
-        show=True,
-        annotate=False,
+        annotate:bool = False,
         annotate_kws:dict = None,
         colorbar: bool = False,
-        ax=None,
         white_grid: bool = False,
         cb_tick_params: dict = None,
+        ax:plt.Axes = None,
         ax_kws: dict = None,
+        show:bool = True,
         **kwargs
 ):
     """
@@ -86,11 +86,13 @@ def imshow(
     See :ref:`sphx_glr_auto_examples_imshow.py` for more examples
 
     """
+    if ax_kws is None:
+        ax_kws = dict()
 
     if ax is None:
         ax = plt.gca()
-        if 'figsize' in kwargs:
-            figsize = kwargs.pop('figsize')
+        if 'figsize' in ax_kws:
+            figsize = ax_kws.pop('figsize')
             ax.figure.set_size_inches(figsize)
 
     if hasattr(values, "values") and hasattr(values, "columns"):

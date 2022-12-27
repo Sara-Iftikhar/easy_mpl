@@ -14,10 +14,10 @@ def hist(
         labels:Union[str, List[str]] = None,
         share_axes:bool = True,
         grid: bool = True,
-        ax: plt.Axes = None,
         subplots_kws:dict = None,
-        show: bool = True,
+        ax: plt.Axes = None,
         ax_kws: dict = None,
+        show: bool = True,
         **kwargs
 ):
     """

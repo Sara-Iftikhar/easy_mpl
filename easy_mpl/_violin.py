@@ -40,8 +40,8 @@ def violin_plot(
         max_dots: Union[int, List[int]] = 100,
         cut: Union[float, tuple, List[float], List[tuple]] = 0.2,
         labels: Union[str, List[str]] = None,
-        show: bool = True,
         ax: plt.Axes = None,
+        show: bool = True,
 ) -> plt.Axes:
     """
     makes violin plot/plots of the arrays in data

@@ -24,13 +24,13 @@ def bar_chart(
         color=None,
         cmap: Union[str, List[str]] = None,
         rotation:int = 0,
-        show:bool = True,
-        ax:plt.Axes = None,
         bar_labels: Union[list, np.ndarray] = None,
         bar_label_kws=None,
         share_axes: bool = True,
         width = None,
+        ax:plt.Axes = None,
         ax_kws: dict = None,
+        show:bool = True,
         **kwargs
 ) -> Union[plt.Axes, List[plt.Axes]]:
     """

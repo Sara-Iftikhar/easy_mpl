@@ -35,11 +35,11 @@ def ridge(
         xlabel: str = None,
         title: str = None,
         figsize: tuple = None,
-        show=True,
         hspace: float = -0.7,
         labels: Union[str, List[str]] = None,
         share_axes: bool = False,
         ax: plt.Axes = None,
+        show=True,
 ) -> List[plt.Axes,]:
     """
     plots distribution of features/columns/arrays in data as ridge.
