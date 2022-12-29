@@ -33,14 +33,14 @@ def hist(
             whether to draw all the histograms on one axes or not?
         grid : bool, optional
             whether to show the grid or not
-        show : bool, optional
-            whether to show the plot or not
-        ax : plt.Axes, optional
-            axes on which to draw the plot
         subplots_kws : dict
             kws which go to plt.subplots() such as figure size (width, height)
+        ax : plt.Axes, optional
+            axes on which to draw the plot
         ax_kws : dict
             keyword arguments for :py:func:`easy_mpl.utils.process_axes`
+        show : bool, optional
+            whether to show the plot or not
         **kwargs : optional
             any keyword arguments for :obj:`matplotlib.axes.Axes.hist`
 

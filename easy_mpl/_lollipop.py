@@ -57,10 +57,12 @@ def lollipop_plot(
     marker_kws : dict, optional
         The keyword arguments for the marker. These arguments are passed to
         `matplotlib.axes.Axes.scatter`_.
-    show : bool, optional (default=True)
-        whether to show the plot or not
     ax : matplotlib.axes.Axes, optional
         The axes to plot on. If not given, current available axes will be used.
+    ax_kws : dict, optional
+        any keyword arguments for :py:func:`easy_mpl.utils.process_axes`.
+    show : bool, optional (default=True)
+        whether to show the plot or not
     **kwargs : optional
         Additional keyword arguments to pass to the process_axis function.
 

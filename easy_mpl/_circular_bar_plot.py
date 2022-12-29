@@ -49,12 +49,12 @@ def circular_bar_plot(
         space between the labels and the bars.
     figsize : tuple, optional
         Size of the figure.
-    show : bool, optional (default=True)
-        Show the plot.
     text_kws : dict, optional (default=None)
         keyword arguments for axes.text()
     ax_kws : optional
         Additional keyword arguments to pass to the :py:func:`easy_mpl.utils.process_axes`.
+    show : bool, optional (default=True)
+        Show the plot.
     **kwargs
         go to :obj:`matplotlib.axes.Axes.bar`
 

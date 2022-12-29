@@ -44,13 +44,13 @@ def scatter(
         only relevant if ``marker_labels`` are provided.
     xoffset : float
     yoffset : float
-    show : bool, optional
-        whether to show the plot or not
     ax : plt.Axes, optional
         :obj:`matplotlib.axes`, if not given, current available axes will be used
     ax_kws : dict (default=None)
         any keyword arguments for processing of axes which will
         be forwarded to :func:`easy_mpl.utils.prcess_axis`
+    show : bool, optional (default=True)
+        whether to show the plot or not
     **kwargs : optional
         any additional keyword arguments for :obj:`matplotlib.axes.Axes.scatter`
 

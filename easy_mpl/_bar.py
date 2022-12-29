@@ -56,10 +56,6 @@ def bar_chart(
             matplotlib colormap
         rotation : int, optional
             rotation angle of ticklabels
-        ax : :obj:`matplotlib.axes`, optional
-            If not given, current available axes will be used
-        show : bool, optional,
-            whether to show the plot or not
         bar_labels : list
             labels of the bars
         bar_label_kws : dict
@@ -70,9 +66,13 @@ def bar_chart(
             separate axes
         width : float
             width of the bars
+        ax : :obj:`matplotlib.axes`, optional
+            If not given, current available axes will be used
         ax_kws : dict, optional
             any keyword arguments for processing of axes that will go to
             :py:func:`easy_mpl.utils.process_axes`
+        show : bool, optional
+            whether to show the plot or not
         **kwargs :
             any additional keyword arguments for :obj:`matplotlib.axes.Axes.bar`
             or :obj:`matplotlib.axes.Axes.barh`

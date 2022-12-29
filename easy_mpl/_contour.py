@@ -53,13 +53,14 @@ def contour(
         ax : plt.Axes, optional
             matplotlib axes to work on. If not given, current active axes will
             be used.
-        show : bool, optional
-            whether to show the plot or not
         ax_kws : dict optional
             any keyword arguments for :py:func:`easy_mpl.utils.process_axes`.
+        show : bool, optional
+            whether to show the plot or not
 
     Returns
     -------
+    plt.Axes
         a matplotliblib Axes
 
     Examples

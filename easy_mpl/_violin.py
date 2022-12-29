@@ -87,11 +87,11 @@ def violin_plot(
         list of tuples, it should match the number of arrays in X.
     labels : list/str (default=None
         names for xticks
-    show : bool (default=True)
-        whether to show the plot or not
     ax : plt.Axes (default=None)
         matplotlib Axes object :obj:`matplotlib.axes` on which to draw the plot. If not given, then
         the currently available axes from plt.gca will be used.
+    show : bool (default=True)
+        whether to show the plot or not
 
     Returns
     -------

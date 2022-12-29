@@ -45,16 +45,16 @@ def boxplot(
          matplotlib color or cmap.
     labels : str/list (default=None)
         used for ticklabels of x-axes
-    ax : plt.Axes, optional (default=None)
-        matploltib axes on which to draw the plot
-    show : bool (default=show)
-        whether to show the plot or not
-    ax_kws : dict (default=None)
-        keyword arguments of :py:func:`easy_mpl.utils.process_axes`
     share_axes : bool (default=True)
         whether to draw all the histograms on one axes or not
     figsize : tuple (default=None)
         figure size as tuple (width, height)
+    ax : plt.Axes, optional (default=None)
+        matploltib axes on which to draw the plot
+    ax_kws : dict (default=None)
+        keyword arguments of :py:func:`easy_mpl.utils.process_axes`
+    show : bool (default=show)
+        whether to show the plot or not
     **box_kws :
         any additional keyword argument for :obj:`matplotlib.axes.Axes.boxplot`
 

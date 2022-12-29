@@ -67,8 +67,6 @@ def ridge(
             title of the figure
         figsize : tuple, optional
             size of figure
-        show : bool, optional
-            whether to show the plot or not
         hspace : float, optional (default=-0.7)
             amount of distance between plots
         labels : list/str (default=None
@@ -78,6 +76,8 @@ def ridge(
         ax : plt.Axes, optional (default=None)
             matplotlib axes object :obj:`matplotlib.axes` on which to draw the ridges.
              If given all ridges will be drawn on this axes.
+        show : bool, optional
+            whether to show the plot or not
 
     Returns
     -------
