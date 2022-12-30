@@ -8,14 +8,14 @@ d. bar_chart
 This file shows the usage of :func:`bar_chart` function.
 """
 
+# sphinx_gallery_thumbnail_number = 4
+
 import numpy as np
 from easy_mpl import bar_chart
 import matplotlib.pyplot as plt
 from easy_mpl.utils import version_info
 
-version_info()
-
-# sphinx_gallery_thumbnail_number = 4
+version_info()  # print version information of all the packages being used
 
 #############################
 # A basic chart requires just a list of values to represent as bars.

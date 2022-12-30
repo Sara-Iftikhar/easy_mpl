@@ -11,7 +11,7 @@ much flexibiliy and just want to get things done as quickly as possible. For exa
 why should I write at least three lines to plot a simple array with legend when same
 can be done in one line and my purpose is just to view the array. Why I can't simply
 do ``plot(data)`` or ``imshow(img)``. This motivation gave birth to this library.
-`easy_mpl` stands for easy maplotlib. The purpose of this is to ease the use of
+`easy_mpl` stands for easy matplotlib. The purpose of this is to ease the use of
 matplotlib while keeping the flexibility of object oriented programming paradigm
 of matplotlib intact. Using these one liners will save the time and will not hurt.
 Moreover, you can swap most function of this library with that of matplotlib and
