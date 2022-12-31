@@ -702,8 +702,9 @@ def is_rgb(color)->bool:
     return False
 
 
-def map_array_to_cmap(array, cmap:str):
-    norm = Normalize(vmin=np.nanmin(array), vmax=np.nanmax(array), clip=True)
+def map_array_to_cmap(array, cmap:str, clip:bool = True):
+    norm = Normalize(vmin=np.nanmin(array).item(),
+                     vmax=np.nanmax(array).item(), clip=clip)
     mapper = cm.ScalarMappable(norm=norm, cmap=cmap)
     colors = mapper.to_rgba(array)
     return colors, mapper

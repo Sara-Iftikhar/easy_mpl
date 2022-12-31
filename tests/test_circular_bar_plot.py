@@ -66,6 +66,23 @@ class TestCircularBarPlot(unittest.TestCase):
         # assert isinstance(ax, plt.Axes)
         return
 
+    def test_ax(self):
+        ax = plt.subplot(111, polar=True)
+        ax = circular_bar_plot(self.data,
+                               ax = ax,
+                               ax_kws={'title':"axistent axes"},
+                               show=self.show)
+        assert isinstance(ax, plt.Axes)
+        return
+
+    def test_cbar(self):
+        ax = circular_bar_plot(self.data,
+                               colorbar=True,
+                               ax_kws={'title':"colorbar"},
+                               show=self.show)
+        assert isinstance(ax, plt.Axes)
+        return
+
     def test_with_nan_vals(self):
         data = np.random.random(50)
         data[10] = np.nan

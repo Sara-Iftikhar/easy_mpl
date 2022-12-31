@@ -1,9 +1,10 @@
 
 __all__ = ["dumbbell_plot"]
 
-from typing import Tuple, Any, Union
+from typing import Tuple
 
 import numpy as np
+import matplotlib as mpl
 import matplotlib.pyplot as plt
 import matplotlib.lines as mlines
 
@@ -28,7 +29,7 @@ def dumbbell_plot(
         ax: plt.Axes = None,
         ax_kws:dict = None,
         show: bool = True
-) -> Tuple[plt.Axes, Any, Any]:
+) -> Tuple[plt.Axes, mpl.collections.PathCollection, mpl.collections.PathCollection]:
     """
     Dumbell plot which indicates variation of several variables
     from start to end.
@@ -175,7 +176,6 @@ def dumbbell_plot(
 
     # show plot if show=True
     if show:
-        plt.tight_layout()  # todo should we put it outside of if?
         plt.show()
 
     return ax, st_paths, en_paths
