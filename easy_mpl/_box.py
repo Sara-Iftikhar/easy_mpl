@@ -7,9 +7,10 @@ import matplotlib
 import numpy as np
 import matplotlib.pyplot as plt
 
-from .utils import process_axes
-from .utils import is_dataframe
+from .utils import is_rgb
 from .utils import is_series
+from .utils import is_dataframe
+from .utils import process_axes
 from .utils import create_subplots
 from .utils import make_cols_from_cmap
 
@@ -170,12 +171,6 @@ def _set_ticklabels(ax, share_axes, name, box_kws):
             ax.xaxis.set_tick_params(rotation=90)
 
     return
-
-
-def is_rgb(color)->bool:
-    if isinstance(color, (list, np.ndarray)) and len(color)==3 and isinstance(color[0], (int, float)):
-        return True
-    return False
 
 
 def _unpack_linewidth(line_width, nboxes, share_axes):

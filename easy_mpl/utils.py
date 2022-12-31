@@ -3,10 +3,12 @@ from typing import Union, Any, Optional, Tuple
 from collections.abc import KeysView, ValuesView
 
 import numpy as np
+import matplotlib.cm as cm
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 from matplotlib.path import Path
 from matplotlib.spines import Spine
+from matplotlib.colors import Normalize
 from matplotlib.transforms import Affine2D
 from matplotlib.projections.polar import PolarAxes
 from matplotlib.patches import RegularPolygon
@@ -179,8 +181,13 @@ def process_axes(
     return ax
 
 
-def make_cols_from_cmap(cm: str, num_cols: int, low=0.0, high=1.0)->np.ndarray:
-
+def make_cols_from_cmap(
+        cm: str,
+        num_cols: int,
+        low=0.0,
+        high=1.0
+)->np.ndarray:
+    """make rgb colors from a color pallete"""
     cols = getattr(plt.cm, cm)(np.linspace(low, high, num_cols))
     return cols
 
@@ -682,3 +689,21 @@ def despine_axes(axes, keep=None):
         if s not in keep:
             axes.spines[s].set_visible(False)
     return
+
+
+def make_clrs_from_cmap(*args, **kwargs):
+    return make_cols_from_cmap(*args, **kwargs)
+
+
+def is_rgb(color)->bool:
+    """returns True of ``color`` is rgb else returns False"""
+    if isinstance(color, (list, np.ndarray, tuple)) and len(color) in [3,4] and isinstance(color[0], (int, float)):
+        return True
+    return False
+
+
+def map_array_to_cmap(array, cmap:str):
+    norm = Normalize(vmin=np.nanmin(array), vmax=np.nanmax(array), clip=True)
+    mapper = cm.ScalarMappable(norm=norm, cmap=cmap)
+    colors = mapper.to_rgba(array)
+    return colors, mapper

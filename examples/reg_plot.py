@@ -67,15 +67,15 @@ _ = regplot(x, y,
 fill_kws = {
     "alpha": 0.5
 }
-regplot(x, y,
-             marker_size = 28,
-             marker_color='crimson',
-             line_color='k',
-             scatter_kws={'edgecolors':'black', 'linewidth':0.5,
+_ = regplot(x, y,
+            marker_size = 28,
+            marker_color='crimson',
+            line_color='k',
+            scatter_kws={'edgecolors':'black', 'linewidth':0.5,
                           'alpha': 0.5},
-             marginals=True,
-             marginal_ax_pad=0.25,
-             marginal_ax_size=0.7,
-             ridge_line_kws=RIDGE_LINE_KWS,
-             hist=False,
-             fill_kws=fill_kws)
+            marginals=True,
+            marginal_ax_pad=0.25,
+            marginal_ax_size=0.7,
+            ridge_line_kws=RIDGE_LINE_KWS,
+            hist=False,
+            fill_kws=fill_kws)

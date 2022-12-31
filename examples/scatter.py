@@ -17,6 +17,7 @@ from easy_mpl import scatter
 import numpy as np
 import matplotlib.pyplot as plt
 from easy_mpl.utils import version_info
+from easy_mpl.utils import map_array_to_cmap
 
 version_info()  # print version information of all the packages being used
 
@@ -56,6 +57,20 @@ _ = scatter(x, y, c=y, colorbar=True)
 
 axes, _ = scatter(x, y, show=False)
 assert isinstance(axes, plt.Axes)
+
+# %%
+# We can provide the actual values of rbg as list/array to color/c argument.
+colors, _ = map_array_to_cmap(y, "Blues")
+_ = scatter(x, y, color=colors, colorbar=True)
+
+# %%
+# However, if we show the colorbar, the colorbar in such a case will be
+# `wrong <https://stackoverflow.com/q/70634122/5982232>`_.
+
+colors, mapper = map_array_to_cmap(y, "Blues")
+ax, sc = scatter(x, y, color=colors, show=False)
+plt.colorbar(mapper)  # we must privide the mapper to ``colorbar`` otherwise colorbar will be wrong
+plt.show()
 
 #%%
 # The properties of the markers can be manipulated.

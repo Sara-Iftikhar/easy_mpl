@@ -86,8 +86,9 @@ def scatter(
     x = to_1d_array(x)
     y = to_1d_array(y)
 
-    if colorbar and 'c' not in kwargs:
-        kwargs['c'] = np.arange(len(x))
+    #if colorbar:
+    #    if 'c' not in kwargs and 'color' not in kwargs:
+    #        kwargs['c'] = np.arange(len(x))
 
     sc = ax.scatter(x, y, **kwargs)
 

@@ -43,7 +43,11 @@ def hist(
         add_kde: bool, (default=False)
             whether to add a line representing kernel densitiy estimation or not
         kde_kws : dict
+            keyword arguments to calculate kde. These will go to :func:`easy_mpl.utils.kde`
+            function.
         line_kws : dict
+            keyword arguments for drawing the kde line. These will go to
+            :obj:`matplotlib.axes.Axes.plot` function
         ax : plt.Axes, optional
             axes on which to draw the plot
         ax_kws : dict
