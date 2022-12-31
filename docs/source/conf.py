@@ -23,7 +23,7 @@ copyright = '2022, Ather Abbas'
 author = 'Ather Abbas, Sara Iftikhar'
 
 # The full version, including alpha/beta/rc tags
-release = "0.21.0"
+release = "0.21.2"
 
 
 # -- General configuration ---------------------------------------------------

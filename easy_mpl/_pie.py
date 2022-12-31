@@ -5,7 +5,6 @@ __all__ = ["pie"]
 from typing import Union
 
 import numpy as np
-import pandas as pd
 import matplotlib.pyplot as plt
 
 from easy_mpl.utils import process_axes
@@ -74,8 +73,11 @@ def pie(
             ax.figure.set_size_inches(figsize)
 
     if fractions is None:
-        fractions = pd.Series(vals).value_counts(normalize=True).values
-        vals = pd.Series(vals).value_counts().to_dict()
+        uniques, counts = np.unique(vals, return_counts=True)
+        fractions = counts / counts.sum()
+        vals = {k:v for k,v in zip(uniques, counts)}
+        #fractions = pd.Series(vals).value_counts(normalize=True).values
+        #vals = pd.Series(vals).value_counts().to_dict()
         if labels is None:
             labels = [f"{value} ({count}) " for value, count in vals.items()]
     else:

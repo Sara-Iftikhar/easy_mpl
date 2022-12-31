@@ -14,14 +14,19 @@ from easy_mpl.utils import version_info
 version_info()
 
 ######################################
+# basic
 
 data = np.random.random(50, )
-# basic
-#_ = circular_bar_plot(data)
+
+_ = circular_bar_plot(data)
+
+# %%
 
 _ = circular_bar_plot(data, colorbar=True)
 
-_ = circular_bar_plot(data, color="'RdBu'", colorbar=True)
+# %%
+
+_ = circular_bar_plot(data, color="RdBu", colorbar=True)
 
 # %%
 _ = circular_bar_plot(data, sort=True, colorbar=True)
