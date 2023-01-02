@@ -524,13 +524,13 @@ class AddMarginalPlots(object):
     """
     def __init__(self,
                  x, y,
-                 ax,
-                 pad=0.25,
-                 size=0.7,
+                 ax:plt.Axes,
+                 pad:float=0.25,
+                 size:float = 0.7,
                  hist:bool = True,
-                 hist_kws=None,
-                 ridge_line_kws=None,
-                 fill_kws=None,
+                 hist_kws:dict = None,
+                 ridge_line_kws:dict = None,
+                 fill_kws: dict = None,
                  fix_limits:bool = True
                  ):
 

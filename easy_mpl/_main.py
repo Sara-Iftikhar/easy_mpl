@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 
 from .utils import process_axes, is_dataframe, is_series
 
+# todo add share_axes argument
 
 def plot(
         *args,

@@ -129,7 +129,8 @@ def lollipop_plot(
         _lollipop_horizontal(ax, x, y, line_style, line_color, line_width, line_kws,
                              marker_style, marker_color, marker_size, marker_kws)
 
-    process_axes(ax=ax, **kwargs)
+    if ax_kws and kwargs:
+        process_axes(ax=ax, **ax_kws, **kwargs)
 
     if show:
         plt.show()
@@ -139,10 +140,22 @@ def lollipop_plot(
 
 def _lollipop_vertical(ax, x, y, line_style, line_color, line_width, line_kws,
                        marker_style, marker_color, marker_size, marker_kws):
-    ax.scatter(x, y, marker=marker_style, color=marker_color,
+
+    if isinstance(marker_color, str) and marker_color in plt.colormaps():
+        marker_kws['cmap'] = marker_color
+    else:
+        marker_kws['color'] = marker_color
+
+    ax.scatter(x, y, marker=marker_style,
                s=marker_size, **marker_kws)
-    ax.vlines(x, np.zeros(len(x)), y, color=line_color,
-              linestyle=line_style, linewidth=line_width, **line_kws)
+
+    if line_color in plt.colormaps():
+        line_kws['cmap'] = line_color
+    else:
+        line_kws['color'] = line_color
+
+        ax.vlines(x, np.zeros(len(x)), y,
+                  linestyle=line_style, linewidth=line_width, **line_kws)
     return ax
 
 

@@ -56,6 +56,9 @@ class TestLollipopPlot(unittest.TestCase):
         assert isinstance(ax, plt.Axes)
         return
 
+    def test_linecolor_cmap(self):
+        _ = lollipop_plot(self.y, line_color="RdBu", show=self.show)
+
 
 if __name__ == "__main__":
     unittest.main()
