@@ -217,9 +217,9 @@ y2 = [4.81, 2.92, 1.73, 0.98, 0.51, 0.21, 0.02,
       -0.11, -0.09]
 
 
-plot(y1, '-*', lw=2.0, ms=8, label="Na", show=False)
+plot(y1, '-*', lw=2.0, ms=8, label="Na", color="olive",  show=False)
 
-_ = plot(y2, '-*', label="Ca",
+_ = plot(y2, '-*', label="Ca", color="#69b3a2",
      ax_kws=dict(
      legend_kws = {"loc": "upper center", 'prop':{"weight": "bold", 'size': 14}},
      xlabel="Distance", xlabel_kws={"fontsize": 14, 'weight': "bold"},
@@ -232,9 +232,9 @@ _ = plot(y2, '-*', label="Ca",
 # %%
 # We can add text to a plot using the axes object returned by the ``plot`` function.
 
-plot(y1, '-*', lw=2.0, ms=8, label="Na", show=False)
+plot(y1, '-*', lw=2.0, ms=8, label="Na", color="olive", show=False)
 
-ax = plot(y2, '-*', label="Ca", show=False,
+ax = plot(y2, '-*', label="Ca", show=False, color="#69b3a2",
           ax_kws=dict(
      legend_kws = {"loc": "upper center", 'prop':{"weight": "bold", 'size': 14}},
      xlabel="Distance", xlabel_kws={"fontsize": 14, 'weight': "bold"},

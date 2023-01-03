@@ -28,6 +28,8 @@ def plot(
         *args :
             either a single array or x and y arrays or anything which can go to
             :obj:`matplotlib.axes.Axes.plot` or anything which can got to :obj:`matplotlib.pyplot.plot` .
+        share_axes : bool (default=True)
+            whether to draw all the plots on same axes or not. Only relevant for 2 dimensional data.
         ax : :obj:`matplotlib.axes`
             matplotlib axes object on which plot is to be drawn. If not given,
             then current active axes will be used.

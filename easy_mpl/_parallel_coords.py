@@ -5,7 +5,6 @@ __all__ = ["parallel_coordinates"]
 from typing import Union
 
 import numpy as np
-import pandas as pd
 import matplotlib.cm as cm
 import matplotlib.pyplot as plt
 from matplotlib.path import Path
@@ -108,6 +107,11 @@ def parallel_coordinates(
         If nans are present in data or categories, all the corresponding enteries/rows
         will be removed.
     """
+
+    try:
+        import pandas as pd
+    except (ModuleNotFoundError, ImportError):
+        raise NotImplemented(f"You must install pandas to draw parallel plot")
 
     if cmap is None:
         cmap = "Blues"
