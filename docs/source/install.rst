@@ -12,6 +12,11 @@ choose to install all of them as well.
 ::
     pip install easy_mpl[all]
 
+We can also specify the easy_mpl version that we want to install as below
+::
+    pip install easy_mpl==0.21.1
+
+
 using github link
 =================
 You can also use github link to install easy_mpl.

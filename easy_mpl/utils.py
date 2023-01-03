@@ -215,8 +215,12 @@ def to_1d_array(array_like) -> np.ndarray:
     elif isinstance(array_like, (KeysView, ValuesView)):
         return np.array(list(array_like))
     else:
-        raise ValueError(f'cannot convert object {array_like.__class__.__name__}  to 1d ')
-
+        try:
+            array = np.array(array_like)
+            assert len(array) == array.size
+        except Exception:
+            raise ValueError(f'cannot convert object {array_like.__class__.__name__}  to 1d ')
+        return array
 
 def has_multi_cols(data)->bool:
     """returns True if data contains multiple columns"""

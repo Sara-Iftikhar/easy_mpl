@@ -60,6 +60,11 @@ class Testto1darray(unittest.TestCase):
         assert x.ndim == 1
         return
 
+    def test_df_index(self):
+        x = to_1d_array(pd.DataFrame([1,2,3]).index)
+        assert x.ndim == 1
+        return
+
 
 class TestMisc(unittest.TestCase):
 

@@ -13,11 +13,18 @@ it provides some functionalities which are not available for ``plot`` function.
 
 # sphinx_gallery_thumbnail_number = 4
 
-from easy_mpl import scatter
 import numpy as np
+import pandas as pd
 import matplotlib.pyplot as plt
+from matplotlib.lines import Line2D
 from easy_mpl.utils import version_info
 from easy_mpl.utils import map_array_to_cmap
+
+from easy_mpl import scatter
+
+f = "https://raw.githubusercontent.com/AtrCheema/AI4Water/master/ai4water/datasets/arg_busan.csv"
+dataframe = pd.read_csv(f, index_col='index')
+dataframe = dataframe[['tide_cm', 'pcp_mm', 'tetx_coppml', 'sal_psu', 'sul1_coppml']]
 
 version_info()  # print version information of all the packages being used
 
@@ -118,3 +125,46 @@ _ = scatter(time, year, c=performance, s=parameters,
         ax_kws={"xlabel":"Computation Time (hours)", 'ylabel': "Publish Year",
                 'xlabel_kws': {"fontsize": 14},'ylabel_kws': {"fontsize": 14},
                 'top_spine': False, 'right_spine': False, 'tight_layout': True})
+
+# %%
+# unique colors for group of values
+
+df = dataframe.dropna()
+tide = df['tide_cm']
+tetx = df['tetx_coppml']
+colors = np.full(len(tide), fill_value="#E69F00")
+colors[np.argwhere(tide.values<0.0)] =  "#56B4E9"
+ax, pc = scatter(np.arange(len(tide)), tetx,
+        ax_kws=dict(logy=True, ylabel="tetx coppml", ylabel_kws={"fontsize": 16},
+                    top_spine=False, right_spine=False),
+        color=colors, alpha=0.5, zorder=10)
+fig = ax.get_figure()
+# Create handles for lines.
+handles = [
+    Line2D(
+        [], [], label=label,
+        lw=0, # there's no line added, just the marker
+        marker="o", # circle marker
+        markersize=10,
+        markerfacecolor=colors[idx], # marker fill color
+    )
+    for idx, label in enumerate(['Positive', 'Negative'])
+]
+
+# Add legend -----------------------------------------------------
+legend = fig.legend(
+    handles=handles,
+    bbox_to_anchor=[0.5, 0.9], # Located in the top-mid of the figure.
+    fontsize=12,
+    handletextpad=0.6, # Space between text and marker/line
+    handlelength=1.4,
+    columnspacing=1.4,
+    loc="center",
+    ncol=6,
+title_fontsize=16,
+        title="Tide Type"
+)
+fig.show()
+
+# %%
+# marker style for group of values
