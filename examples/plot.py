@@ -117,10 +117,26 @@ x = pd.DataFrame(np.column_stack([y, y2]),
                  index=pd.date_range("20100101", periods=len(y), freq="D"))
 _ = plot(x, '-o', color=np.array([35, 81, 53]) / 256.0)
 
+# %%
+# For more than one columns, if we don't fix the color, the colors are chosen
+# randomly.
+dy = np.gradient(y)
+dy2 = np.gradient(y2)
+x = pd.DataFrame(np.column_stack([y, y2, dy, dy2]),
+                 columns=["sin", "cos", "dsin", "dcos"],
+                 index=pd.date_range("20100101", periods=len(y), freq="D"))
+_ = plot(x, '-o')
+
+# %%
+# If the dataframe more than one columne, we can plot each column on separate
+# axes
+
+_ = plot(x, '-o', share_axes=False)
+
 #############################
 # The marker size can be set using ``markersize`` or ``ms`` argument.
 
-_ = plot(y, marker=".", markersize=10)
+# _ = plot(y, marker=".", markersize=10)
 
 #############################
 # If the array contains nans, they are simply notplotted

@@ -112,6 +112,24 @@ class TestPlot(unittest.TestCase):
         assert isinstance(ax, plt.Axes)
         return
 
+    def test_share_axes_df(self):
+        x = pd.DataFrame(np.random.random((100, 5)), dtype='object',
+                         columns=[f"col_{i}" for i in range(5)],
+                      index=pd.date_range("20100101", periods=100, freq="D"))
+        ax = plot(x, '-', ax_kws={'title':"df_ncol"},
+                  share_axes=False,
+                  show=self.show)
+        assert isinstance(ax, list), type(ax)
+        return
+
+    def test_share_axes_ndarray(self):
+        x = np.random.random((100, 5))
+        ax = plot(x, '-', ax_kws={'title': "df_ncol"},
+                  share_axes=False,
+                  show=self.show)
+        assert isinstance(ax, list), type(ax)
+        return
+
     def test_lw(self):
         ax = plot(np.random.random(10), marker=".", lw=2, ax_kws={'title':"lw"}, show=self.show)
         assert isinstance(ax, plt.Axes)

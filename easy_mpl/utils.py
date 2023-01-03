@@ -439,17 +439,19 @@ def create_subplots(
         naxes:int,
         ax:plt.Axes = None,
         figsize:tuple = None,
+        ncols:int=None,
         **fig_kws
 )->Tuple:
 
     if ax is None:
 
         if naxes == 1:
-            fig = plt.figure(figsize=figsize)
-            ax = fig.add_subplot()
+            # if we need just one axes, just get the currently available one
+            ax = plt.gca()
+            fig = ax.get_figure()
 
         else:
-            nrows, ncols = get_layout(naxes)
+            nrows, ncols = get_layout(naxes, ncols=ncols)
             plt.close('all')
             fig, ax = plt.subplots(nrows, ncols, figsize=figsize, **fig_kws)
             switch_off_redundant_axes(naxes, nrows * ncols, ax)
@@ -478,7 +480,12 @@ def switch_off_redundant_axes(naxes, nplots, axarr):
     return axarr.reshape(shape)
 
 
-def get_layout(naxes):
+def get_layout(naxes, ncols=None):
+
+    if ncols and ncols==1:
+        nrows = naxes
+        return nrows, ncols
+
     layouts = {1: (1, 1), 2: (1, 2), 3: (2, 2), 4: (2, 2)}
     try:
         nrows, ncols = layouts[naxes]
