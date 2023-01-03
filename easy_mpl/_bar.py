@@ -8,6 +8,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from collections.abc import KeysView, ValuesView
 
+from .utils import is_rgb
 from .utils import BAR_CMAPS
 from .utils import process_axes
 from .utils import create_subplots
@@ -128,12 +129,12 @@ def bar_chart(
     ax = maybe_create_axes(ax, naxes, figsize=figsize)
 
     if ncharts == 1:
-        values, labels, bar_labels = preprocess(values, labels,
-                                                bar_labels, sort, max_bars)
+        values, labels, bar_labels, colors = preprocess(values, labels,
+                                                bar_labels, sort, max_bars, colors[0])
         ind = np.arange(len(values))
         bar_on_axes(ax[0], orient=orient, ax_kws=ax_kws, ind=ind,
                     values=values,
-                    width=width, ticks=ind, labels=labels, color=colors[0],
+                    width=width, ticks=ind, labels=labels, color=colors,
                     bar_labels=bar_labels,
                    rotation=rotation, errors=errors,
                     bar_label_kws=bar_label_kws, kwargs=kwargs)
@@ -155,19 +156,19 @@ def bar_chart(
             _kwargs =kwargs.copy()
             _kwargs['label'] = _kwargs.get('label', idx)
 
-            vals, labels, bar_labels = preprocess(values[:, idx], labels,
-                                                  bar_labels, sort, max_bars)
+            vals, labels, bar_labels, color = preprocess(values[:, idx], labels,
+                                                  bar_labels, sort, max_bars, colors[idx])
             bar_on_axes(ax[0], orient, ax_kws,
                         inds[:, idx], vals, width, ticks, labels,
-                        colors[idx], bar_labels,
+                        color, bar_labels,
                        rotation, errors, bar_label_kws, _kwargs)
 
     else:
         for idx in range(naxes):
             axes = ax[idx]
             data = values[:, idx]
-            data, labels, bar_labels = preprocess(data, labels, bar_labels,
-                                                  sort, max_bars)
+            data, labels, bar_labels, color = preprocess(data, labels, bar_labels,
+                                                  sort, max_bars, colors[idx])
 
             _kwargs = kwargs.copy()
             _kwargs['label'] = _kwargs.get('label', idx)
@@ -175,7 +176,7 @@ def bar_chart(
             ind = np.arange(len(data))
             bar_on_axes(axes, orient, ax_kws,
                         ind, data, width, ind, labels,
-                        colors[idx], bar_labels,
+                        color, bar_labels,
                         rotation, errors,
                         bar_label_kws=bar_label_kws, kwargs=_kwargs)
 
@@ -209,7 +210,7 @@ def maybe_create_axes(ax, naxes:int, figsize=None)->List[plt.Axes]:
     return ax
 
 
-def handle_sort(sort, values, labels, bar_labels):
+def handle_sort(sort, values, labels, bar_labels, color):
     if sort:
         sort_idx = np.argsort(values)
         values = values[sort_idx]
@@ -220,7 +221,11 @@ def handle_sort(sort, values, labels, bar_labels):
             if 'float' in bar_labels.dtype.name:
                 bar_labels = np.round(bar_labels, decimals=2)
 
-    return values, labels, bar_labels
+        if isinstance(color, (list, np.ndarray, tuple)):
+            if is_rgb(color[0]) or isinstance(color[0], str):
+                color = np.array(color)[sort_idx]
+
+    return values, labels, bar_labels, color
 
 
 def handle_maxbars(max_bars, values, labels):
@@ -234,15 +239,15 @@ def handle_maxbars(max_bars, values, labels):
     return values, labels
 
 
-def preprocess(values, labels, bar_labels, sort, max_bars):
+def preprocess(values, labels, bar_labels, sort, max_bars, colors):
     if labels is None:
         labels = [f"F{i}" for i in range(len(values))]
 
-    values, labels, bar_labels = handle_sort(sort, values, labels, bar_labels)
+    values, labels, bar_labels, colors = handle_sort(sort, values, labels, bar_labels, colors)
 
     values, labels = handle_maxbars(max_bars, values, labels)
 
-    return values, labels, bar_labels
+    return values, labels, bar_labels, colors
 
 
 def bar_on_axes(ax, orient, ax_kws, *args, **kwargs):

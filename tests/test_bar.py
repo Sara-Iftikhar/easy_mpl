@@ -56,6 +56,14 @@ class TestBarChart(unittest.TestCase):
         assert isinstance(ax, plt.Axes)
         return
 
+    def test_sort_with_str_colors(self):
+        d, names = get_chart_data(5)
+        cm = ['r', 'k', 'olive', 'yellow', 'green']
+
+        ax = bar_chart(values=d, labels=names, color=cm, sort=True, show=self.show)
+        assert isinstance(ax, plt.Axes)
+        return
+
     def test_h_sorted(self):
         d, names = get_chart_data(5)
         cm = make_cols_from_cmap(random.choice(BAR_CMAPS), len(d), 0.2)

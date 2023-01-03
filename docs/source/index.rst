@@ -9,7 +9,7 @@ Welcome to easy_mpl's documentation!
    :caption: contents
 
    intro
-   installation
+   install
    plots
    auto_examples/index
 

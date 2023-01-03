@@ -76,14 +76,11 @@ def pie(
         uniques, counts = np.unique(vals, return_counts=True)
         fractions = counts / counts.sum()
         vals = {k:v for k,v in zip(uniques, counts)}
-        #fractions = pd.Series(vals).value_counts(normalize=True).values
-        #vals = pd.Series(vals).value_counts().to_dict()
+
         if labels is None:
             labels = [f"{value} ({count}) " for value, count in vals.items()]
     else:
         assert vals is None
-        if labels is None:
-            labels = [f"f{i}" for i in range(len(fractions))]
 
     if 'autopct' not in kwargs:
         kwargs['autopct'] = '%1.1f%%'
