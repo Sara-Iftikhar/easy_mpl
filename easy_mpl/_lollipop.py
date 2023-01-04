@@ -4,6 +4,7 @@ __all__ = ["lollipop_plot"]
 import numpy as np
 import matplotlib.pyplot as plt
 
+from .utils import is_rgb
 from .utils import to_1d_array, process_axes
 
 
@@ -114,6 +115,10 @@ def lollipop_plot(
         y = y[idx]
         assert x is None
 
+        if isinstance(line_color, (list, np.ndarray, tuple)):
+            if is_rgb(line_color[0]) or isinstance(line_color[0], str):
+                line_color = np.array(line_color)[idx]
+
     if x is None:
         x = np.arange(len(y))
 
@@ -154,8 +159,8 @@ def _lollipop_vertical(ax, x, y, line_style, line_color, line_width, line_kws,
     else:
         line_kws['color'] = line_color
 
-        ax.vlines(x, np.zeros(len(x)), y,
-                  linestyle=line_style, linewidth=line_width, **line_kws)
+    ax.vlines(x, np.zeros(len(x)), y,
+              linestyle=line_style, linewidth=line_width, **line_kws)
     return ax
 
 

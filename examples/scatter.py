@@ -75,7 +75,7 @@ _ = scatter(x, y, color=colors, colorbar=True)
 # `wrong <https://stackoverflow.com/q/70634122/5982232>`_.
 
 colors, mapper = map_array_to_cmap(y, "Blues")
-ax, sc = scatter(x, y, color=colors, show=False)
+_, sc = scatter(x, y, color=colors, show=False)
 plt.colorbar(mapper)  # we must privide the mapper to ``colorbar`` otherwise colorbar will be wrong
 plt.show()
 
@@ -129,7 +129,7 @@ _ = scatter(time, year, c=performance, s=parameters,
 # %%
 # unique colors for group of values
 
-df = dataframe.dropna()
+df = dataframe.dropna().reset_index(drop=True)
 tide = df['tide_cm']
 tetx = df['tetx_coppml']
 colors = np.full(len(tide), fill_value="#E69F00")
@@ -168,3 +168,45 @@ fig.show()
 
 # %%
 # marker style for group of values
+
+colors = "#009E73", "#E69F00"
+def make_color(array):
+    clrs = np.full(len(array), fill_value=colors[0])
+    clrs[np.argwhere(array < 0.0)] = colors[1]
+    return clrs
+
+
+markers = ["o", "^", "s"] # circle, triangle, square
+labels = ["No Rain", "Low Rain", "High Rain"]
+Y = [df.loc[df['pcp_mm']<=0.0],
+        df.loc[(df['pcp_mm']>0.0) & (df['pcp_mm']<=1.0)],
+        df.loc[df['pcp_mm']>1.0]]
+
+X = [df.loc[df['pcp_mm']<=0.0].index,
+        df.loc[(df['pcp_mm']>0.0) & (df['pcp_mm']<=1.0)].index,
+        df.loc[df['pcp_mm']>1.0].index]
+
+_ = ax = plt.subplots()
+for label, marker, x, y in zip(labels, markers, X, Y):
+    color = make_color(y['tide_cm'].values)
+    axes, pc = scatter(x=x, y=y['tetx_coppml'], marker=marker,
+            ax_kws=dict(logy=True, ylabel="tetx coppml", ylabel_kws={"fontsize": 16},
+                                            top_spine=False, right_spine=False),
+            color=color, alpha=0.5, zorder=10,
+            label=label,
+            show=False)
+
+handles = [Line2D([], [], label=label,
+                  marker="o", markersize=10, lw=0, markerfacecolor=colors[idx])
+    for idx, label in enumerate(['Positive', 'Negative'])
+]
+fig = axes.get_figure()
+legend = fig.legend(handles=handles, bbox_to_anchor=[0.5, 0.9],
+title_fontsize=16,title="Tide Type", loc="center")
+
+leg = plt.legend(bbox_to_anchor=[0.8, 0.85], title="Rainfall", title_fontsize=16)
+for h in leg.legendHandles:
+    h.set_facecolor('white')
+    h.set_edgecolor('k')
+    h.set_linewidth(2.0)
+plt.show()
