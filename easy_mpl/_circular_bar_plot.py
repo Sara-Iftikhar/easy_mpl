@@ -2,6 +2,7 @@
 __all__ = ["circular_bar_plot"]
 
 import random
+import warnings
 from typing import Union
 
 import numpy as np
@@ -10,20 +11,23 @@ import matplotlib.pyplot as plt
 from .utils import _rescale
 from .utils import BAR_CMAPS
 from .utils import to_1d_array, make_cols_from_cmap, process_axes
+from .utils import map_array_to_cmap
 
 
 def circular_bar_plot(
         data,
         labels: list = None,
-        sort=False,
+        sort:bool =False,
         color: Union[str, list, np.ndarray] = None,
         label_format: str = None,
         min_max_range: tuple = None,
         label_padding: int = 4,
         figsize: tuple = None,
-        show: bool = True,
         text_kws: dict = None,
+        colorbar:bool = False,
+        ax:plt.Axes = None,
         ax_kws: dict = None,
+        show: bool = True,
         **kwargs
 ) -> plt.Axes:
     """
@@ -49,12 +53,16 @@ def circular_bar_plot(
         space between the labels and the bars.
     figsize : tuple, optional
         Size of the figure.
-    show : bool, optional (default=True)
-        Show the plot.
     text_kws : dict, optional (default=None)
         keyword arguments for axes.text()
+    colorbar : bool (default=False)
+        whether to show the colorbar or not
+    ax : plt.Axes (default=None)
+        matplotlib axews with polar projections
     ax_kws : optional
         Additional keyword arguments to pass to the :py:func:`easy_mpl.utils.process_axes`.
+    show : bool, optional (default=True)
+        Show the plot.
     **kwargs
         go to :obj:`matplotlib.axes.Axes.bar`
 
@@ -92,9 +100,13 @@ def circular_bar_plot(
 
     text_kws = text_kws or {}
 
-    plt.close('all')
-    plt.figure(figsize=figsize or (8, 12))
-    ax = plt.subplot(111, polar=True)
+    if ax is None:
+        plt.close('all')
+        plt.figure(figsize=figsize or (7, 10))
+        ax = plt.subplot(111, polar=True)
+    else:
+        assert ax.name == "polar"
+
     plt.axis('off')
 
     if hasattr(data, "values") and hasattr(data, "columns"):
@@ -118,10 +130,13 @@ def circular_bar_plot(
         values = values[~val_nan_idx]
         labels = [labels[i] for i in range(len(labels)) if not val_nan_idx[i]]
 
+    mapper = None
     if color is None:
-        color = make_cols_from_cmap(random.choice(BAR_CMAPS), len(values), 0.2)
+        #color = make_cols_from_cmap(random.choice(BAR_CMAPS), len(values), 0.2, 0.9)
+        color, mapper = map_array_to_cmap(values, random.choice(BAR_CMAPS))
     elif isinstance(color, str) and color in plt.colormaps():
-        color = make_cols_from_cmap(color, len(values), 0.2)
+        #color = make_cols_from_cmap(color, len(values), 0.2)
+        color, mapper = map_array_to_cmap(values, color)
     else:
         color = color
 
@@ -136,7 +151,9 @@ def circular_bar_plot(
         heights = heights[sort_idx]
         labels = [labels[i] for i in sort_idx]
         values = values[sort_idx]
-        # color = color[sort_idx]
+
+        if not isinstance(color, str):
+            color = color[sort_idx]
 
     # Compute the width of each bar. In total we have 2*Pi = 360°
     width = 2 * np.pi / len(heights)
@@ -184,6 +201,14 @@ def circular_bar_plot(
             rotation_mode="anchor",
             **text_kws
         )
+
+    if colorbar:
+        if mapper:
+            fig: plt.Figure = ax.get_figure()
+            cbar = fig.colorbar(mapper, orientation='horizontal')
+            cbar.ax.tick_params('both', labelsize=16)
+        else:
+            warnings.warn(f"For single color, colorbar does not make sense!")
 
     if ax_kws:
         process_axes(ax, **ax_kws)

@@ -22,6 +22,34 @@ class Testhist(unittest.TestCase):
         hist(np.random.random((10, 1)), show=self.show)
         return
 
+    def test_hist_return_axes(self):
+        out, ax = hist(np.random.random((10, 1)), show=self.show,
+             return_axes=True)
+        assert isinstance(ax, plt.Axes), ax
+        return
+
+    def test_hist_return_axes_with_share_axes(self):
+        out, ax = hist(np.random.random((10, 2)),
+                       show=self.show,
+                       share_axes=True,
+             return_axes=True)
+        assert isinstance(ax, plt.Axes), ax
+        return
+
+    def test_hist_return_axes_with_share_axes_False(self):
+        out, ax = hist(np.random.random((10, 2)),
+                       show=self.show,
+                       share_axes=False,
+             return_axes=True)
+        assert isinstance(ax, np.ndarray), ax
+        return
+
+    def test_hist_add_kde(self):
+        out = hist(np.random.random((10, 1)), show=self.show,
+             add_kde=True)
+        assert isinstance(out, tuple)
+        return
+
     def test_figsize(self):
         hist(np.random.random((10, 1)),
         subplots_kws={"figsize":(10, 10)},

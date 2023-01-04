@@ -21,7 +21,7 @@ def contour(
         label_contour_kws: dict = None,
         ax: plt.Axes = None,
         show: bool = True,
-        **kwargs
+        ax_kws:dict = None,
 ):
     """A contour plot of irregularly spaced data coordinates.
 
@@ -53,13 +53,14 @@ def contour(
         ax : plt.Axes, optional
             matplotlib axes to work on. If not given, current active axes will
             be used.
+        ax_kws : dict optional
+            any keyword arguments for :py:func:`easy_mpl.utils.process_axes`.
         show : bool, optional
             whether to show the plot or not
-        **kwargs : optional
-            any keyword arguments for easy_mpl.utils.process_axis
 
     Returns
     -------
+    plt.Axes
         a matplotliblib Axes
 
     Examples
@@ -98,10 +99,13 @@ def contour(
 
     assert len(x) == len(y) == len(z)
 
+    if ax_kws is None:
+        ax_kws = dict()
+
     if ax is None:
         ax = plt.gca()
-        if 'figsize' in kwargs:
-            figsize = kwargs.pop('figsize')
+        if 'figsize' in ax_kws:
+            figsize = ax_kws.pop('figsize')
             ax.figure.set_size_inches(figsize)
 
     kws = contour_kws or {"levels": 14, "linewidth": 0.5, "colors": "k"}
@@ -119,7 +123,8 @@ def contour(
         kws = show_points_kws or {'color': 'k', 'marker': 'o', 'ms': 3, "linestyle": ""}
         ax.plot(x, y, **kws)
 
-    process_axes(ax, **kwargs)
+    if ax_kws:
+        process_axes(ax, **ax_kws)
 
     if label_contours:
         kws = label_contour_kws or {"colors": "black"}

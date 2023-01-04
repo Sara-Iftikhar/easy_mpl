@@ -35,11 +35,11 @@ def ridge(
         xlabel: str = None,
         title: str = None,
         figsize: tuple = None,
-        show=True,
         hspace: float = -0.7,
         labels: Union[str, List[str]] = None,
         share_axes: bool = False,
         ax: plt.Axes = None,
+        show=True,
 ) -> List[plt.Axes,]:
     """
     plots distribution of features/columns/arrays in data as ridge.
@@ -67,8 +67,6 @@ def ridge(
             title of the figure
         figsize : tuple, optional
             size of figure
-        show : bool, optional
-            whether to show the plot or not
         hspace : float, optional (default=-0.7)
             amount of distance between plots
         labels : list/str (default=None
@@ -78,6 +76,8 @@ def ridge(
         ax : plt.Axes, optional (default=None)
             matplotlib axes object :obj:`matplotlib.axes` on which to draw the ridges.
              If given all ridges will be drawn on this axes.
+        show : bool, optional
+            whether to show the plot or not
 
     Returns
     -------
@@ -192,7 +192,8 @@ def ridge(
                          linewidth=line_width[idx], **plot_kws)
 
         _fill_kws = {
-            "alpha": 1.0
+            "alpha": 1.0,
+            'where': np.array([True for _ in range(len(xs[col]))])
         }
 
         if fill_kws is None:

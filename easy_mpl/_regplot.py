@@ -43,7 +43,6 @@ def regplot(
         ci: Union[int, None] = 95,
         fill_color=None,
         figsize: tuple = None,
-        ax_kws:dict = None,
         marginals: bool = False,
         marginal_ax_size: Union[float, List[float]] = 0.7,
         marginal_ax_pad: Union[float, List[float]] = 0.25,
@@ -51,8 +50,9 @@ def regplot(
         fill_kws: Union[dict, List[dict]] = None,
         hist: bool = True,
         hist_kws: Union[dict, List[dict]] = None,
+        ax: plt.Axes = None,
+        ax_kws:dict = None,
         show: bool = True,
-        ax: plt.Axes = None
 ) -> plt.Axes:
     """
     Regpression plot with regression line and confidence interval
@@ -65,8 +65,6 @@ def regplot(
              It can be numpy array, pandas DataFram/Series or a list
         ci : int, optional
             confidence interval. Set to None if not required.
-        show : bool, optional
-            whether to show the plot or not
         annotation_key : str, optional
             The name of the value to annotate with.
         annotation_val : float, int, optional
@@ -87,8 +85,6 @@ def regplot(
             only relevent if ci is not None.
         figsize : tuple, optional
             figure size (width, height)
-        ax_kws : dict (default=None)
-            keyword arguments for :py:func:`easy_mpl.utils.process_axes`
         marginals : bool (default=False)
             whether to draw the marginal plots or not
         marginal_ax_size :
@@ -116,6 +112,10 @@ def regplot(
         ax : plt.Axes, optional
             matplotlib axes :obj:`matplotlib.axes` to draw plot on. If not given,
             current avaialable will be used.
+        ax_kws : dict (default=None)
+            keyword arguments for :py:func:`easy_mpl.utils.process_axes`
+        show : bool, optional
+            whether to show the plot or not
 
     Returns
     --------
@@ -273,5 +273,7 @@ def _regplot(x, y, ax, ci=None,
     if ci:
         ax.fill_between(grid[:, 1], *err_bands,
                         facecolor=fill_color,
-                        alpha=.15)
+                        alpha=.15,
+                        where=np.array([True for _ in range(len(grid))])
+                        )
     return ax

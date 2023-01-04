@@ -3,12 +3,14 @@ __all__ = ["boxplot"]
 
 from typing import Union, List, Tuple
 
+import matplotlib
 import numpy as np
 import matplotlib.pyplot as plt
 
-from .utils import process_axes
-from .utils import is_dataframe
+from .utils import is_rgb
 from .utils import is_series
+from .utils import is_dataframe
+from .utils import process_axes
 from .utils import create_subplots
 from .utils import make_cols_from_cmap
 
@@ -19,11 +21,11 @@ def boxplot(
         line_width = None,
         fill_color:Union[str, List[str]] = None,
         labels:Union[str, List[str]] = None,
-        ax:plt.Axes = None,
-        show:bool = True,
-        ax_kws:dict = None,
         share_axes:bool = True,
         figsize:tuple = None,
+        ax:plt.Axes = None,
+        ax_kws:dict = None,
+        show:bool = True,
         **box_kws,
 )->Tuple[Union[plt.Axes, List[plt.Axes]], Union[List[dict], dict]]:
     """
@@ -44,16 +46,16 @@ def boxplot(
          matplotlib color or cmap.
     labels : str/list (default=None)
         used for ticklabels of x-axes
-    ax : plt.Axes, optional (default=None)
-        matploltib axes on which to draw the plot
-    show : bool (default=show)
-        whether to show the plot or not
-    ax_kws : dict (default=None)
-        keyword arguments of :py:func:`easy_mpl.utils.process_axes`
     share_axes : bool (default=True)
         whether to draw all the histograms on one axes or not
     figsize : tuple (default=None)
         figure size as tuple (width, height)
+    ax : plt.Axes, optional (default=None)
+        matploltib axes on which to draw the plot
+    ax_kws : dict (default=None)
+        keyword arguments of :py:func:`easy_mpl.utils.process_axes`
+    show : bool (default=show)
+        whether to show the plot or not
     **box_kws :
         any additional keyword argument for :obj:`matplotlib.axes.Axes.boxplot`
 
@@ -113,6 +115,12 @@ def boxplot(
 
     box_outs = []
     for (idx, name), x, ax in zip(enumerate(labels), data, axes):
+
+        # in version 3.2.. giving DataFrame to ax.boxplot makes boxes for each row
+        # in version 3.3.. giving DataFrame to ax.boxplot tries to make boxp for first row (columns)
+        if is_dataframe(x) and matplotlib.__version__ < "3.3.0":
+            x = x.values
+
         box_out = ax.boxplot(x, **_box_kws)
         box_outs.append(box_out)
 
@@ -163,12 +171,6 @@ def _set_ticklabels(ax, share_axes, name, box_kws):
             ax.xaxis.set_tick_params(rotation=90)
 
     return
-
-
-def is_rgb(color)->bool:
-    if isinstance(color, (list, np.ndarray)) and len(color)==3 and isinstance(color[0], (int, float)):
-        return True
-    return False
 
 
 def _unpack_linewidth(line_width, nboxes, share_axes):

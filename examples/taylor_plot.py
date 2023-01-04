@@ -27,7 +27,7 @@ simulations =  {"LSTM": np.random.normal(20, 40, 10),
             "CNN": np.random.normal(20, 40, 10),
             "TCN": np.random.normal(20, 40, 10),
             "CNN-LSTM": np.random.normal(20, 40, 10)}
-taylor_plot(observations=observations,
+_ = taylor_plot(observations=observations,
             simulations=simulations,
             title="Taylor Plot")
 
@@ -68,7 +68,7 @@ simulations = {
 
 rects = dict(site1=221, site2=222, site3=223, site4=224)
 
-taylor_plot(observations=observations,
+_ = taylor_plot(observations=observations,
             simulations=simulations,
             axis_locs=rects,
             plot_bias=True,
@@ -89,7 +89,7 @@ predictions = {   # pbias is optional
 
 
 
-taylor_plot(observations,
+_ = taylor_plot(observations,
     predictions,
     title="with statistical parameters")
 
@@ -103,7 +103,7 @@ simulations =  {"LSTM": np.random.normal(20, 40, 10),
                 "CNN": np.random.normal(20, 40, 10),
                 "TCN": np.random.normal(20, 40, 10),
                 "CNN-LSTM": np.random.normal(20, 40, 10)}
-taylor_plot(observations=observations,
+_ = taylor_plot(observations=observations,
             simulations=simulations,
             title="customized markers",
             marker_kws={'markersize': 10, 'markeredgewidth': 1.5,
@@ -120,7 +120,7 @@ simus =  {"LSTMBasedRegressionModel": np.random.normal(20, 40, 10),
         "CNNBasedRegressionModel": np.random.normal(20, 40, 10),
         "TCNBasedRegressionModel": np.random.normal(20, 40, 10),
         "CNN-LSTMBasedRegressionModel": np.random.normal(20, 40, 10)}
-taylor_plot(observations=observations,
+_ = taylor_plot(observations=observations,
             simulations=simus,
             title="custom_legend",
             leg_kws={'facecolor': 'white',

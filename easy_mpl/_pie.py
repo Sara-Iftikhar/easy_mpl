@@ -5,7 +5,6 @@ __all__ = ["pie"]
 from typing import Union
 
 import numpy as np
-import pandas as pd
 import matplotlib.pyplot as plt
 
 from easy_mpl.utils import process_axes
@@ -16,8 +15,8 @@ def pie(
         fractions: Union[list, np.ndarray] = None,
         labels: list = None,
         ax: plt.Axes = None,
-        show: bool = True,
         ax_kws: dict = None,
+        show: bool = True,
         **kwargs
 ) -> plt.Axes:
     """
@@ -63,21 +62,25 @@ def pie(
         https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.pie.html
     """
     # todo, add example for and partial pie chart
+
+    if ax_kws is None:
+        ax_kws = dict()
+
     if ax is None:
         ax = plt.gca()
-        if 'figsize' in kwargs:
-            figsize = kwargs.pop('figsize')
+        if 'figsize' in ax_kws:
+            figsize = ax_kws.pop('figsize')
             ax.figure.set_size_inches(figsize)
 
     if fractions is None:
-        fractions = pd.Series(vals).value_counts(normalize=True).values
-        vals = pd.Series(vals).value_counts().to_dict()
+        uniques, counts = np.unique(vals, return_counts=True)
+        fractions = counts / counts.sum()
+        vals = {k:v for k,v in zip(uniques, counts)}
+
         if labels is None:
             labels = [f"{value} ({count}) " for value, count in vals.items()]
     else:
         assert vals is None
-        if labels is None:
-            labels = [f"f{i}" for i in range(len(fractions))]
 
     if 'autopct' not in kwargs:
         kwargs['autopct'] = '%1.1f%%'

@@ -117,10 +117,26 @@ x = pd.DataFrame(np.column_stack([y, y2]),
                  index=pd.date_range("20100101", periods=len(y), freq="D"))
 _ = plot(x, '-o', color=np.array([35, 81, 53]) / 256.0)
 
+# %%
+# For more than one columns, if we don't fix the color, the colors are chosen
+# randomly.
+dy = np.gradient(y)
+dy2 = np.gradient(y2)
+x = pd.DataFrame(np.column_stack([y, y2, dy, dy2]),
+                 columns=["sin", "cos", "dsin", "dcos"],
+                 index=pd.date_range("20100101", periods=len(y), freq="D"))
+_ = plot(x, '-o')
+
+# %%
+# If the dataframe more than one columne, we can plot each column on separate
+# axes
+
+_ = plot(x, '-o', share_axes=False)
+
 #############################
 # The marker size can be set using ``markersize`` or ``ms`` argument.
 
-_ = plot(y, marker=".", markersize=10)
+# _ = plot(y, marker=".", markersize=10)
 
 #############################
 # If the array contains nans, they are simply notplotted
@@ -201,9 +217,9 @@ y2 = [4.81, 2.92, 1.73, 0.98, 0.51, 0.21, 0.02,
       -0.11, -0.09]
 
 
-plot(y1, '-*', lw=2.0, ms=8, label="Na", show=False)
+plot(y1, '-*', lw=2.0, ms=8, label="Na", color="olive",  show=False)
 
-_ = plot(y2, '-*', label="Ca",
+_ = plot(y2, '-*', label="Ca", color="#69b3a2",
      ax_kws=dict(
      legend_kws = {"loc": "upper center", 'prop':{"weight": "bold", 'size': 14}},
      xlabel="Distance", xlabel_kws={"fontsize": 14, 'weight': "bold"},
@@ -216,9 +232,9 @@ _ = plot(y2, '-*', label="Ca",
 # %%
 # We can add text to a plot using the axes object returned by the ``plot`` function.
 
-plot(y1, '-*', lw=2.0, ms=8, label="Na", show=False)
+plot(y1, '-*', lw=2.0, ms=8, label="Na", color="olive", show=False)
 
-ax = plot(y2, '-*', label="Ca", show=False,
+ax = plot(y2, '-*', label="Ca", show=False, color="#69b3a2",
           ax_kws=dict(
      legend_kws = {"loc": "upper center", 'prop':{"weight": "bold", 'size': 14}},
      xlabel="Distance", xlabel_kws={"fontsize": 14, 'weight': "bold"},

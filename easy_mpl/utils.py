@@ -3,10 +3,12 @@ from typing import Union, Any, Optional, Tuple
 from collections.abc import KeysView, ValuesView
 
 import numpy as np
+import matplotlib.cm as cm
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 from matplotlib.path import Path
 from matplotlib.spines import Spine
+from matplotlib.colors import Normalize
 from matplotlib.transforms import Affine2D
 from matplotlib.projections.polar import PolarAxes
 from matplotlib.patches import RegularPolygon
@@ -179,8 +181,13 @@ def process_axes(
     return ax
 
 
-def make_cols_from_cmap(cm: str, num_cols: int, low=0.0, high=1.0)->np.ndarray:
-
+def make_cols_from_cmap(
+        cm: str,
+        num_cols: int,
+        low=0.0,
+        high=1.0
+)->np.ndarray:
+    """make rgb colors from a color pallete"""
     cols = getattr(plt.cm, cm)(np.linspace(low, high, num_cols))
     return cols
 
@@ -208,8 +215,12 @@ def to_1d_array(array_like) -> np.ndarray:
     elif isinstance(array_like, (KeysView, ValuesView)):
         return np.array(list(array_like))
     else:
-        raise ValueError(f'cannot convert object {array_like.__class__.__name__}  to 1d ')
-
+        try:
+            array = np.array(array_like)
+            assert len(array) == array.size
+        except Exception:
+            raise ValueError(f'cannot convert object {array_like.__class__.__name__}  to 1d ')
+        return array
 
 def has_multi_cols(data)->bool:
     """returns True if data contains multiple columns"""
@@ -404,7 +415,7 @@ def version_info():
     from . import __version__
     info = dict()
     info['easy_mpl'] = __version__
-    info['matplotlib'] = matplotlib._get_version()
+    info['matplotlib'] = matplotlib.__version__
     info['numpy'] = np.__version__
 
     try:
@@ -432,17 +443,19 @@ def create_subplots(
         naxes:int,
         ax:plt.Axes = None,
         figsize:tuple = None,
+        ncols:int=None,
         **fig_kws
 )->Tuple:
 
     if ax is None:
 
         if naxes == 1:
-            fig = plt.figure(figsize=figsize)
-            ax = fig.add_subplot()
+            # if we need just one axes, just get the currently available one
+            ax = plt.gca()
+            fig = ax.get_figure()
 
         else:
-            nrows, ncols = get_layout(naxes)
+            nrows, ncols = get_layout(naxes, ncols=ncols)
             plt.close('all')
             fig, ax = plt.subplots(nrows, ncols, figsize=figsize, **fig_kws)
             switch_off_redundant_axes(naxes, nrows * ncols, ax)
@@ -471,7 +484,12 @@ def switch_off_redundant_axes(naxes, nplots, axarr):
     return axarr.reshape(shape)
 
 
-def get_layout(naxes):
+def get_layout(naxes, ncols=None):
+
+    if ncols and ncols==1:
+        nrows = naxes
+        return nrows, ncols
+
     layouts = {1: (1, 1), 2: (1, 2), 3: (2, 2), 4: (2, 2)}
     try:
         nrows, ncols = layouts[naxes]
@@ -517,17 +535,18 @@ class AddMarginalPlots(object):
     """
     def __init__(self,
                  x, y,
-                 ax,
-                 pad=0.25,
-                 size=0.7,
+                 ax:plt.Axes,
+                 pad:float=0.25,
+                 size:float = 0.7,
                  hist:bool = True,
-                 hist_kws=None,
-                 ridge_line_kws=None,
-                 fill_kws=None,
+                 hist_kws:dict = None,
+                 ridge_line_kws:dict = None,
+                 fill_kws: dict = None,
                  fix_limits:bool = True
                  ):
 
         self.ax = ax
+        self._n = len(x)
 
         if not isinstance(pad, (list, tuple)):
             pad = [pad, pad]
@@ -562,7 +581,7 @@ class AddMarginalPlots(object):
                       ):
 
         line_kws = self._get_line_kws(self.ridge_line_kws[0])
-        fill_kws = self._get_fill_kws(self.ridge_line_kws[1])
+
 
         if self.fix_limits:
             xlim = np.array(self.ax.get_xlim()) * 1.05
@@ -590,6 +609,8 @@ class AddMarginalPlots(object):
         ax2.plot(ind, data, **line_kws)
 
         if not self.hist:
+            fill_kws = self._get_fill_kws(self.fill_kws[0], n=len(ind))
+
             ax2.fill_between(ind, data, **fill_kws)
 
         if self.fix_limits:
@@ -603,7 +624,6 @@ class AddMarginalPlots(object):
                       ):
 
         line_kws = self._get_line_kws(self.ridge_line_kws[1])
-        fill_kws = self._get_fill_kws(self.fill_kws[1])
 
         if self.fix_limits:
             ylim = self.ax.get_ylim()
@@ -633,6 +653,7 @@ class AddMarginalPlots(object):
         ax2.plot(data, ind, **line_kws)
 
         if not self.hist:
+            fill_kws = self._get_fill_kws(self.fill_kws[1], n=len(ind))
             ax2.fill_betweenx(ind, data, **fill_kws)
 
         if self.fix_limits:
@@ -648,8 +669,10 @@ class AddMarginalPlots(object):
         return _line_kws
 
     @staticmethod
-    def _get_fill_kws(fill_kws)->dict:
-        _fill_kws = {"alpha": 0.5, 'color':'r'}
+    def _get_fill_kws(fill_kws, n)->dict:
+        _fill_kws = {"alpha": 0.5, 'color':'r',
+                     'where': np.array([True for _ in range(n)])
+                     }
         if fill_kws is not None:
             _fill_kws.update(fill_kws)
         return _fill_kws
@@ -677,3 +700,22 @@ def despine_axes(axes, keep=None):
         if s not in keep:
             axes.spines[s].set_visible(False)
     return
+
+
+def make_clrs_from_cmap(*args, **kwargs):
+    return make_cols_from_cmap(*args, **kwargs)
+
+
+def is_rgb(color)->bool:
+    """returns True of ``color`` is rgb else returns False"""
+    if isinstance(color, (list, np.ndarray, tuple)) and len(color) in [3,4] and isinstance(color[0], (int, float)):
+        return True
+    return False
+
+
+def map_array_to_cmap(array, cmap:str, clip:bool = True):
+    norm = Normalize(vmin=np.nanmin(array).item(),
+                     vmax=np.nanmax(array).item(), clip=clip)
+    mapper = cm.ScalarMappable(norm=norm, cmap=cmap)
+    colors = mapper.to_rgba(array)
+    return colors, mapper

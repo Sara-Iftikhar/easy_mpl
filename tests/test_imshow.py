@@ -4,6 +4,8 @@ import unittest
 import os
 import site
 
+import matplotlib.pyplot as plt
+
 package_path = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 site.addsitedir(package_path)
 
@@ -22,13 +24,15 @@ class TestImshow(unittest.TestCase):
                      ax_kws=dict(title="vanilla"),
                        show=self.show)
         assert isinstance(img, matplotlib.image.AxesImage)
+        plt.close('all')
         return
 
     def test_figsize(self):
         img = imshow(np.random.random((10, 10)), colorbar=True,
-            ax_kws=dict(title="figsize"), figsize=(10, 10),
+            ax_kws=dict(title="figsize", figsize=(10, 10)),
                        show=self.show)
         assert isinstance(img, matplotlib.image.AxesImage)
+        plt.close('all')
         return
 
     def test_imshow_witout_cb(self):
@@ -36,6 +40,7 @@ class TestImshow(unittest.TestCase):
                     ax_kws=dict(title="without_colorbar"),
                         show=self.show)
         assert isinstance(img, matplotlib.image.AxesImage)
+        plt.close('all')
         return
 
     def test_annotate(self):
@@ -43,12 +48,14 @@ class TestImshow(unittest.TestCase):
                     ax_kws=dict(title="annotate"),
                         annotate=True, show=self.show)
         assert isinstance(img, matplotlib.image.AxesImage)
+        plt.close('all')
         return
 
     def test_df(self):
         df = pd.DataFrame(np.random.random((10, 2)), columns=['a', 'b'])
         img = imshow(df, colorbar=True, show=self.show, ax_kws=dict(title="df"))
         assert isinstance(img, matplotlib.image.AxesImage)
+        plt.close('all')
         return
 
     def test_with_nan_vals(self):
@@ -56,6 +63,7 @@ class TestImshow(unittest.TestCase):
         x.ravel()[np.random.choice(x.size, 5, replace=False)] = np.nan
         img = imshow(x, colorbar=True, show=self.show, ax_kws=dict(title="with_nan_vals"))
         assert isinstance(img, matplotlib.image.AxesImage)
+        plt.close('all')
         return
 
     def test_white_gridlines(self):
@@ -64,12 +72,14 @@ class TestImshow(unittest.TestCase):
                         xticklabels=[f"Feature {i}" for i in range(data.shape[1])],
                         white_grid=True, annotate=True, colorbar=True, show=self.show)
         assert isinstance(im, matplotlib.image.AxesImage)
+        plt.close('all')
         return
 
     def test_df_object_type(self):
         data = pd.DataFrame(np.random.random((10, 10)), dtype='object')
         img = imshow(data, white_grid=True, annotate=True, show=self.show)
         assert isinstance(img, matplotlib.image.AxesImage)
+        plt.close('all')
         return
 
     def test_textcolors_tuple(self):
@@ -78,6 +88,7 @@ class TestImshow(unittest.TestCase):
                         annotate_kws={'textcolors': ("black", "white")}
                         )
         assert isinstance(img, matplotlib.image.AxesImage)
+        plt.close('all')
         return
 
     def test_textcolors_array(self):
@@ -91,6 +102,7 @@ class TestImshow(unittest.TestCase):
         },
         show=self.show)
         assert isinstance(img, matplotlib.image.AxesImage)
+        plt.close('all')
         return
 
 

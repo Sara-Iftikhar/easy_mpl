@@ -11,6 +11,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 from easy_mpl import scatter
+from easy_mpl.utils import map_array_to_cmap
 
 
 class TestScatter(unittest.TestCase):
@@ -63,6 +64,17 @@ class TestScatter(unittest.TestCase):
         y[np.random.choice(y.size, 5, replace=False)] = np.nan
         ax, _ = scatter(x, y, show=self.show)
         assert isinstance(ax, plt.Axes)
+
+        return
+
+    def test_colorbar_with_colors(self):
+        # todo
+        x = np.linspace(0, 10, 100)
+        y = np.sin(x)
+        colors, mapper = map_array_to_cmap(y, "Blues")
+        ax, sc = scatter(x, y, color=colors, show=False)
+        plt.colorbar(mapper)
+        plt.close('all')
 
         return
 

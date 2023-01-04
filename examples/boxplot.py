@@ -7,15 +7,17 @@ p. boxplot
 
 This file shows the usage of :func:`boxplot` function.
 """
+
+# sphinx_gallery_thumbnail_number = 7
+
 import pandas as pd
 
 from easy_mpl import boxplot
 from easy_mpl.utils import _rescale
 from easy_mpl.utils import version_info
 
-version_info()
+version_info()  # print version information of all the packages being used
 
-# sphinx_gallery_thumbnail_number = 7
 
 # %%
 

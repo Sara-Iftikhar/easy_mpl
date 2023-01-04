@@ -4,8 +4,10 @@ __all__ = ["violin_plot"]
 import random
 from typing import Union, List
 
+import matplotlib
 import numpy as np
 import matplotlib.pyplot as plt
+from matplotlib import rcParams
 
 from easy_mpl.utils import _rescale, kde, is_dataframe
 
@@ -38,8 +40,8 @@ def violin_plot(
         max_dots: Union[int, List[int]] = 100,
         cut: Union[float, tuple, List[float], List[tuple]] = 0.2,
         labels: Union[str, List[str]] = None,
-        show: bool = True,
         ax: plt.Axes = None,
+        show: bool = True,
 ) -> plt.Axes:
     """
     makes violin plot/plots of the arrays in data
@@ -85,11 +87,11 @@ def violin_plot(
         list of tuples, it should match the number of arrays in X.
     labels : list/str (default=None
         names for xticks
-    show : bool (default=True)
-        whether to show the plot or not
     ax : plt.Axes (default=None)
         matplotlib Axes object :obj:`matplotlib.axes` on which to draw the plot. If not given, then
         the currently available axes from plt.gca will be used.
+    show : bool (default=True)
+        whether to show the plot or not
 
     Returns
     -------
@@ -179,7 +181,10 @@ def violin_plot(
         _violin_kws.pop("bw_method")
 
     # The output is stored in 'violins', used to customize their appearence
-    violins = ax.violin(vpstats, positions=POSITIONS, **_violin_kws)
+    if matplotlib.__version__ <= "3.4.0":
+        violins = violin_mpl_340(ax, vpstats, positions=POSITIONS, **_violin_kws)
+    else:
+        violins = ax.violin(vpstats, positions=POSITIONS, **_violin_kws)
 
     if isinstance(fill_colors, str):
         fill_colors = [fill_colors for _ in range(len(X))]
@@ -404,3 +409,258 @@ def to_1d_arrays(data)->List[np.ndarray,]:
         assert data.ndim == 2
         Y = [data[:, i] for i in range(data.shape[1])]
     return Y
+
+# ******************************************
+# Following code is taken from matplotlib
+# because for versions prior to 3.5 (3.4 or prior versions)
+# we need to set where argument to fill_between otherwise
+# fill_between returns error.
+# matplotlib comes with following licence
+"""
+License agreement for matplotlib versions 1.3.0 and later
+=========================================================
+
+1. This LICENSE AGREEMENT is between the Matplotlib Development Team
+("MDT"), and the Individual or Organization ("Licensee") accessing and
+otherwise using matplotlib software in source or binary form and its
+associated documentation.
+
+2. Subject to the terms and conditions of this License Agreement, MDT
+hereby grants Licensee a nonexclusive, royalty-free, world-wide license
+to reproduce, analyze, test, perform and/or display publicly, prepare
+derivative works, distribute, and otherwise use matplotlib
+alone or in any derivative version, provided, however, that MDT's
+License Agreement and MDT's notice of copyright, i.e., "Copyright (c)
+2012- Matplotlib Development Team; All Rights Reserved" are retained in
+matplotlib  alone or in any derivative version prepared by
+Licensee.
+
+3. In the event Licensee prepares a derivative work that is based on or
+incorporates matplotlib or any part thereof, and wants to
+make the derivative work available to others as provided herein, then
+Licensee hereby agrees to include in any such work a brief summary of
+the changes made to matplotlib .
+
+4. MDT is making matplotlib available to Licensee on an "AS
+IS" basis.  MDT MAKES NO REPRESENTATIONS OR WARRANTIES, EXPRESS OR
+IMPLIED.  BY WAY OF EXAMPLE, BUT NOT LIMITATION, MDT MAKES NO AND
+DISCLAIMS ANY REPRESENTATION OR WARRANTY OF MERCHANTABILITY OR FITNESS
+FOR ANY PARTICULAR PURPOSE OR THAT THE USE OF MATPLOTLIB
+WILL NOT INFRINGE ANY THIRD PARTY RIGHTS.
+
+5. MDT SHALL NOT BE LIABLE TO LICENSEE OR ANY OTHER USERS OF MATPLOTLIB
+ FOR ANY INCIDENTAL, SPECIAL, OR CONSEQUENTIAL DAMAGES OR
+LOSS AS A RESULT OF MODIFYING, DISTRIBUTING, OR OTHERWISE USING
+MATPLOTLIB , OR ANY DERIVATIVE THEREOF, EVEN IF ADVISED OF
+THE POSSIBILITY THEREOF.
+
+6. This License Agreement will automatically terminate upon a material
+breach of its terms and conditions.
+
+7. Nothing in this License Agreement shall be deemed to create any
+relationship of agency, partnership, or joint venture between MDT and
+Licensee.  This License Agreement does not grant permission to use MDT
+trademarks or trade name in a trademark sense to endorse or promote
+products or services of Licensee, or any third party.
+
+8. By copying, installing or otherwise using matplotlib ,
+Licensee agrees to be bound by the terms and conditions of this License
+Agreement.
+"""
+
+
+def violin_mpl_340(self, vpstats, positions=None, vert=True, widths=0.5,
+           showmeans=False, showextrema=True, showmedians=False):
+    """
+    Drawing function for violin plots.
+
+    Draw a violin plot for each column of *vpstats*. Each filled area
+    extends to represent the entire data range, with optional lines at the
+    mean, the median, the minimum, the maximum, and the quantiles values.
+
+    Parameters
+    ----------
+    vpstats : list of dicts
+      A list of dictionaries containing stats for each violin plot.
+      Required keys are:
+
+      - ``coords``: A list of scalars containing the coordinates that
+        the violin's kernel density estimate were evaluated at.
+
+      - ``vals``: A list of scalars containing the values of the
+        kernel density estimate at each of the coordinates given
+        in *coords*.
+
+      - ``mean``: The mean value for this violin's dataset.
+
+      - ``median``: The median value for this violin's dataset.
+
+      - ``min``: The minimum value for this violin's dataset.
+
+      - ``max``: The maximum value for this violin's dataset.
+
+      Optional keys are:
+
+      - ``quantiles``: A list of scalars containing the quantile values
+        for this violin's dataset.
+
+    positions : array-like, default: [1, 2, ..., n]
+      The positions of the violins. The ticks and limits are
+      automatically set to match the positions.
+
+    vert : bool, default: True.
+      If true, plots the violins vertically.
+      Otherwise, plots the violins horizontally.
+
+    widths : array-like, default: 0.5
+      Either a scalar or a vector that sets the maximal width of
+      each violin. The default is 0.5, which uses about half of the
+      available horizontal space.
+
+    showmeans : bool, default: False
+      If true, will toggle rendering of the means.
+
+    showextrema : bool, default: True
+      If true, will toggle rendering of the extrema.
+
+    showmedians : bool, default: False
+      If true, will toggle rendering of the medians.
+
+    Returns
+    -------
+    dict
+      A dictionary mapping each component of the violinplot to a
+      list of the corresponding collection instances created. The
+      dictionary has the following keys:
+
+      - ``bodies``: A list of the `~.collections.PolyCollection`
+        instances containing the filled area of each violin.
+
+      - ``cmeans``: A `~.collections.LineCollection` instance that marks
+        the mean values of each of the violin's distribution.
+
+      - ``cmins``: A `~.collections.LineCollection` instance that marks
+        the bottom of each violin's distribution.
+
+      - ``cmaxes``: A `~.collections.LineCollection` instance that marks
+        the top of each violin's distribution.
+
+      - ``cbars``: A `~.collections.LineCollection` instance that marks
+        the centers of each violin's distribution.
+
+      - ``cmedians``: A `~.collections.LineCollection` instance that
+        marks the median values of each of the violin's distribution.
+
+      - ``cquantiles``: A `~.collections.LineCollection` instance created
+        to identify the quantiles values of each of the violin's
+        distribution.
+
+    """
+
+    # Statistical quantities to be plotted on the violins
+    means = []
+    mins = []
+    maxes = []
+    medians = []
+    quantiles = np.asarray([])
+
+    # Collections to be returned
+    artists = {}
+
+    N = len(vpstats)
+    datashape_message = ("List of violinplot statistics and `{0}` "
+                         "values must have the same length")
+
+    # Validate positions
+    if positions is None:
+        positions = range(1, N + 1)
+    elif len(positions) != N:
+        raise ValueError(datashape_message.format("positions"))
+
+    # Validate widths
+    if np.isscalar(widths):
+        widths = [widths] * N
+    elif len(widths) != N:
+        raise ValueError(datashape_message.format("widths"))
+
+    # Calculate ranges for statistics lines
+    pmins = -0.25 * np.array(widths) + positions
+    pmaxes = 0.25 * np.array(widths) + positions
+
+    # Check whether we are rendering vertically or horizontally
+    if vert:
+        fill = self.fill_betweenx
+        perp_lines = self.hlines
+        par_lines = self.vlines
+    else:
+        fill = self.fill_between
+        perp_lines = self.vlines
+        par_lines = self.hlines
+
+    if rcParams['_internal.classic_mode']:
+        fillcolor = 'y'
+        edgecolor = 'r'
+    else:
+        fillcolor = edgecolor = self._get_lines.get_next_color()
+
+    # Render violins
+    bodies = []
+    for stats, pos, width in zip(vpstats, positions, widths):
+        # The 0.5 factor reflects the fact that we plot from v-p to
+        # v+p
+        vals = np.array(stats['vals'])
+        vals = 0.5 * width * vals / vals.max()
+        bodies += [fill(stats['coords'],
+                        -vals + pos,
+                        vals + pos,
+                        facecolor=fillcolor,
+                        where = np.array([True for _ in range(len(stats['coords']))]),
+                        alpha=0.3)]
+        means.append(stats['mean'])
+        mins.append(stats['min'])
+        maxes.append(stats['max'])
+        medians.append(stats['median'])
+        q = stats.get('quantiles')
+        if q is not None:
+            # If exist key quantiles, assume it's a list of floats
+            quantiles = np.concatenate((quantiles, q))
+    artists['bodies'] = bodies
+
+    # Render means
+    if showmeans:
+        artists['cmeans'] = perp_lines(means, pmins, pmaxes,
+                                       colors=edgecolor)
+
+    # Render extrema
+    if showextrema:
+        artists['cmaxes'] = perp_lines(maxes, pmins, pmaxes,
+                                       colors=edgecolor)
+        artists['cmins'] = perp_lines(mins, pmins, pmaxes,
+                                      colors=edgecolor)
+        artists['cbars'] = par_lines(positions, mins, maxes,
+                                     colors=edgecolor)
+
+    # Render medians
+    if showmedians:
+        artists['cmedians'] = perp_lines(medians,
+                                         pmins,
+                                         pmaxes,
+                                         colors=edgecolor)
+
+    # Render quantile values
+    if quantiles.size > 0:
+        # Recalculate ranges for statistics lines for quantiles.
+        # ppmins are the left end of quantiles lines
+        ppmins = np.asarray([])
+        # pmaxes are the right end of quantiles lines
+        ppmaxs = np.asarray([])
+        for stats, cmin, cmax in zip(vpstats, pmins, pmaxes):
+            q = stats.get('quantiles')
+            if q is not None:
+                ppmins = np.concatenate((ppmins, [cmin] * np.size(q)))
+                ppmaxs = np.concatenate((ppmaxs, [cmax] * np.size(q)))
+        # Start rendering
+        artists['cquantiles'] = perp_lines(quantiles, ppmins, ppmaxs,
+                                           colors=edgecolor)
+
+    return artists

@@ -19,9 +19,9 @@ def scatter(
         text_kws : dict = None,
         xoffset = 0.1,
         yoffset = 0.1,
-        show: bool = True,
         ax: plt.Axes = None,
         ax_kws:dict = None,
+        show: bool = True,
         **kwargs
 ) -> Tuple[plt.Axes, mpl.collections.PathCollection]:
     """
@@ -44,13 +44,13 @@ def scatter(
         only relevant if ``marker_labels`` are provided.
     xoffset : float
     yoffset : float
-    show : bool, optional
-        whether to show the plot or not
     ax : plt.Axes, optional
         :obj:`matplotlib.axes`, if not given, current available axes will be used
     ax_kws : dict (default=None)
         any keyword arguments for processing of axes which will
         be forwarded to :func:`easy_mpl.utils.prcess_axis`
+    show : bool, optional (default=True)
+        whether to show the plot or not
     **kwargs : optional
         any additional keyword arguments for :obj:`matplotlib.axes.Axes.scatter`
 
@@ -86,8 +86,9 @@ def scatter(
     x = to_1d_array(x)
     y = to_1d_array(y)
 
-    if colorbar and 'c' not in kwargs:
-        kwargs['c'] = np.arange(len(x))
+    #if colorbar:
+    #    if 'c' not in kwargs and 'color' not in kwargs:
+    #        kwargs['c'] = np.arange(len(x))
 
     sc = ax.scatter(x, y, **kwargs)
 

@@ -74,12 +74,14 @@ class TestRidge(unittest.TestCase):
         axis = ridge(x, title="array_with_nan_vals", show=self.show)
         for ax in axis:
             assert isinstance(ax, plt.Axes)
+        plt.close('all')
         return
 
     def test_cmap_as_color_name(self):
         axis = ridge(np.random.random(100, ), color="white", show=self.show)
         for ax in axis:
             assert isinstance(ax, plt.Axes)
+        plt.close('all')
         return
 
     def test_cmap_as_cmap_name(self):

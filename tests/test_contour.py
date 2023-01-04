@@ -22,38 +22,47 @@ class TestContour(unittest.TestCase):
     z = x * np.exp(-x**2 - y**2)
 
     def test_vanilla(self):
-        ax = contour(self.x, self.y, self.z, title="vanilla", show=self.show)
+        ax = contour(self.x, self.y, self.z,
+                     ax_kws=dict(title="vanilla"), show=self.show)
         assert isinstance(ax, plt.Axes)
         return
 
     def test_fill_between(self):
-        ax = contour(self.x, self.y, self.z, fill_between=True, title="fill_between",
+        ax = contour(self.x, self.y, self.z, fill_between=True,
+                     ax_kws=dict(title="fill_between"),
                      show=self.show)
         assert isinstance(ax, plt.Axes)
         return
 
     def test_fill_between_without_colorbar(self):
-        ax = contour(self.x, self.y, self.z, fill_between=True, colorbar=False,
-                     title="fill_between without colorbar", show=self.show)
+        ax = contour(self.x, self.y, self.z, fill_between=True,
+                     colorbar=False,
+                     ax_kws=dict(title="fill_between without colorbar"),
+                     show=self.show)
         assert isinstance(ax, plt.Axes)
         return
 
     def test_fill_between_with_show_points(self):
-        ax = contour(self.x, self.y, self.z, fill_between=True, colorbar=True,
-                     show_points=True, title="fill_between with show_points",
+        ax = contour(self.x, self.y, self.z, fill_between=True,
+                     colorbar=True,
+                     show_points=True,
+                     ax_kws=dict(title="fill_between with show_points"),
                      show=self.show)
         assert isinstance(ax, plt.Axes)
         return
 
     def test_labels(self):
-        ax = contour(self.x, self.y, self.z, label_contours=True, title="labels",
+        ax = contour(self.x, self.y, self.z, label_contours=True,
+                     ax_kws=dict(title="labels"),
                      show=self.show)
         assert isinstance(ax, plt.Axes)
         return
 
     def test_labels_with_fill_between(self):
-        ax = contour(self.x, self.y, self.z, label_contours=True, fill_between=True,
-                     title="labels with fill_between", show=self.show)
+        ax = contour(self.x, self.y, self.z, label_contours=True,
+                     fill_between=True,
+                     ax_kws=dict(title="labels with fill_between"),
+                     show=self.show)
         assert isinstance(ax, plt.Axes)
         return
 

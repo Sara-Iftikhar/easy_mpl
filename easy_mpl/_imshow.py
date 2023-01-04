@@ -14,14 +14,14 @@ def imshow(
         values,
         yticklabels=None,
         xticklabels=None,
-        show=True,
-        annotate=False,
+        annotate:bool = False,
         annotate_kws:dict = None,
         colorbar: bool = False,
-        ax=None,
         white_grid: bool = False,
         cb_tick_params: dict = None,
+        ax:plt.Axes = None,
         ax_kws: dict = None,
+        show:bool = True,
         **kwargs
 ):
     """
@@ -32,8 +32,6 @@ def imshow(
         values: 2d array
             the image/data to show. It must bt 2 dimensional. It can also
             be dataframe.
-        show : bool, optional
-            whether to show the plot or not
         annotate : bool, optional
             whether to annotate the heatmap or not
         annotate_kws : dict, optional
@@ -52,14 +50,16 @@ def imshow(
             tick labels for x-axis. For DataFrames, column names are used by default.
         yticklabels :  list, optional
             tick labels for y-axis. For DataFrames, index is used by default
-        ax : plt.Axes, optional
-            if not given, current available axes will be used
         white_grid : bool, optional (default=False)
             whether to show the white grids or not. This will also turn off the spines.
         cb_tick_params : dict, optional
             tick params for colorbar. for example ``pad`` or ``orientation``
+        ax : plt.Axes, optional
+            if not given, current available axes will be used
         ax_kws : dict, optional (default=None)
             any keyword arguments for :py:func:`easy_mpl.utils.process_axes` function as dictionary
+        show : bool, optional
+            whether to show the plot or not
         **kwargs : optional
             any further keyword arguments for :obj:`matplotlib.axes.Axes.imshow`
 
@@ -86,11 +86,13 @@ def imshow(
     See :ref:`sphx_glr_auto_examples_imshow.py` for more examples
 
     """
+    if ax_kws is None:
+        ax_kws = dict()
 
     if ax is None:
         ax = plt.gca()
-        if 'figsize' in kwargs:
-            figsize = kwargs.pop('figsize')
+        if 'figsize' in ax_kws:
+            figsize = ax_kws.pop('figsize')
             ax.figure.set_size_inches(figsize)
 
     if hasattr(values, "values") and hasattr(values, "columns"):
