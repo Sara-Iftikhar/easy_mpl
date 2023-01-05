@@ -159,6 +159,12 @@ class TestBarChart(unittest.TestCase):
         assert isinstance(ax, plt.Axes)
         return
 
+    def test_color_for_each_bar(self):
+        ax = bar_chart(np.random.randint(1, 10, (5, 1)),
+                       color=["Blue", 'salmon', 'cadetblue', "olive", "k"], show=self.show)
+        assert isinstance(ax, plt.Axes)
+        return
+
     def test_cmap(self):
         ax = bar_chart(np.random.randint(1, 10, 10),
                        cmap="GnBu",

@@ -317,12 +317,16 @@ def is_1d(array):
     return False
 
 
-def get_color(cmap, color, ncharts, n_bars):
+def get_color(cmap, color, ncharts, n_bars)->list:
     if not isinstance(cmap, list):
         cmap = [cmap for _ in range(ncharts)]
 
     if not isinstance(color, list):
         color = [color for _ in range(ncharts)]
+    elif ncharts == 1:
+        # the user has specified separate color for each bar
+        # in next for loop we don't want to get just firs color from the list
+        color = [color]
 
     colors = []
     for idx in range(ncharts):

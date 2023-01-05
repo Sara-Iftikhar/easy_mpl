@@ -20,6 +20,11 @@ version_info()  # print version information of all the packages being used
 #############################
 
 x = np.random.random((10, 8))
+
+_ = imshow(x)
+
+# %%
+
 _ = imshow(x, annotate=True)
 
 #############################
@@ -53,3 +58,7 @@ _ = imshow(data, cmap="Blues",
               'fontsize': 14
        },
        colorbar=True)
+
+# %%
+# get axes from im and show its processing
+

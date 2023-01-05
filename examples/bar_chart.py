@@ -100,3 +100,34 @@ _ = bar_chart(data, color=['salmon', 'cadetblue'])
 # multipler bar charts on separate axes
 data = np.random.randint(0, 10, (5, 2))
 _ = bar_chart(data, color=['salmon', 'cadetblue'], share_axes=False)
+
+# %%
+# specifying colors for group of bars
+
+colors = {'Asia': '#60AB7B',
+          'Europe': '#F9B234',
+          'Africa': '#E91B23'}
+
+continents = {'Pakistan': 'Asia', 'Iran': 'Asia', 'Syria': 'Asia',
+         'Iraq': 'Asia', 'Lebanon': 'Asia', 'Ireland': 'Europe',
+         'Germany': 'Europe', 'Norway': 'Europe', 'Ghana': 'Africa',
+         'Egypt': 'Africa', 'Moroco': 'Africa', 'Tunis': 'Africa'}
+
+data = [ 17.5,  21.6,  21.6,  47.7,
+         0.2,  15.2,   0.4 ,   1.4,
+         60.6,   1.5,  11.8,   6.2]
+
+ax = bar_chart(data, list(continents.keys()),
+          bar_labels=data, bar_label_kws={'label_type':'edge',
+                                            'fontsize': 10,
+                                            'weight': 'bold'},
+          show=False, sort=True, color=[colors[val] for val in continents.values()],
+          ax_kws=dict(top_spine=False, right_spine=False))
+
+ax.set_xticklabels(ax.get_xticks().astype(int), size=12, weight='bold')
+ax.set_yticklabels(ax.get_yticklabels(), size=12, weight='bold')
+labels = np.unique(list(continents.values()))
+handles = [plt.Rectangle((0,0),1,1, color=colors[l]) for l in labels]
+plt.legend(handles, labels, loc='lower right')
+plt.tight_layout()
+plt.show()

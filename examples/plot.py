@@ -136,7 +136,7 @@ _ = plot(x, '-o', share_axes=False)
 #############################
 # The marker size can be set using ``markersize`` or ``ms`` argument.
 
-# _ = plot(y, marker=".", markersize=10)
+_ = plot(y, marker=".", markersize=10)
 
 #############################
 # If the array contains nans, they are simply notplotted
