@@ -235,7 +235,7 @@ def _unpack_data(x, labels, share_axes:bool)->Tuple[list, list]:
     if isinstance(x, np.ndarray):
         if len(x) == x.size:
             X = [x]
-            names = [None]
+            names = [[None]]
         else:
             if share_axes:
                 X = [x]

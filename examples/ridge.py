@@ -69,3 +69,35 @@ x1 = np.random.random(100)
 x2 = np.random.random(90)
 _ = ridge([x1, x2], color=np.random.random((3, 2)))
 
+# %%
+f = "https://raw.githubusercontent.com/AtrCheema/AI4Water/master/ai4water/datasets/arg_busan.csv"
+df = pd.read_csv(f, index_col='index')
+print(df.shape)
+df.head()
+# %%
+
+cols = ['air_temp_c',
+        'wat_temp_c',
+        'sal_psu',
+        'tide_cm',
+        'rel_hum',
+        'pcp12_mm',
+        'wind_dir_deg',
+        'wind_speed_mps'
+        ]
+
+_ = ridge(df[cols])
+
+# %%
+f = 'https://media.githubusercontent.com/media/HakaiInstitute/essd2021-hydromet-datapackage/main/2013-2019_Discharge1015_5min.csv'
+df = pd.read_csv(f)
+df.index = pd.to_datetime(df.pop('Datetime'))
+print(df.shape)
+df.head()
+# %%
+groupby_year = df.groupby(lambda x: x.year)
+
+_ = ridge(
+    [grp['Qrate'].resample('D').interpolate(method='linear') for _, grp in groupby_year],
+    labels=[name for name, _ in groupby_year],
+    )

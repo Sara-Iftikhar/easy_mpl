@@ -29,6 +29,18 @@ class TestBox(unittest.TestCase):
         _assert_output(ax, out)
         return
 
+    def test_1array(self):
+        ax, out = boxplot(df['tide_cm'].values, show=self.show)
+        _assert_output(ax, out)
+        return
+
+    def test_1array_with_label(self):
+        ax, out = boxplot(df['tide_cm'].values,
+                          labels=['tide_cm'],
+                          show=self.show)
+        _assert_output(ax, out)
+        return
+
     def test_notch(self):
         ax, out = boxplot(df[cols], show=self.show, notch=True)
         _assert_output(ax, out)
