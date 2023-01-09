@@ -27,6 +27,7 @@ cols = ['air_temp_c', 'wat_temp_c', 'sal_psu', 'tide_cm', 'rel_hum', 'pcp12_mm']
 
 data = np.random.randn(1000)
 
+# %%
 # let's start with a basic histogram
 
 _ = hist(data, bins = 100)
@@ -34,7 +35,7 @@ _ = hist(data, bins = 100)
 
 
 # %%
-# %% adding KDE and specifying line properties
+# adding KDE and specifying line properties
 
 _ = hist(data, add_kde=True, bins=50, color = 'lightpink',
          line_kws={'linestyle': '--',
@@ -86,7 +87,7 @@ _ = hist(df[cols], share_axes=False,
          bins = 20, linewidth = 0.5, edgecolor = "k", grid=False)
 
 # %%
-# Arguments of subplots can be given to `subplots_kws`
+# Arguments of subplots can be given to ``subplots_kws``
 
 _ = hist(df[cols], share_axes=False, subplots_kws={"sharex": "all"},
          bins = 20, linewidth = 0.5, edgecolor = "k", grid=False)
