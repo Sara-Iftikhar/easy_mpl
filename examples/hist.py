@@ -63,7 +63,7 @@ _ = hist(data, bins = 100, color = 'gold',
 
 # %%
 # Any argument for matplotlib.hist can be given to hist function for example
-# `color` or `edgecolor`
+# ``color`` or ``edgecolor``
 
 _ = hist(data, bins = 20, linewidth = 0.5,
          edgecolor = "k", grid=False, color='khaki')
