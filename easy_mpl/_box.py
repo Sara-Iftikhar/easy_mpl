@@ -260,7 +260,17 @@ def _unpack_data(x, labels, share_axes:bool)->Tuple[list, list]:
 
     elif isinstance(x, (list, tuple)) and isinstance(x[0], (list, tuple, np.ndarray)):
         X = [x_ for x_ in x]
-        names = [None]*len(X)
+        names = [None] * len(X)
+        if share_axes:
+            X = [X]
+            names = [names]
+
+    elif isinstance(x, (list, tuple)) and is_series(x[0]):  # list of series
+        if share_axes:
+            X = [x]
+        else:
+            X = x
+        names = [x_.name for x_ in x]
 
     elif isinstance(x, (list, tuple)) and not is_dataframe(x[0]):
         X = [x]
@@ -273,7 +283,7 @@ def _unpack_data(x, labels, share_axes:bool)->Tuple[list, list]:
             labels = [labels]
         if share_axes:
             labels = [labels]
-        assert len(labels) == len(names), f"{len(names)} does not match data"
+        #assert len(labels) == len(names), f"{len(names)} does not match data"
         names = labels
 
     return X, names

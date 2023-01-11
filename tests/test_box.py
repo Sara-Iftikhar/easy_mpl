@@ -105,6 +105,32 @@ class TestBox(unittest.TestCase):
         _assert_output(ax, out)
         return
 
+    def test_list_of_arrays(self):
+        data = np.random.random(100)
+        ax, out = boxplot([data, data, data], show=self.show)
+        _assert_output(ax, out)
+        return
+
+    def test_list_of_series(self):
+        data = pd.Series(np.random.random(100))
+        ax, out = boxplot([data, data, data], show=self.show)
+        _assert_output(ax, out)
+        return
+
+    def test_list_of_arrays_with_labels(self):
+        data = np.random.random(100)
+        ax, out = boxplot([data, data, data], show=self.show,
+                          labels=['a', 'b', 'c'])
+        _assert_output(ax, out)
+        return
+
+    def test_list_of_series_with_labels(self):
+        data = pd.Series(np.random.random(100))
+        ax, out = boxplot([data, data, data], show=self.show,
+                          labels=['a', 'b', 'c'])
+        _assert_output(ax, out)
+        return
+
 
 class TestShareAxes(unittest.TestCase):
     show = False
@@ -191,6 +217,35 @@ class TestShareAxes(unittest.TestCase):
         _assert_list(axes, outs)
         return
 
+    def test_list_of_arrays(self):
+        data = np.random.random(100)
+        ax, out = boxplot([data, data, data], show=self.show,
+                          share_axes=False)
+        _assert_list(ax, out)
+        return
+
+    def test_list_of_series(self):
+        data = pd.Series(np.random.random(100))
+        ax, out = boxplot([data, data, data], show=self.show,
+                          share_axes=False)
+        _assert_list(ax, out)
+        return
+
+    def test_list_of_arrays_with_labels(self):
+        data = np.random.random(100)
+        ax, out = boxplot([data, data, data], show=self.show,
+                          share_axes=False,
+                          labels=['a', 'b', 'c'])
+        _assert_list(ax, out)
+        return
+
+    def test_list_of_series_with_labels(self):
+        data = pd.Series(np.random.random(100))
+        ax, out = boxplot([data, data, data], show=self.show,
+                          share_axes=False,
+                          labels=['a', 'b', 'c'])
+        _assert_list(ax, out)
+        return
 
 def _assert_output(ax, out):
     assert isinstance(ax, plt.Axes), ax
