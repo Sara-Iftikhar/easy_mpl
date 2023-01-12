@@ -511,8 +511,6 @@ class AddMarginalPlots(object):
 
     parameters
     -----------
-    x : array like
-    y : array like
     ax : plt.Axes
         :obj:`matplotlib.axes` on which to add the marginal plots
     pad :
@@ -530,23 +528,22 @@ class AddMarginalPlots(object):
     >>> y = np.random.normal(size=100)
     >>> e = x-y
     >>> ax = plot(e, show=False)
-    >>> AddMarginalPlots(x, y, ax, hist=True)
+    >>> AddMarginalPlots(ax, hist=True)(x, y)
     >>> plt.show()
     """
-    def __init__(self,
-                 x, y,
-                 ax:plt.Axes,
-                 pad:float=0.25,
-                 size:float = 0.7,
-                 hist:bool = True,
-                 hist_kws:dict = None,
-                 ridge_line_kws:dict = None,
-                 fill_kws: dict = None,
-                 fix_limits:bool = True
-                 ):
+    def __init__(
+            self,
+            ax:plt.Axes,
+            pad:float=0.25,
+            size:float = 0.7,
+            hist:bool = True,
+            hist_kws:dict = None,
+            ridge_line_kws:dict = None,
+            fill_kws: dict = None,
+            fix_limits:bool = True
+    ):
 
         self.ax = ax
-        self._n = len(x)
 
         if not isinstance(pad, (list, tuple)):
             pad = [pad, pad]
@@ -558,26 +555,42 @@ class AddMarginalPlots(object):
 
         self.hist = hist
 
-        HIST_KWS = self.verify_kws(hist_kws)
+        self.HIST_KWS = self.verify_kws(hist_kws)
         self.ridge_line_kws = self.verify_kws(ridge_line_kws)
         self.fill_kws = self.verify_kws(fill_kws)
 
         self.fix_limits = fix_limits
 
-        self.divider = make_axes_locatable(ax)
 
-        axHistx = self.add_ax_marg_x(x, hist_kws=HIST_KWS[0])
-        axHisty = self.add_ax_marg_y(y_data=y, hist_kws=HIST_KWS[1])
+
+    def __call__(
+            self,
+            x,
+            y,
+            top_axes:plt.Axes=None,
+            right_axes:plt.Axes=None
+    )->tuple:
+        """
+        x : array like
+        y : array like
+        """
+        self.divider = make_axes_locatable(self.ax)
+
+        axHistx = self.add_ax_marg_x(x, hist_kws=self.HIST_KWS[0], ax=top_axes)
+        axHisty = self.add_ax_marg_y(y_data=y, hist_kws=self.HIST_KWS[1], ax=right_axes)
 
         # make some labels invisible
         plt.setp(axHistx.get_xticklabels() + axHisty.get_yticklabels(),
                  visible=False)
 
-        despine_axes(ax, keep=["left", "bottom"])
+        despine_axes(self.ax, keep=["left", "bottom"])
+
+        return axHistx, axHisty
 
     def add_ax_marg_x(self,
                       x_data,
-                      hist_kws:dict=None
+                      hist_kws:dict=None,
+                      ax:plt.Axes = None,
                       ):
 
         line_kws = self._get_line_kws(self.ridge_line_kws[0])
@@ -590,8 +603,12 @@ class AddMarginalPlots(object):
         if hist_kws is not None:
             _hist_kws.update(hist_kws)
 
-        new_axes = self.divider.append_axes("top", self.size[0],
+        if ax is None:
+            new_axes = self.divider.append_axes("top", self.size[0],
                                        pad=self.pad[0], sharex=self.ax)
+        else:
+            new_axes = ax
+
         despine_axes(new_axes, keep="bottom")
         new_axes.set_yticks([])
 
@@ -620,7 +637,8 @@ class AddMarginalPlots(object):
 
     def add_ax_marg_y(self,
                       y_data,
-                      hist_kws: dict = None
+                      hist_kws: dict = None,
+                      ax:plt.Axes = None
                       ):
 
         line_kws = self._get_line_kws(self.ridge_line_kws[1])
@@ -634,10 +652,15 @@ class AddMarginalPlots(object):
         if hist_kws is not None:
             _hist_kws.update(hist_kws)
 
-        new_axes = self.divider.append_axes("right",
-                                       self.size[1],
-                                       pad=self.pad[1],
-                                       sharey=self.ax)
+        if ax is None:
+            new_axes = self.divider.append_axes(
+                "right",
+                self.size[1],
+                pad=self.pad[1],
+                sharey=self.ax)
+        else:
+            new_axes = ax
+
         despine_axes(new_axes, keep="left")
         new_axes.set_xticks([])
 

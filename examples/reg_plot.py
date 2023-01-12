@@ -7,7 +7,7 @@ h. regplot
 This file shows the usage of :func:`regplot` function.
 """
 # sphinx_gallery_thumbnail_number = -2
-
+import matplotlib.pyplot as plt
 import numpy as np
 from easy_mpl import regplot
 from easy_mpl.utils import version_info
@@ -79,3 +79,21 @@ _ = regplot(x, y,
             ridge_line_kws=RIDGE_LINE_KWS,
             hist=False,
             fill_kws=fill_kws)
+
+# %%
+cov = np.array(
+    [[1.0, 0.9, 0.7],
+     [0.9, 1.2, 0.8],
+     [0.7, 0.8, 1.4]]
+)
+data = rng.multivariate_normal(np.zeros(3),
+                               cov, size=100)
+
+ax = regplot(data[:, 0], data[:, 1], line_color='black',
+             marker_color='crimson',
+             scatter_kws={'edgecolors':'black', 'linewidth':0.5, 'alpha': 0.5},
+             show=False)
+ax = regplot(data[:, 0], data[:, 2], line_color='green', ax=ax,
+             scatter_kws={'edgecolors':'black', 'linewidth':0.5, 'alpha': 0.5},
+             show=False)
+plt.show()

@@ -199,11 +199,13 @@ def regplot(
              **line_kws)
 
     if marginals:
-        AddMarginalPlots(x, y, ax,
-                         pad=marginal_ax_pad, size=marginal_ax_size,
-                         hist=hist, hist_kws=hist_kws,
+        AddMarginalPlots(ax,
+                         pad=marginal_ax_pad,
+                         size=marginal_ax_size,
+                         hist=hist,
+                         hist_kws=hist_kws,
                          ridge_line_kws=ridge_line_kws,
-                         fill_kws=fill_kws)
+                         fill_kws=fill_kws)(x, y)
 
     _ax_kws = {'xlabel': 'Observed',
                'xlabel_kws': {'fontsize': 14},

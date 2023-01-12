@@ -190,7 +190,7 @@ ax = plot(
 
 # draw horizontal line on y=0
 ax.axhline(0.0)
-AddMarginalPlots(x, y, ax)
+AddMarginalPlots(ax)(x, y)
 plt.show()
 
 
