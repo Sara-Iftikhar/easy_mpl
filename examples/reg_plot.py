@@ -25,34 +25,43 @@ _ = regplot(x, y)
 
 #%%
 # customizing marker style
-_ = regplot(x, y, marker_color='black')
+_ = regplot(x, y, marker_color='white',
+            scatter_kws={'marker':"D", 'edgecolors':'grey'})
+
+#%%
+# another example by increasing the `marker size`
+_ = regplot(x, y, marker_color='crimson', marker_size=35,
+           scatter_kws={'marker':"o", 'edgecolors':'black'})
 
 
 #%%
 # customizing line style
-_ = regplot(x, y, line_color='black')
+_ = regplot(x, y, line_color='black', line_style='--',
+            line_kws={'linewidth':2})
 
 #%%
 # customizing fill color
-_ = regplot(x, y, fill_color='black')
+_ = regplot(x, y, fill_color='teal')
 
 #%%
-
-_ = regplot(x, y, ci=None, line_color='green')
+# hiding confidence interval
+_ = regplot(x, y, ci=None, line_color='olive')
 
 # %%
 # We can show distribution of x and y along the marginals
 # This can be done by setting the ``marginals`` keyword to True
 
-RIDGE_LINE_KWS = [{'color': 'k', 'lw': 1.0}, {'color': 'crimson', 'lw': 1.0}]
-HIST_KWS = [{'color': 'darkcyan'}, {'color': 'tab:brown'}]
+RIDGE_LINE_KWS = [{'color': 'olive', 'lw': 1.0}, {'color': 'firebrick', 'lw': 1.0}]
+HIST_KWS = [{'color': 'khaki'}, {'color': 'salmon'}]
 
 _ = regplot(x, y,
-             marker_size = 28,
+             marker_size = 35,
              marker_color='crimson',
              line_color='k',
+             fill_color='k',
              scatter_kws={'edgecolors':'black', 'linewidth':0.5,
-                          'alpha': 0.5},
+                          #'alpha': 0.5
+                          },
              marginals=True,
              marginal_ax_pad=0.25,
              marginal_ax_size=0.7,
@@ -64,13 +73,14 @@ _ = regplot(x, y,
 # Instead of drawing histograms, we can decide to fill the ridges
 # drawn by kde lines on marginals.
 
-fill_kws = {
-    "alpha": 0.5
-}
+fill_kws = [{'color': 'thistle'}, {'color': 'lightblue'}]
+RIDGE_LINE_KWS = [{'color': 'purple', 'lw': 1.0}, {'color': 'teal', 'lw': 1.0}]
+
 _ = regplot(x, y,
-            marker_size = 28,
+            marker_size = 40,
             marker_color='crimson',
             line_color='k',
+            fill_color='k',
             scatter_kws={'edgecolors':'black', 'linewidth':0.5,
                           'alpha': 0.5},
             marginals=True,
@@ -81,6 +91,9 @@ _ = regplot(x, y,
             fill_kws=fill_kws)
 
 # %%
+# multiple regression lines with customized marker, line
+# and fill style
+
 cov = np.array(
     [[1.0, 0.9, 0.7],
      [0.9, 1.2, 0.8],
@@ -89,11 +102,12 @@ cov = np.array(
 data = rng.multivariate_normal(np.zeros(3),
                                cov, size=100)
 
-ax = regplot(data[:, 0], data[:, 1], line_color='black',
-             marker_color='crimson',
-             scatter_kws={'edgecolors':'black', 'linewidth':0.5, 'alpha': 0.5},
+ax = regplot(data[:, 0], data[:, 1], line_color='orange',
+             marker_color='orange', marker_size=35, fill_color='orange',
+             scatter_kws={'edgecolors':'black', 'linewidth':0.8, 'alpha': 0.8},
              show=False)
-ax = regplot(data[:, 0], data[:, 2], line_color='green', ax=ax,
-             scatter_kws={'edgecolors':'black', 'linewidth':0.5, 'alpha': 0.5},
+ax = regplot(data[:, 0], data[:, 2], line_color='royalblue', ax=ax,
+                marker_color='royalblue', marker_size=35, fill_color='royalblue',
+             scatter_kws={'edgecolors':'black', 'linewidth':0.8, 'alpha': 0.8},
              show=False)
 plt.show()
