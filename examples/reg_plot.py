@@ -26,7 +26,7 @@ _ = regplot(x, y)
 #%%
 # customizing marker style
 _ = regplot(x, y, marker_color='white',
-            scatter_kws={'marker':"D", 'edgecolors':'grey'})
+            scatter_kws={'marker':"D", 'edgecolors':'black'})
 
 #%%
 # another example by increasing the `marker size`
@@ -36,16 +36,22 @@ _ = regplot(x, y, marker_color='crimson', marker_size=35,
 
 #%%
 # customizing line style
-_ = regplot(x, y, line_color='black', line_style='--',
-            line_kws={'linewidth':2})
+_ = regplot(x, y, marker_color='dodgerblue', marker_size=35,
+           scatter_kws={'marker':"o"},
+            line_color='dimgrey', line_style='--',
+            line_kws={'linewidth':3})
 
 #%%
 # customizing fill color
-_ = regplot(x, y, fill_color='teal')
+_ = regplot(x, y, marker_color='crimson', marker_size=40,
+           scatter_kws={'marker':"o", 'edgecolors':'black'},
+            fill_color='teal')
 
 #%%
 # hiding confidence interval
-_ = regplot(x, y, ci=None, line_color='olive')
+_ = regplot(x, y, marker_color='crimson', marker_size=40,
+           scatter_kws={'marker':"o", 'edgecolors':'black'},
+            ci=None, line_color='olive')
 
 # %%
 # We can show distribution of x and y along the marginals
@@ -60,7 +66,6 @@ _ = regplot(x, y,
              line_color='k',
              fill_color='k',
              scatter_kws={'edgecolors':'black', 'linewidth':0.5,
-                          #'alpha': 0.5
                           },
              marginals=True,
              marginal_ax_pad=0.25,
