@@ -59,7 +59,7 @@ _ = scatter(x, y, c=z)
 _ = scatter(x, y, c=y, colorbar=True)
 
 #############################
-# The function ``scatter`` returns a tuple. The first argument is a maplotlib
+# The function ``scatter`` returns a tuple. The first argument is a matplotlib
 # axes which can be used for further processing
 
 axes, _ = scatter(x, y, show=False)
@@ -76,7 +76,7 @@ _ = scatter(x, y, color=colors, colorbar=True)
 
 colors, mapper = map_array_to_cmap(y, "Blues")
 _, sc = scatter(x, y, color=colors, show=False)
-plt.colorbar(mapper)  # we must privide the mapper to ``colorbar`` otherwise colorbar will be wrong
+plt.colorbar(mapper)  # we must provide the mapper to ``colorbar`` otherwise colorbar will be wrong
 plt.show()
 
 #%%
