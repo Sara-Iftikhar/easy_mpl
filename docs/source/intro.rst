@@ -29,19 +29,19 @@ arguments. These are ``ax``, ``ax_kws`` and ``show``. The meanings of these thre
 
  * ``ax`` stands for axes, the matplotlib axes object :obj:`matplotlib.axes`.
    If ``ax`` argument is given, then the plots are drawn on this otherwise either a new
-   matplotlib axes is created or currently availabel axes is used.
+   matplotlib axes is created or currently available axes is used.
  * ``ax_kws`` is a dictionary which includes the arguments to manipulate the x and y labels, ticklabels, title.
    These arguments are passed to :func:`easy_mpl.utils.process_axes` function.
- * The ``shsow`` argument determines whether to draw the plot after the function or not.
-   If ``show`` is set to False, then the axes is not *exhauseted*, which means, we can
+ * The ``show`` argument determines whether to draw the plot after the function or not.
+   If ``show`` is set to False, then the axes is not *exhausted*, which means, we can
    manipulate it if required and call `plt.show` or `plt.draw` after manipulating the axes.
    Otherwise, in default case (when ``show`` is True), the plot is drawn immediately after
    calling the corresponding function.
 
-Moreover these wrapper functions also take some auxilliary input arguments
+Moreover these wrapper functions also take some auxiliary input arguments
 which can be used for further manipulation of these plots. For example the
 :func:`imshow` function takes the ``whiten_grid`` argument. The second
-kinds of functions in this library are helper functions for data visualization and anlayis.
+kinds of functions in this library are helper functions for data visualization and analysis.
 These include :func:`regplot`, :func:`dumbbell_plot`, :func:`ridge`, :func:`parallel_coordinates`,
 :func:`taylor_plot`, :func:`lollipop_plot`, :func:`circular_bar_plot`,
 :func:`violin_plot` and :func:`spider_plot` . Thus easy_mpl is not a replacement to matplotlib
