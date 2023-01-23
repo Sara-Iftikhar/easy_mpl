@@ -742,3 +742,63 @@ def map_array_to_cmap(array, cmap:str, clip:bool = True):
     mapper = cm.ScalarMappable(norm=norm, cmap=cmap)
     colors = mapper.to_rgba(array)
     return colors, mapper
+
+
+def process_cbar(
+        ax,
+        mappable,
+        border:bool = True,
+        width: Union[int, float] = None,
+        pad: Union[int, float] = 0.2,
+        orientation:str = "vertical",
+        title:str = None,
+        title_kws: dict = None
+):
+    """
+    makes and processes colobar to an axisting axes
+
+    Parameters
+    ----------
+    ax : plt.Axes
+    mappable :
+    border : bool
+        wether to draw the border or not
+    pad :
+    orientation : str
+    title : str
+    title_kws : dict
+        ``rotation``
+        ``labelpad``
+        ``fontsize``
+        ``weight``
+
+    Returns
+    -------
+    plt.colorbar
+    """
+    if orientation == "vertical":
+        position = "right"
+    else:
+        position = "bottom"
+
+    cb_params = {'pad': pad, 'orientation': orientation}
+    divider = make_axes_locatable(ax)
+    cax = divider.append_axes(position, size="5%", pad=pad)
+    cbar = plt.colorbar(mappable, cax=cax, **cb_params)
+
+    if not border:
+        # Turn spines off and create white grid.
+        if isinstance(cax.spines, dict):
+            for sp in cax.spines:
+                cax.spines[sp].set_visible(False)
+        else:
+            cax.spines[:].set_visible(False)
+
+        if title:
+            if title_kws is None: title_kws = {}
+
+            if orientation == "vertical":
+                cbar.ax.set_ylabel(title, title_kws)
+            else:
+                cbar.ax.set_xlabel(title, **title_kws)
+    return cbar
