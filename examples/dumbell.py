@@ -13,6 +13,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from easy_mpl import dumbbell_plot
 from easy_mpl.utils import version_info
+from easy_mpl.utils import despine_axes
 
 version_info()
 
@@ -85,3 +86,31 @@ _ = dumbbell_plot(
     start_kws=dict(s=160, lw=2, zorder=2),
     end_kws=dict(s=200, lw=2.5, zorder=2)
 )
+
+f, ax = plt.subplots(facecolor = "#EFE9E6")
+start = np.linspace(35, 60, 20)
+end = np.linspace(40, 55, 20)
+line_colors = []
+for st, en in zip(start, end):
+    if st>en:
+        line_colors.append("#74959A")
+    else:
+        line_colors.append("#495371")
+
+dumbbell_plot(start, end,
+              start_kws=dict(color = "#74959A", s = 150, alpha = 0.35, zorder = 3),
+              end_kws=dict(color = "#495371", s = 150, alpha = 0.35, zorder = 3),
+              line_kws=dict(zorder = 2, lw = 2.5), line_color=line_colors,
+              ax=ax,
+              show=False, )
+
+dumbbell_plot(start, end,
+              start_kws=dict(color = "none", ec = "#74959A", s = 180, lw = 2.5, zorder = 3),
+              end_kws=dict(color = "none", ec = "#495371", s = 180, lw = 2.5, zorder = 3),
+              line_kws=dict(zorder = 2, lw = 2.5), line_color=line_colors,
+              ax=ax,
+              show=False )
+despine_axes(ax, keep=['left', 'bottom'])
+lines, labels = ax.get_legend_handles_labels()
+ax.legend([lines[2], lines[3]], ['Start', 'End'], labelspacing=1.0)
+plt.show()

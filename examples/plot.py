@@ -295,6 +295,7 @@ x1 = np.random.randint(-5, 5, (50, n))
 x2 = np.random.randint(-5, 5, (50, n))
 
 f, axes = plt.subplots(1, 2, figsize=(10, 5), sharey="all", facecolor = "#EFE9E6")
+axes[0].grid(ls='--', color='#efe9e6', zorder=2)
 axes[1].grid(ls='--', color='#efe9e6', zorder=2)
 for i in range(n):
 
