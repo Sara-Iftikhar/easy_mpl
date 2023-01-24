@@ -1,4 +1,7 @@
 
+__all__ = ["process_cbar", "make_cols_from_cmap", "process_axes",
+           "kde", "make_clrs_from_cmap", "map_array_to_cmap"]
+
 from typing import Union, Any, Optional, Tuple
 from collections.abc import KeysView, ValuesView
 
@@ -794,11 +797,11 @@ def process_cbar(
         else:
             cax.spines[:].set_visible(False)
 
-        if title:
-            if title_kws is None: title_kws = {}
+    if title:
+        if title_kws is None: title_kws = {}
 
-            if orientation == "vertical":
-                cbar.ax.set_ylabel(title, title_kws)
-            else:
-                cbar.ax.set_xlabel(title, **title_kws)
+        if orientation == "vertical":
+            cbar.ax.set_ylabel(title, title_kws)
+        else:
+            cbar.ax.set_xlabel(title, **title_kws)
     return cbar

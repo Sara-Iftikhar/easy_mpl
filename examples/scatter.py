@@ -24,7 +24,8 @@ from easy_mpl import scatter
 
 f = "https://raw.githubusercontent.com/AtrCheema/AI4Water/master/ai4water/datasets/arg_busan.csv"
 dataframe = pd.read_csv(f, index_col='index')
-dataframe = dataframe[['tide_cm', 'pcp_mm', 'tetx_coppml', 'sal_psu', 'sul1_coppml']]
+dataframe = dataframe[['tide_cm', 'pcp_mm', 'sal_psu', 'pcp12_mm',
+                       'sul1_coppml', 'tetx_coppml', 'blaTEM_coppml', 'aac_coppml']]
 
 version_info()  # print version information of all the packages being used
 
@@ -209,4 +210,25 @@ for h in leg.legendHandles:
     h.set_facecolor('white')
     h.set_edgecolor('k')
     h.set_linewidth(2.0)
+plt.show()
+
+# %%
+from easy_mpl.utils import process_cbar
+df = dataframe.dropna().reset_index(drop=True)
+
+def draw_scatter(target, ax):
+    ax.grid(visible=True, ls='--', color='lightgrey')
+    colors, mapper = map_array_to_cmap(df['pcp12_mm'].values, "inferno")
+    ax_, _ = scatter(np.arange(len(df)), df[target],
+                      color=colors, alpha=0.5, s=40, ec="grey", zorder=10,
+                      ax_kws=dict(logy=True, ylabel=target, ylabel_kws={"fontsize": 12},
+                                  top_spine=False, right_spine=False, bottom_spine=False),
+                      ax=ax, show=False)
+    process_cbar(ax_, mappable=mapper, orientation="horizontal", pad=0.3,
+                 title="Precipitation", title_kws=dict(fontsize=12))
+
+f, all_axes = plt.subplots(2,2, sharex="all", facecolor="#EFE9E6", figsize=(9, 6))
+targets = ["tetx_coppml", "sul1_coppml", "aac_coppml", "blaTEM_coppml"]
+for col, axes in zip(targets, all_axes.flatten()):
+    draw_scatter(col, axes)
 plt.show()
