@@ -35,8 +35,8 @@ class TestRegplot(unittest.TestCase):
         plt.close('all')
         return
 
-    def test_regplot_with_line_ci_and_annotation(self):
-        regplot(self.x, self.y, annotation_key="MSE", annotation_val=0.2,
+    def test_regplot_with_label(self):
+        regplot(self.x, self.y, label="MSE",
                 show=self.show)
         plt.close('all')
         return
@@ -102,6 +102,14 @@ class TestRegplot(unittest.TestCase):
         regplot(self.x, self.y, marginals=True, hist=False, show=self.show)
         plt.close('all')
         return
+
+    def test_two_regplots(self):
+        ax = regplot(self.x, self.y, marginals=True, hist=False, show=False)
+        regplot(self.x, self.y, marginals=True, hist=False,
+                     ax=ax, show=self.show)
+        plt.close('all')
+        return
+
 
 if __name__ == "__main__":
     unittest.main()

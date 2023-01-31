@@ -2,7 +2,7 @@
 __all__ = ["process_cbar", "make_cols_from_cmap", "process_axes",
            "kde", "make_clrs_from_cmap", "map_array_to_cmap"]
 
-from typing import Union, Any, Optional, Tuple
+from typing import Union, Any, Optional, Tuple, List
 from collections.abc import KeysView, ValuesView
 
 import numpy as np
@@ -70,7 +70,8 @@ def process_axes(
     xlabel : str
         label for x-axes
     xlabel_kws : dict
-        keyword arguments for :obj:`matplotlib.axes.Axes.set_xlabel` ax.set_xlabel(xlabel, **xlabel_kws)
+        keyword arguments for :obj:`matplotlib.axes.Axes.set_xlabel`
+        as ax.set_xlabel(xlabel, **xlabel_kws)
     xtick_kws :
         # for axes.tick_params such as which, labelsize, colors etc
     min_xticks : int
@@ -110,7 +111,8 @@ def process_axes(
     Returns
     -------
     plt.Axes
-        the matplotlib Axes object :obj:`matplotlib.axes` which was passed to this function
+        the matplotlib Axes object :obj:`matplotlib.axes` which was passed to
+        this function
     """
     if ax is None:
         ax = plt.gca()
@@ -204,8 +206,8 @@ def to_1d_array(array_like) -> np.ndarray:
         if array_like.ndim == 1:
             return array_like
         else:
-            assert array_like.size == len(array_like), f'cannot convert multidim ' \
-                                                       f'array of shape {array_like.shape} to 1d'
+            assert array_like.size == len(array_like), f"""
+            cannot convert multidim array of shape {array_like.shape} to 1d"""
             return array_like.reshape(-1, )
 
     elif array_like.__class__.__name__ == 'DataFrame' and array_like.ndim == 2:
@@ -222,7 +224,8 @@ def to_1d_array(array_like) -> np.ndarray:
             array = np.array(array_like)
             assert len(array) == array.size
         except Exception:
-            raise ValueError(f'cannot convert object {array_like.__class__.__name__}  to 1d ')
+            raise ValueError(f"""
+            cannot convert object {array_like.__class__.__name__}  to 1d """)
         return array
 
 def has_multi_cols(data)->bool:
@@ -234,8 +237,8 @@ def has_multi_cols(data)->bool:
 
 
 def kde(
-        y,
-        bw_method = "scott",
+        y:np.ndarray,
+        bw_method:str = "scott",
         bins:int = 1000,
         cut:Union[float, Tuple[float]] = 0.5,
 )->Tuple[Union[np.ndarray, Tuple[np.ndarray, Optional[float]]], Any]:
@@ -245,8 +248,11 @@ def kde(
     parameters
     ----------
     y :
+        array like
     bw_method :
+        method to calculate
     bins :
+        number of bins
     cut :
     """
 
@@ -283,7 +289,7 @@ def annotate_imshow(
         **text_kws
 ):
     """annotates imshow
-    https://matplotlib.org/stable/gallery/images_contours_and_fields/image_annotated_heatmap.html
+https://matplotlib.org/stable/gallery/images_contours_and_fields/image_annotated_heatmap.html
     """
 
     if data is None:
@@ -291,7 +297,8 @@ def annotate_imshow(
 
     use_threshold = True
     if isinstance(textcolors, np.ndarray) and textcolors.shape == data.shape:
-        assert threshold is None, f"if textcolors is given as array then threshold should be None"
+        assert threshold is None, f"""
+        if textcolors is given as array then threshold should be None"""
         use_threshold = False
     else:
         if threshold is not None:
@@ -516,13 +523,27 @@ class AddMarginalPlots(object):
     -----------
     ax : plt.Axes
         :obj:`matplotlib.axes` on which to add the marginal plots
-    pad :
+    pad : float
+        float or tuple of two. Distance between main axes and marginal axes
     size :
+        width and height of marginal axes
     hist : bool
-    hist_kws :
-    ridge_line_kws :
-    fill_kws :
+        whether to draw histogram on marginal axes or not
+    hist_kws : dict
+        keyword arguments that will go to axes.hist function for drawing
+        histograms on maginal plots. It can be a single dictionary or
+        a list of two dictionaries. By default following values are used
+        "linewidth":0.5, "edgecolor":"k"
+    ridge_line_kws : dict
+        keyword arguments that will go to axes.plot function for drawing
+        ridge line on maginal plots. It can
+        be a single dictionary or a list of two dictionaries
+    fill_kws : dict
+        keyword arguments that will go to axes.fill_between function fill
+        between ridge line on maginal plots. Only valid if ``hist`` is False.
+        It can be a single dictionary or a list of two dictionaries
     fix_limits : bool
+        If true, then will not shrink/expand the axes after drawing hist/ridge line
 
     Examples
     ---------
@@ -540,9 +561,9 @@ class AddMarginalPlots(object):
             pad:float=0.25,
             size:float = 0.7,
             hist:bool = True,
-            hist_kws:dict = None,
-            ridge_line_kws:dict = None,
-            fill_kws: dict = None,
+            hist_kws:Union[dict, List[dict]] = None,
+            ridge_line_kws:Union[dict, List[dict]] = None,
+            fill_kws:Union[dict, List[dict]] = None,
             fix_limits:bool = True
     ):
 
@@ -564,8 +585,6 @@ class AddMarginalPlots(object):
 
         self.fix_limits = fix_limits
 
-
-
     def __call__(
             self,
             x,
@@ -580,7 +599,8 @@ class AddMarginalPlots(object):
         self.divider = make_axes_locatable(self.ax)
 
         axHistx = self.add_ax_marg_x(x, hist_kws=self.HIST_KWS[0], ax=top_axes)
-        axHisty = self.add_ax_marg_y(y_data=y, hist_kws=self.HIST_KWS[1], ax=right_axes)
+        axHisty = self.add_ax_marg_y(y_data=y, hist_kws=self.HIST_KWS[1],
+                                     ax=right_axes)
 
         # make some labels invisible
         plt.setp(axHistx.get_xticklabels() + axHisty.get_yticklabels(),
@@ -590,11 +610,12 @@ class AddMarginalPlots(object):
 
         return axHistx, axHisty
 
-    def add_ax_marg_x(self,
-                      x_data,
-                      hist_kws:dict=None,
-                      ax:plt.Axes = None,
-                      ):
+    def add_ax_marg_x(
+            self,
+            x_data,
+            hist_kws:dict=None,
+            ax:plt.Axes = None,
+    ):
 
         line_kws = self._get_line_kws(self.ridge_line_kws[0])
 
@@ -688,14 +709,14 @@ class AddMarginalPlots(object):
         return new_axes
 
     @staticmethod
-    def _get_line_kws(line_kws)->dict:
+    def _get_line_kws(line_kws:dict)->dict:
         _line_kws = {'color': 'k', 'lw': 1.0}
         if line_kws is not None:
             _line_kws.update(line_kws)
         return _line_kws
 
     @staticmethod
-    def _get_fill_kws(fill_kws, n)->dict:
+    def _get_fill_kws(fill_kws:dict, n:int)->dict:
         _fill_kws = {"alpha": 0.5, 'color':'r',
                      'where': np.array([True for _ in range(n)])
                      }
@@ -704,7 +725,7 @@ class AddMarginalPlots(object):
         return _fill_kws
 
     @staticmethod
-    def verify_kws(kws=None):
+    def verify_kws(kws:Union[dict, List[dict]]=None)->list:
         if kws is not None and not isinstance(kws, list):
             assert isinstance(kws, dict)
             kws = [kws, kws]
@@ -734,12 +755,22 @@ def make_clrs_from_cmap(*args, **kwargs):
 
 def is_rgb(color)->bool:
     """returns True of ``color`` is rgb else returns False"""
-    if isinstance(color, (list, np.ndarray, tuple)) and len(color) in [3,4] and isinstance(color[0], (int, float)):
+    cond_1 = isinstance(color, (list, np.ndarray, tuple))
+    if cond_1  and len(color) in [3,4] and isinstance(color[0], (int, float)):
         return True
     return False
 
 
-def map_array_to_cmap(array, cmap:str, clip:bool = True):
+def map_array_to_cmap(array, cmap:str, clip:bool = True)->tuple:
+    """creates cmap using values in array
+
+    Parameters
+    ------------
+    array :
+        array like
+    cmap : str
+    clip : bool
+    """
     norm = Normalize(vmin=np.nanmin(array).item(),
                      vmax=np.nanmax(array).item(), clip=clip)
     mapper = cm.ScalarMappable(norm=norm, cmap=cmap)

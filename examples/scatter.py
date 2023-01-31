@@ -218,14 +218,16 @@ df = dataframe.dropna().reset_index(drop=True)
 
 def draw_scatter(target, ax):
     ax.grid(visible=True, ls='--', color='lightgrey')
-    colors, mapper = map_array_to_cmap(df['pcp12_mm'].values, "inferno")
+    c, mapper = map_array_to_cmap(df['pcp12_mm'].values, "inferno")
     ax_, _ = scatter(np.arange(len(df)), df[target],
-                      color=colors, alpha=0.5, s=40, ec="grey", zorder=10,
+                      color=c, alpha=0.5, s=40, ec="grey", zorder=10,
                       ax_kws=dict(logy=True, ylabel=target, ylabel_kws={"fontsize": 12},
                                   top_spine=False, right_spine=False, bottom_spine=False),
                       ax=ax, show=False)
     process_cbar(ax_, mappable=mapper, orientation="horizontal", pad=0.3,
+                 border=False,
                  title="Precipitation", title_kws=dict(fontsize=12))
+    return
 
 f, all_axes = plt.subplots(2,2, sharex="all", facecolor="#EFE9E6", figsize=(9, 6))
 targets = ["tetx_coppml", "sul1_coppml", "aac_coppml", "blaTEM_coppml"]
