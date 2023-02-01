@@ -456,7 +456,14 @@ def create_subplots(
         ncols:int=None,
         **fig_kws
 )->Tuple:
-
+    """
+    creates the subplots. If naxes is 1 and ax is None, then current available axes
+    is returned using plt.gca(). If naxes is 1 and ax is not None, then ax is returned
+    as it is. If naxes > 1 and ax is None, then new axes are created. If naxes > 1 and
+    ax is not None, then ax is closed with a warning and new axes' are created.
+    If naxes are > 1, then nrows and ncols are calculated automatically unless cols
+    is given. The last redundent axes are switched off in case naxes < (nrows*ncols).
+    """
     if ax is None:
 
         if naxes == 1:
@@ -475,7 +482,7 @@ def create_subplots(
         if naxes == 1:
             return fig, ax
 
-        nrows, ncols = get_layout(naxes)
+        nrows, ncols = get_layout(naxes, ncols=ncols)
         plt.close('all')
         fig, ax = plt.subplots(nrows, ncols, figsize=figsize, **fig_kws)
         switch_off_redundant_axes(naxes, nrows*ncols, ax)
@@ -494,11 +501,15 @@ def switch_off_redundant_axes(naxes, nplots, axarr):
     return axarr.reshape(shape)
 
 
-def get_layout(naxes, ncols=None):
+def get_layout(naxes:int, ncols:int=None)->tuple:
 
-    if ncols and ncols==1:
-        nrows = naxes
-        return nrows, ncols
+    if ncols:
+        if ncols==1:
+            nrows = naxes
+            return nrows, ncols
+        else:
+            nrows = naxes-ncols
+            return nrows, ncols
 
     layouts = {1: (1, 1), 2: (1, 2), 3: (2, 2), 4: (2, 2)}
     try:
