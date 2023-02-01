@@ -84,8 +84,7 @@ def boxplot(
     if ax is None:
         ax = plt.gca()
 
-    _box_kws = {
-    }
+    _box_kws = {}
 
     data, labels = _unpack_data(data, labels, share_axes)
 
@@ -255,8 +254,8 @@ def _unpack_data(x, labels, share_axes:bool)->Tuple[list, list]:
             names = x.columns.tolist()
 
     elif is_series(x):
-        X = x.values
-        names = [x.name]
+        X = [x.values]
+        names = [[x.name]]
 
     elif isinstance(x, (list, tuple)) and isinstance(x[0], (list, tuple, np.ndarray)):
         X = [x_ for x_ in x]
