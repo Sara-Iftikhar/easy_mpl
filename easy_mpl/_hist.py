@@ -97,7 +97,9 @@ def hist(
         names = [x.name]
 
     elif isinstance(x, (list, tuple)) and isinstance(x[0], (list, tuple, np.ndarray)):
-        X = [x_ for x_ in x]
+        assert all([len(np.array(array_like))==np.array(array_like).size for array_like in x]), f"""
+        All arrays must be one dimensional."""
+        X = [np.array(x_).reshape(-1,) for x_ in x]
         names = [None]*len(X)
 
     elif isinstance(x, (list, tuple)) and not is_dataframe(x[0]):

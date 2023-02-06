@@ -29,6 +29,23 @@ class TestBox(unittest.TestCase):
         _assert_output(ax, out)
         return
 
+    def test_basic_series(self):
+        ax, out = boxplot(df[cols[0]], show=self.show)
+        _assert_output(ax, out)
+        return
+
+    def test_1array(self):
+        ax, out = boxplot(df['tide_cm'].values, show=self.show)
+        _assert_output(ax, out)
+        return
+
+    def test_1array_with_label(self):
+        ax, out = boxplot(df['tide_cm'].values,
+                          labels=['tide_cm'],
+                          show=self.show)
+        _assert_output(ax, out)
+        return
+
     def test_notch(self):
         ax, out = boxplot(df[cols], show=self.show, notch=True)
         _assert_output(ax, out)
@@ -89,6 +106,38 @@ class TestBox(unittest.TestCase):
     def test_labels_df(self):
         data = np.random.random((100, 3))
         ax, out = boxplot(pd.DataFrame(data), show=self.show,
+                          labels=['a', 'b', 'c'])
+        _assert_output(ax, out)
+        return
+
+    def test_list_of_arrays(self):
+        data = np.random.random(100)
+        ax, out = boxplot([data, data, data], show=self.show)
+        _assert_output(ax, out)
+        return
+
+    def test_list_of_arrays_2dim(self):
+        data = np.random.random(100).reshape(-1,1)
+        ax, out = boxplot([data, data, data], show=self.show)
+        _assert_output(ax, out)
+        return
+
+    def test_list_of_series(self):
+        data = pd.Series(np.random.random(100))
+        ax, out = boxplot([data, data, data], show=self.show)
+        _assert_output(ax, out)
+        return
+
+    def test_list_of_arrays_with_labels(self):
+        data = np.random.random(100)
+        ax, out = boxplot([data, data, data], show=self.show,
+                          labels=['a', 'b', 'c'])
+        _assert_output(ax, out)
+        return
+
+    def test_list_of_series_with_labels(self):
+        data = pd.Series(np.random.random(100))
+        ax, out = boxplot([data, data, data], show=self.show,
                           labels=['a', 'b', 'c'])
         _assert_output(ax, out)
         return
@@ -177,6 +226,43 @@ class TestShareAxes(unittest.TestCase):
                              labels=['a', 'b', 'c'],
                 share_axes=False)
         _assert_list(axes, outs)
+        return
+
+    def test_list_of_arrays(self):
+        data = np.random.random(100)
+        ax, out = boxplot([data, data, data], show=self.show,
+                          share_axes=False)
+        _assert_list(ax, out)
+        return
+
+    def test_list_of_arrays_2dim(self):
+        data = np.random.random(100).reshape(-1,1)
+        ax, out = boxplot([data, data, data], show=self.show,
+                          share_axes=False)
+        _assert_list(ax, out)
+        return
+
+    def test_list_of_series(self):
+        data = pd.Series(np.random.random(100))
+        ax, out = boxplot([data, data, data], show=self.show,
+                          share_axes=False)
+        _assert_list(ax, out)
+        return
+
+    def test_list_of_arrays_with_labels(self):
+        data = np.random.random(100)
+        ax, out = boxplot([data, data, data], show=self.show,
+                          share_axes=False,
+                          labels=['a', 'b', 'c'])
+        _assert_list(ax, out)
+        return
+
+    def test_list_of_series_with_labels(self):
+        data = pd.Series(np.random.random(100))
+        ax, out = boxplot([data, data, data], show=self.show,
+                          share_axes=False,
+                          labels=['a', 'b', 'c'])
+        _assert_list(ax, out)
         return
 
 

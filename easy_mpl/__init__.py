@@ -21,4 +21,4 @@ from ._violin import violin_plot
 from .utils import process_axes
 
 
-__version__ = "0.21.2"
+__version__ = "0.21.3"

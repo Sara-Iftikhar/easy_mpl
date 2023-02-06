@@ -2,10 +2,13 @@
 
 __all__ = ["imshow"]
 
+from typing import Union
+
 import numpy as np
 import matplotlib.pyplot as plt
-from mpl_toolkits.axes_grid1 import make_axes_locatable
 
+from .utils import despine_axes
+from .utils import process_cbar
 from .utils import process_axes
 from .utils import annotate_imshow
 
@@ -17,8 +20,9 @@ def imshow(
         annotate:bool = False,
         annotate_kws:dict = None,
         colorbar: bool = False,
-        white_grid: bool = False,
-        cb_tick_params: dict = None,
+        grid_params: dict = None,
+        mask : Union[bool, str, np.ndarray] = None,
+        cbar_params: dict = None,
         ax:plt.Axes = None,
         ax_kws: dict = None,
         show:bool = True,
@@ -50,10 +54,19 @@ def imshow(
             tick labels for x-axis. For DataFrames, column names are used by default.
         yticklabels :  list, optional
             tick labels for y-axis. For DataFrames, index is used by default
-        white_grid : bool, optional (default=False)
-            whether to show the white grids or not. This will also turn off the spines.
-        cb_tick_params : dict, optional
-            tick params for colorbar. for example ``pad`` or ``orientation``
+        grid_params : dict, optional (default=None)
+            parameters to process grid. Allowed keys in the dictionary are following
+                - ``border``, bool
+                - ``linestyle``
+                - ``linewidth``
+                - ``color``
+        mask :
+            This argument can be used to hide part of heatmap from being displayed.
+                - True : will only show the lower half
+                - ``upper`` will only show the lower half
+                - ``lower`` will only show the upper half
+        cbar_params : dict, optional
+            params for colorbar. for example ``pad`` or ``orientation``
         ax : plt.Axes, optional
             if not given, current available axes will be used
         ax_kws : dict, optional (default=None)
@@ -80,7 +93,7 @@ def imshow(
         >>> data = np.random.random((4, 10))
         >>> imshow(data, cmap="YlGn",
         ...        xticklabels=[f"Feature {i}" for i in range(data.shape[1])],
-        ...        white_grid=True, annotate=True,
+        ...        grid_params={'border': True, 'color': 'w', 'linewidth': 2}, annotate=True,
         ...        colorbar=True)
 
     See :ref:`sphx_glr_auto_examples_imshow.py` for more examples
@@ -106,11 +119,26 @@ def imshow(
         # the best way to convert series in df to number is to use to_numeric
         values = np.column_stack([pd.to_numeric(values.iloc[:, i]) for i in range(values.shape[1])])
 
+    to_keep = None
+    if mask is not None:
+        if isinstance(mask, (str, bool)):
+            _mask = np.tri(values.shape[0], k=-1)
+            if mask == "lower":
+                values = np.ma.array(values, mask=_mask)  # mask out the lower triangle
+                to_keep = ['right', 'top']
+            else:
+                values = np.ma.array(values, mask=_mask).T
+                to_keep = ['left', 'bottom']
+
     tick_params = {}
     if 'ticks' in kwargs:
         tick_params['ticks'] = kwargs.pop('ticks')
 
     im = ax.imshow(values, **kwargs)
+
+    if to_keep:
+        despine_axes(ax, keep=to_keep)
+
 
     if annotate_kws is None:
         annotate_kws = {}
@@ -143,7 +171,36 @@ def imshow(
     if ax_kws:
         process_axes(ax, **ax_kws)
 
-    if white_grid:
+    if grid_params:
+        process_grid(ax, values, **grid_params)
+
+    if colorbar:
+        if cbar_params is None:
+            cbar_params = {}
+        process_cbar(ax, im, **cbar_params)
+        # cb_tick_params = cb_tick_params or {'pad': 0.2, 'orientation': 'vertical'}
+        # # https://stackoverflow.com/a/18195921/5982232
+        # divider = make_axes_locatable(ax)
+        # cax = divider.append_axes("right", size="5%", pad=0.2)
+        # fig: plt.Figure = plt.gcf()
+        # cb = fig.colorbar(im, cax=cax, **cb_tick_params)
+
+    if show:
+        plt.show()
+
+    return im
+
+
+def process_grid(
+        ax:plt.Axes,
+        data:np.ndarray,
+        border:bool = False,
+        color:str = "w",
+        linewidth:Union[int, float] = 3,
+        linestyle:str = '-'
+):
+
+    if not border:
         # Turn spines off and create white grid.
         if isinstance(ax.spines, dict):
             for sp in ax.spines:
@@ -151,20 +208,8 @@ def imshow(
         else:
             ax.spines[:].set_visible(False)
 
-        ax.set_xticks(np.arange(values.shape[1] + 1) - .5, minor=True)
-        ax.set_yticks(np.arange(values.shape[0] + 1) - .5, minor=True)
-        ax.grid(which="minor", color="w", linestyle='-', linewidth=3)
-        ax.tick_params(which="minor", bottom=False, left=False)
-
-    if colorbar:
-        cb_tick_params = cb_tick_params or {'pad': 0.2, 'orientation': 'vertical'}
-        # https://stackoverflow.com/a/18195921/5982232
-        divider = make_axes_locatable(ax)
-        cax = divider.append_axes("right", size="5%", pad=0.2)
-        fig: plt.Figure = plt.gcf()
-        cb = fig.colorbar(im, cax=cax, **cb_tick_params)
-
-    if show:
-        plt.show()
-
-    return im
+    ax.set_xticks(np.arange(data.shape[1] + 1) - .5, minor=True)
+    ax.set_yticks(np.arange(data.shape[0] + 1) - .5, minor=True)
+    ax.grid(which="minor", color=color, linestyle=linestyle, linewidth=linewidth)
+    ax.tick_params(which="minor", bottom=False, left=False)
+    return

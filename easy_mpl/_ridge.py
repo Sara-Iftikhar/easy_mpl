@@ -29,7 +29,7 @@ def ridge(
         cut: float = 0.5,
         color: Union[str, List[str], np.ndarray, List[np.ndarray]] = None,
         fill_kws: dict = None,
-        line_width: Union[int, List[int]] = 1.0,
+        line_width: Union[int, List[int], float, List[float]] = 1.0,
         line_color: Union[str, List[str]] = "black",
         plot_kws: dict = None,
         xlabel: str = None,

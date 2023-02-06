@@ -15,7 +15,6 @@ import numpy as np
 import pandas as pd
 from easy_mpl import plot
 import matplotlib.pyplot as plt
-from easy_mpl.utils import AddMarginalPlots
 from easy_mpl.utils import version_info
 
 version_info()  # print version information of all the packages being used
@@ -136,7 +135,7 @@ _ = plot(x, '-o', share_axes=False)
 #############################
 # The marker size can be set using ``markersize`` or ``ms`` argument.
 
-# _ = plot(y, marker=".", markersize=10)
+_ = plot(y, marker=".", markersize=10)
 
 #############################
 # If the array contains nans, they are simply notplotted
@@ -168,31 +167,6 @@ print(f"Type of ax is: {type(ax)}")
 # draw horizontal line on y=0
 ax.axhline(0.0)
 plt.show()
-
-# %%
-# We can add marginal plots to our main plot using ``AddMarginalPlots`` class.
-# The marginal plots are used to show the distribution of x-axis data and y-axis data.
-# The distribution of x-axis data is shown on top of main plot and the distribution
-# of y-axis data is shown on right side of main plot.
-
-ax = plot(
-    e,
-    'o',
-    show=False,
-    markerfacecolor=np.array([225, 121, 144])/256.0,
-    markeredgecolor="black", markeredgewidth=0.5,
-    ax_kws=dict(
-    xlabel="Predicted",
-    ylabel="Residual",
-    xlabel_kws={"fontsize": 14},
-    ylabel_kws={"fontsize": 14}),
-     )
-
-# draw horizontal line on y=0
-ax.axhline(0.0)
-AddMarginalPlots(x, y, ax)
-plt.show()
-
 
 # %%
 # We can also provide an already existing axes to ``plot`` function using ``ax`` argument.
@@ -267,3 +241,62 @@ ax.text(np.argmin(y2), 2,
 
 plt.tight_layout()
 plt.show()
+
+# %%
+# setting spine colors
+
+y1 = [2, 3,5,6, 8.5, 9, 11.8, 12.4, 13.6]
+y2 = [0.5, 4, 2, 4, 5, 6, 4, 5, 6]
+y3 = np.array(y1) - np.array(y2)
+
+plot(y1, marker='o', mfc='white', ms=10, lw=5,
+     color='#287271', show=False)
+plot(y2, marker='o', mfc='white', ms=10, lw=5,
+     color='#D81159', show=False)
+ax = plot(y3, marker='o', mfc='white', ms=10, lw=5,
+     color='orange', show=False)
+ax.grid(ls='--', color='lightgrey')
+for spine in ax.spines.values():
+    spine.set_edgecolor('lightgrey')
+    spine.set_linestyle('dashed')
+ax.tick_params(color='lightgrey', labelsize=14, labelcolor='grey')
+plt.show()
+
+# %%
+# using fill between
+n = 12
+x1 = np.random.randint(-5, 5, (50, n))
+x2 = np.random.randint(-5, 5, (50, n))
+
+f, axes = plt.subplots(1, 2, figsize=(10, 5), sharey="all", facecolor = "#EFE9E6")
+axes[0].grid(ls='--', color='#efe9e6', zorder=2)
+axes[1].grid(ls='--', color='#efe9e6', zorder=2)
+for i in range(n):
+
+    plot(x1[:, i], ax=axes[0], lw = .75, color = 'grey', alpha = 0.25,
+         show=False)
+    plot(x2[:, i], ax=axes[1], lw=.75, color='grey', alpha=0.25,
+         show=False)
+
+plot(np.zeros(50), ax=axes[0], show=False, color='black', ls='dashed', lw=1)
+plot(np.zeros(50), ax=axes[1], show=False, color='black', ls='dashed', lw=1)
+
+plot(x1.mean(axis=1), ax=axes[0], show=False,
+     lw=1.5, color='#336699', zorder=5, markevery=[-1], marker='o', ms=6, mfc='white')
+plot(x2.mean(axis=1), ax=axes[1], show=False,
+     lw=1.5, color='#DA4167', zorder=5, markevery=[-1], marker='o', ms=6, mfc='white')
+
+axes[0].fill_between(x=[0, 50], y1=0, y2=5, color='#336699', alpha=0.05,
+                ec='None', hatch='......', zorder=1)
+axes[0].fill_between(x=[0, 50], y1=0, y2=-5, color='#DA4167',
+                     alpha=0.05, ec='None', hatch='......', zorder=1)
+
+axes[0].tick_params(color='lightgrey', labelsize=14, labelcolor='grey')
+
+axes[1].fill_between(x=[0, 50], y1=0, y2=5, color='#336699', alpha=0.05,
+                ec='None', hatch='......', zorder=1)
+axes[1].fill_between(x=[0, 50], y1=0, y2=-5, color='#DA4167',
+                     alpha=0.05, ec='None', hatch='......', zorder=1)
+axes[1].tick_params(color='lightgrey', labelsize=14, labelcolor='grey')
+plt.show()
+

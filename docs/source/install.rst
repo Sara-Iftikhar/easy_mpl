@@ -16,6 +16,14 @@ We can also specify the easy_mpl version that we want to install as below
 ::
     pip install easy_mpl==0.21.1
 
+To updated the installation run
+::
+    pip install --upgrade easy_mpl
+
+To install from a specific commit, we can write the required commit SHA as below
+::
+    pip install git+https://github.com/Sara-Iftikhar/easy_mpl.git@b4629329fa387a292b33ef7ba087e4cf4ba363f0
+
 
 using github link
 =================

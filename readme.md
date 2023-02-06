@@ -105,7 +105,7 @@ from easy_mpl import imshow
 data = np.random.random((4, 10))
 imshow(data, cmap="YlGn",
        xticklabels=[f"Feature {i}" for i in range(data.shape[1])],
-       white_grid=True, annotate=True,
+       grid_params={'color': 'w', 'linewidth': 2}, annotate=True,
        colorbar=True)
 ```
 <p float="left">
@@ -384,6 +384,7 @@ for col in df.columns:
 
 axes = violin_plot(df, show=False)
 axes.set_facecolor("#fbf9f4")
+plt.tight_layout()
 plt.show()
 ```
 <p float="left">

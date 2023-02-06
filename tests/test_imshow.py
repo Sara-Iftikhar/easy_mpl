@@ -17,7 +17,9 @@ from easy_mpl import imshow
 
 
 class TestImshow(unittest.TestCase):
+
     show = False
+    x = np.random.random((20, 20))
 
     def test_imshow(self):
         img = imshow(np.random.random((10, 10)), colorbar=True,
@@ -70,21 +72,21 @@ class TestImshow(unittest.TestCase):
         data = np.random.random((4, 10))
         im = imshow(data, cmap="YlGn",
                         xticklabels=[f"Feature {i}" for i in range(data.shape[1])],
-                        white_grid=True, annotate=True, colorbar=True, show=self.show)
+                        grid_params={}, annotate=True, colorbar=True, show=self.show)
         assert isinstance(im, matplotlib.image.AxesImage)
         plt.close('all')
         return
 
     def test_df_object_type(self):
         data = pd.DataFrame(np.random.random((10, 10)), dtype='object')
-        img = imshow(data, white_grid=True, annotate=True, show=self.show)
+        img = imshow(data, grid_params={}, annotate=True, show=self.show)
         assert isinstance(img, matplotlib.image.AxesImage)
         plt.close('all')
         return
 
     def test_textcolors_tuple(self):
         data = pd.DataFrame(np.random.random((10, 10)), dtype='object')
-        img = imshow(data, white_grid=True, annotate=True, show=self.show,
+        img = imshow(data, grid_params={}, annotate=True, show=self.show,
                         annotate_kws={'textcolors': ("black", "white")}
                         )
         assert isinstance(img, matplotlib.image.AxesImage)
@@ -94,7 +96,7 @@ class TestImshow(unittest.TestCase):
     def test_textcolors_array(self):
         data = pd.DataFrame(np.random.random((3, 3)), dtype='object')
         img = imshow(data, cmap="YlGn",
-        white_grid=True, annotate=True,
+        annotate=True,
         annotate_kws={
               "textcolors": np.array([['black', 'black', 'black'],
                                       ['white', 'white', 'white'],
@@ -103,6 +105,18 @@ class TestImshow(unittest.TestCase):
         show=self.show)
         assert isinstance(img, matplotlib.image.AxesImage)
         plt.close('all')
+        return
+
+    def test_mask_true(self):
+        imshow(self.x, mask=True, show=self.show)
+        return
+
+    def test_mask_upper(self):
+        imshow(self.x, mask=True, show=self.show)
+        return
+
+    def test_mask_lower(self):
+        imshow(self.x, mask=True, show=self.show)
         return
 
 

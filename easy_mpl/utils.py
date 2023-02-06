@@ -1,5 +1,8 @@
 
-from typing import Union, Any, Optional, Tuple
+__all__ = ["process_cbar", "make_cols_from_cmap", "process_axes",
+           "kde", "make_clrs_from_cmap", "map_array_to_cmap", "AddMarginalPlots"]
+
+from typing import Union, Any, Optional, Tuple, List
 from collections.abc import KeysView, ValuesView
 
 import numpy as np
@@ -67,7 +70,8 @@ def process_axes(
     xlabel : str
         label for x-axes
     xlabel_kws : dict
-        keyword arguments for :obj:`matplotlib.axes.Axes.set_xlabel` ax.set_xlabel(xlabel, **xlabel_kws)
+        keyword arguments for :obj:`matplotlib.axes.Axes.set_xlabel`
+        as ax.set_xlabel(xlabel, **xlabel_kws)
     xtick_kws :
         # for axes.tick_params such as which, labelsize, colors etc
     min_xticks : int
@@ -107,7 +111,8 @@ def process_axes(
     Returns
     -------
     plt.Axes
-        the matplotlib Axes object :obj:`matplotlib.axes` which was passed to this function
+        the matplotlib Axes object :obj:`matplotlib.axes` which was passed to
+        this function
     """
     if ax is None:
         ax = plt.gca()
@@ -201,8 +206,8 @@ def to_1d_array(array_like) -> np.ndarray:
         if array_like.ndim == 1:
             return array_like
         else:
-            assert array_like.size == len(array_like), f'cannot convert multidim ' \
-                                                       f'array of shape {array_like.shape} to 1d'
+            assert array_like.size == len(array_like), f"""
+            cannot convert multidim array of shape {array_like.shape} to 1d"""
             return array_like.reshape(-1, )
 
     elif array_like.__class__.__name__ == 'DataFrame' and array_like.ndim == 2:
@@ -219,7 +224,8 @@ def to_1d_array(array_like) -> np.ndarray:
             array = np.array(array_like)
             assert len(array) == array.size
         except Exception:
-            raise ValueError(f'cannot convert object {array_like.__class__.__name__}  to 1d ')
+            raise ValueError(f"""
+            cannot convert object {array_like.__class__.__name__}  to 1d """)
         return array
 
 def has_multi_cols(data)->bool:
@@ -231,8 +237,8 @@ def has_multi_cols(data)->bool:
 
 
 def kde(
-        y,
-        bw_method = "scott",
+        y:np.ndarray,
+        bw_method:str = "scott",
         bins:int = 1000,
         cut:Union[float, Tuple[float]] = 0.5,
 )->Tuple[Union[np.ndarray, Tuple[np.ndarray, Optional[float]]], Any]:
@@ -242,8 +248,11 @@ def kde(
     parameters
     ----------
     y :
+        array like
     bw_method :
+        method to calculate
     bins :
+        number of bins
     cut :
     """
 
@@ -280,7 +289,7 @@ def annotate_imshow(
         **text_kws
 ):
     """annotates imshow
-    https://matplotlib.org/stable/gallery/images_contours_and_fields/image_annotated_heatmap.html
+https://matplotlib.org/stable/gallery/images_contours_and_fields/image_annotated_heatmap.html
     """
 
     if data is None:
@@ -288,7 +297,8 @@ def annotate_imshow(
 
     use_threshold = True
     if isinstance(textcolors, np.ndarray) and textcolors.shape == data.shape:
-        assert threshold is None, f"if textcolors is given as array then threshold should be None"
+        assert threshold is None, f"""
+        if textcolors is given as array then threshold should be None"""
         use_threshold = False
     else:
         if threshold is not None:
@@ -446,7 +456,14 @@ def create_subplots(
         ncols:int=None,
         **fig_kws
 )->Tuple:
-
+    """
+    creates the subplots. If naxes is 1 and ax is None, then current available axes
+    is returned using plt.gca(). If naxes is 1 and ax is not None, then ax is returned
+    as it is. If naxes > 1 and ax is None, then new axes are created. If naxes > 1 and
+    ax is not None, then ax is closed with a warning and new axes' are created.
+    If naxes are > 1, then nrows and ncols are calculated automatically unless cols
+    is given. The last redundent axes are switched off in case naxes < (nrows*ncols).
+    """
     if ax is None:
 
         if naxes == 1:
@@ -465,7 +482,7 @@ def create_subplots(
         if naxes == 1:
             return fig, ax
 
-        nrows, ncols = get_layout(naxes)
+        nrows, ncols = get_layout(naxes, ncols=ncols)
         plt.close('all')
         fig, ax = plt.subplots(nrows, ncols, figsize=figsize, **fig_kws)
         switch_off_redundant_axes(naxes, nrows*ncols, ax)
@@ -484,11 +501,15 @@ def switch_off_redundant_axes(naxes, nplots, axarr):
     return axarr.reshape(shape)
 
 
-def get_layout(naxes, ncols=None):
+def get_layout(naxes:int, ncols:int=None)->tuple:
 
-    if ncols and ncols==1:
-        nrows = naxes
-        return nrows, ncols
+    if ncols:
+        if ncols==1:
+            nrows = naxes
+            return nrows, ncols
+        else:
+            nrows = naxes-ncols
+            return nrows, ncols
 
     layouts = {1: (1, 1), 2: (1, 2), 3: (2, 2), 4: (2, 2)}
     try:
@@ -511,17 +532,31 @@ class AddMarginalPlots(object):
 
     parameters
     -----------
-    x : array like
-    y : array like
     ax : plt.Axes
         :obj:`matplotlib.axes` on which to add the marginal plots
-    pad :
+    pad : float
+        float or tuple of two. Distance between main axes and marginal axes
     size :
-    hist : bool
-    hist_kws :
-    ridge_line_kws :
-    fill_kws :
+        width and height of marginal axes
+    hist : bool (default=True)
+        whether to draw histogram on marginal axes or not
+    hist_kws : dict
+        keyword arguments that will go to axes.hist function for drawing
+        histograms on maginal plots. It can be a single dictionary or
+        a list of two dictionaries. By default following values are used
+        "linewidth":0.5, "edgecolor":"k"
+    ridge : bool (default=True)
+        whether to draw ridge line or not
+    ridge_line_kws : dict
+        keyword arguments that will go to axes.plot function for drawing
+        ridge line on maginal plots. It can
+        be a single dictionary or a list of two dictionaries
+    fill_kws : dict
+        keyword arguments that will go to axes.fill_between function fill
+        between ridge line on maginal plots. Only valid if ``hist`` is False.
+        It can be a single dictionary or a list of two dictionaries
     fix_limits : bool
+        If true, then will not shrink/expand the axes after drawing hist/ridge line
 
     Examples
     ---------
@@ -530,23 +565,25 @@ class AddMarginalPlots(object):
     >>> y = np.random.normal(size=100)
     >>> e = x-y
     >>> ax = plot(e, show=False)
-    >>> AddMarginalPlots(x, y, ax, hist=True)
+    >>> AddMarginalPlots(ax, hist=True)(x, y)
     >>> plt.show()
+
+    See :ref:`sphx_glr_auto_examples_marginal_plots.py` for more examples
     """
-    def __init__(self,
-                 x, y,
-                 ax:plt.Axes,
-                 pad:float=0.25,
-                 size:float = 0.7,
-                 hist:bool = True,
-                 hist_kws:dict = None,
-                 ridge_line_kws:dict = None,
-                 fill_kws: dict = None,
-                 fix_limits:bool = True
-                 ):
+    def __init__(
+            self,
+            ax:plt.Axes,
+            pad:float=0.25,
+            size:float = 0.7,
+            hist:bool = True,
+            hist_kws:Union[dict, List[dict]] = None,
+            ridge:bool = True,
+            ridge_line_kws:Union[dict, List[dict]] = None,
+            fill_kws:Union[dict, List[dict]] = None,
+            fix_limits:bool = True
+    ):
 
         self.ax = ax
-        self._n = len(x)
 
         if not isinstance(pad, (list, tuple)):
             pad = [pad, pad]
@@ -557,31 +594,65 @@ class AddMarginalPlots(object):
         self.size = size
 
         self.hist = hist
+        self.ridge = ridge
 
-        HIST_KWS = self.verify_kws(hist_kws)
+        self.HIST_KWS = self.verify_kws(hist_kws)
         self.ridge_line_kws = self.verify_kws(ridge_line_kws)
         self.fill_kws = self.verify_kws(fill_kws)
 
         self.fix_limits = fix_limits
 
-        self.divider = make_axes_locatable(ax)
+    def __call__(
+            self,
+            x,
+            y,
+            top_axes:plt.Axes=None,
+            right_axes:plt.Axes=None
+    )->tuple:
+        """
+        draws the top and right marginal axes.
 
-        axHistx = self.add_ax_marg_x(x, hist_kws=HIST_KWS[0])
-        axHisty = self.add_ax_marg_y(y_data=y, hist_kws=HIST_KWS[1])
+        Parameters
+        -----------
+        x : array like
+            the array whose distribution is to be shown on top of
+            main axes
+        y : array like
+            the array whose distribution is to be shown on right side of
+            main axes
+        top_axes : plt.Axes
+            the axes on which distribution of y is shown as histogram/ridge.
+            If not given, will be created
+        right_axes : plt.Axes
+            the axes on which distribution of y is shown as histogram/ridge
+            If not given, will be created using matplotlib.make_axes_locatable().append()
+        """
+        if top_axes is not None:
+            assert isinstance(top_axes, plt.Axes)
+            assert isinstance(right_axes, plt.Axes)
+        else:
+            self.divider = make_axes_locatable(self.ax)
+
+        axHistx = self.add_ax_marg_x(x, hist_kws=self.HIST_KWS[0], ax=top_axes)
+        axHisty = self.add_ax_marg_y(y_data=y, hist_kws=self.HIST_KWS[1],
+                                     ax=right_axes)
 
         # make some labels invisible
         plt.setp(axHistx.get_xticklabels() + axHisty.get_yticklabels(),
                  visible=False)
 
-        despine_axes(ax, keep=["left", "bottom"])
+        despine_axes(self.ax, keep=["left", "bottom"])
 
-    def add_ax_marg_x(self,
-                      x_data,
-                      hist_kws:dict=None
-                      ):
+        return axHistx, axHisty
 
+    def add_ax_marg_x(
+            self,
+            x_data,
+            hist_kws:dict=None,
+            ax:plt.Axes = None,
+    ):
+        """Adds the axes on top of main axes"""
         line_kws = self._get_line_kws(self.ridge_line_kws[0])
-
 
         if self.fix_limits:
             xlim = np.array(self.ax.get_xlim()) * 1.05
@@ -590,25 +661,33 @@ class AddMarginalPlots(object):
         if hist_kws is not None:
             _hist_kws.update(hist_kws)
 
-        new_axes = self.divider.append_axes("top", self.size[0],
+        if ax is None:
+            new_axes = self.divider.append_axes("top", self.size[0],
                                        pad=self.pad[0], sharex=self.ax)
+        else:
+            new_axes = ax
+
         despine_axes(new_axes, keep="bottom")
         new_axes.set_yticks([])
 
         if self.hist:
-            # we draw histogram on old axes so that kde line
-            # comes on top
-            ax2 = new_axes.twinx()
+
             new_axes.hist(x_data, **_hist_kws)
-            despine_axes(ax2)
-            ax2.set_yticks([])
+            if self.ridge:
+                # we draw histogram on old axes so that kde line
+                # comes on top
+                ax2 = new_axes.twinx()
+                despine_axes(ax2)
+                ax2.set_yticks([])
         else:
             ax2 = new_axes
 
-        ind, data = kde(x_data, cut=0.2)
-        ax2.plot(ind, data, **line_kws)
+        if self.ridge:
+            ind, data = kde(x_data, cut=0.2)
+            ax2.plot(ind, data, **line_kws)
 
-        if not self.hist:
+        if not self.hist and self.ridge:
+            # filling is only done when ridge is drawn and historgram is not
             fill_kws = self._get_fill_kws(self.fill_kws[0], n=len(ind))
 
             ax2.fill_between(ind, data, **fill_kws)
@@ -618,11 +697,13 @@ class AddMarginalPlots(object):
 
         return new_axes
 
-    def add_ax_marg_y(self,
-                      y_data,
-                      hist_kws: dict = None
-                      ):
-
+    def add_ax_marg_y(
+            self,
+            y_data,
+            hist_kws: dict = None,
+            ax:plt.Axes = None
+    ):
+        """Adds the axes on right side of main axes"""
         line_kws = self._get_line_kws(self.ridge_line_kws[1])
 
         if self.fix_limits:
@@ -634,25 +715,36 @@ class AddMarginalPlots(object):
         if hist_kws is not None:
             _hist_kws.update(hist_kws)
 
-        new_axes = self.divider.append_axes("right",
-                                       self.size[1],
-                                       pad=self.pad[1],
-                                       sharey=self.ax)
+        if ax is None:
+            new_axes = self.divider.append_axes(
+                "right",
+                self.size[1],
+                pad=self.pad[1],
+                sharey=self.ax)
+        else:
+            new_axes = ax
+
         despine_axes(new_axes, keep="left")
         new_axes.set_xticks([])
 
         if self.hist:
-            ax2 = new_axes.twiny()
+
             new_axes.hist(y_data, **_hist_kws)
-            despine_axes(ax2)
-            ax2.set_xticks([])
+
+            if self.ridge:
+                # create a twin axes for ridge so that it comes on top
+                ax2 = new_axes.twiny()
+                despine_axes(ax2)
+                ax2.set_xticks([])
         else:
             ax2 = new_axes
 
-        ind, data = kde(y_data, cut=0.2)
-        ax2.plot(data, ind, **line_kws)
+        if self.ridge:
+            ind, data = kde(y_data, cut=0.2)
+            ax2.plot(data, ind, **line_kws)
 
-        if not self.hist:
+        if not self.hist and self.ridge:
+            # filling is only done when ridge is drawn and historgram is not
             fill_kws = self._get_fill_kws(self.fill_kws[1], n=len(ind))
             ax2.fill_betweenx(ind, data, **fill_kws)
 
@@ -662,15 +754,15 @@ class AddMarginalPlots(object):
         return new_axes
 
     @staticmethod
-    def _get_line_kws(line_kws)->dict:
+    def _get_line_kws(line_kws:dict)->dict:
         _line_kws = {'color': 'k', 'lw': 1.0}
         if line_kws is not None:
             _line_kws.update(line_kws)
         return _line_kws
 
     @staticmethod
-    def _get_fill_kws(fill_kws, n)->dict:
-        _fill_kws = {"alpha": 0.5, 'color':'r',
+    def _get_fill_kws(fill_kws:dict, n:int)->dict:
+        _fill_kws = {"alpha": 0.5,
                      'where': np.array([True for _ in range(n)])
                      }
         if fill_kws is not None:
@@ -678,7 +770,7 @@ class AddMarginalPlots(object):
         return _fill_kws
 
     @staticmethod
-    def verify_kws(kws=None):
+    def verify_kws(kws:Union[dict, List[dict]]=None)->list:
         if kws is not None and not isinstance(kws, list):
             assert isinstance(kws, dict)
             kws = [kws, kws]
@@ -708,14 +800,84 @@ def make_clrs_from_cmap(*args, **kwargs):
 
 def is_rgb(color)->bool:
     """returns True of ``color`` is rgb else returns False"""
-    if isinstance(color, (list, np.ndarray, tuple)) and len(color) in [3,4] and isinstance(color[0], (int, float)):
+    cond_1 = isinstance(color, (list, np.ndarray, tuple))
+    if cond_1  and len(color) in [3,4] and isinstance(color[0], (int, float)):
         return True
     return False
 
 
-def map_array_to_cmap(array, cmap:str, clip:bool = True):
+def map_array_to_cmap(array, cmap:str, clip:bool = True)->tuple:
+    """creates cmap using values in array
+
+    Parameters
+    ------------
+    array :
+        array like
+    cmap : str
+    clip : bool
+    """
     norm = Normalize(vmin=np.nanmin(array).item(),
                      vmax=np.nanmax(array).item(), clip=clip)
     mapper = cm.ScalarMappable(norm=norm, cmap=cmap)
     colors = mapper.to_rgba(array)
     return colors, mapper
+
+
+def process_cbar(
+        ax,
+        mappable,
+        border:bool = True,
+        width: Union[int, float] = None,
+        pad: Union[int, float] = 0.2,
+        orientation:str = "vertical",
+        title:str = None,
+        title_kws: dict = None
+):
+    """
+    makes and processes colobar to an axisting axes
+
+    Parameters
+    ----------
+    ax : plt.Axes
+    mappable :
+    border : bool
+        wether to draw the border or not
+    pad :
+    orientation : str
+    title : str
+    title_kws : dict
+        ``rotation``
+        ``labelpad``
+        ``fontsize``
+        ``weight``
+
+    Returns
+    -------
+    plt.colorbar
+    """
+    if orientation == "vertical":
+        position = "right"
+    else:
+        position = "bottom"
+
+    cb_params = {'pad': pad, 'orientation': orientation}
+    divider = make_axes_locatable(ax)
+    cax = divider.append_axes(position, size="5%", pad=pad)
+    cbar = plt.colorbar(mappable, cax=cax, **cb_params)
+
+    if not border:
+        # Turn spines off and create white grid.
+        if isinstance(cax.spines, dict):
+            for sp in cax.spines:
+                cax.spines[sp].set_visible(False)
+        else:
+            cax.spines[:].set_visible(False)
+
+    if title:
+        if title_kws is None: title_kws = {}
+
+        if orientation == "vertical":
+            cbar.ax.set_ylabel(title, title_kws)
+        else:
+            cbar.ax.set_xlabel(title, **title_kws)
+    return cbar

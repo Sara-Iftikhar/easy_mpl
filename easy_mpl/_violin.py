@@ -101,7 +101,7 @@ def violin_plot(
     Examples
     --------
     >>> import numpy as np
-    >>> from easy_mpl._violin import violin_plot
+    >>> from easy_mpl import violin_plot
     >>> data = np.random.gamma(20, 10, 100)
     >>> violin_plot(data)
     >>> violin_plot(data, show_datapoints=False)

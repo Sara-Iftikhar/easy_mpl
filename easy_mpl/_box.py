@@ -84,8 +84,7 @@ def boxplot(
     if ax is None:
         ax = plt.gca()
 
-    _box_kws = {
-    }
+    _box_kws = {}
 
     data, labels = _unpack_data(data, labels, share_axes)
 
@@ -235,7 +234,7 @@ def _unpack_data(x, labels, share_axes:bool)->Tuple[list, list]:
     if isinstance(x, np.ndarray):
         if len(x) == x.size:
             X = [x]
-            names = [None]
+            names = [[None]]
         else:
             if share_axes:
                 X = [x]
@@ -255,12 +254,24 @@ def _unpack_data(x, labels, share_axes:bool)->Tuple[list, list]:
             names = x.columns.tolist()
 
     elif is_series(x):
-        X = x.values
-        names = [x.name]
+        X = [x.values]
+        names = [[x.name]]
 
     elif isinstance(x, (list, tuple)) and isinstance(x[0], (list, tuple, np.ndarray)):
-        X = [x_ for x_ in x]
-        names = [None]*len(X)
+        assert all([len(array)==array.size for array in x]), f"""
+        All arrays must be one dimensional."""
+        X = [np.array(x_).reshape(-1,) for x_ in x]
+        names = [None] * len(X)
+        if share_axes:
+            X = [X]
+            names = [names]
+
+    elif isinstance(x, (list, tuple)) and is_series(x[0]):  # list of series
+        if share_axes:
+            X = [x]
+        else:
+            X = x
+        names = [x_.name for x_ in x]
 
     elif isinstance(x, (list, tuple)) and not is_dataframe(x[0]):
         X = [x]
@@ -273,7 +284,7 @@ def _unpack_data(x, labels, share_axes:bool)->Tuple[list, list]:
             labels = [labels]
         if share_axes:
             labels = [labels]
-        assert len(labels) == len(names), f"{len(names)} does not match data"
+        #assert len(labels) == len(names), f"{len(names)} does not match data"
         names = labels
 
     return X, names

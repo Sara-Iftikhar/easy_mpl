@@ -39,8 +39,14 @@ _ = boxplot(df[cols])
 _ = boxplot(df[cols].values)
 
 # %%
+_ = boxplot([df[col].values for col in df.columns])
+
+# %%
 # The fill color can be specificed using any valid matplotlib cmap
 _ = boxplot(df[cols], fill_color="GnBu", patch_artist=True)
+
+# %%
+_ = boxplot(df[cols], fill_color="lightpink", patch_artist=True)
 
 # %%
 # change color of median line
@@ -55,7 +61,7 @@ _ = boxplot(df[cols], fill_color="GnBu", patch_artist=True,
 # %%
 # customize mean line color
 _ = boxplot(df[cols], fill_color="GnBu", patch_artist=True,
-            meanprops={"color": "black"})
+            meanline=True, showmeans=True, meanprops={"color": "black"})
 
 # %%
 # show notches
@@ -87,5 +93,8 @@ _ = boxplot(dataframe[cols], flierprops={"ms": 1.0},
 # %%
 # make boxplots horizontal
 _ = boxplot(dataframe[cols], flierprops={"ms": 1.0},
-            fill_color="GnBu", patch_artist=True,
-            share_axes=False, vert=False, widths=0.7)
+            fill_color="lightpink", patch_artist=True,
+            medianprops={"color": "black"},
+            share_axes=False, vert=False, widths=0.7,
+            figsize=(8, 7)
+            )

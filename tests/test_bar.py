@@ -77,9 +77,17 @@ class TestBarChart(unittest.TestCase):
         d, names = get_chart_data((5, 3))
         cm = make_cols_from_cmap(random.choice(BAR_CMAPS), len(d), 0.2)
 
-        ax = bar_chart(values=d, labels=names, color=cm, orient='v',
+        self.assertRaises(AssertionError, bar_chart, values=d,
+                          labels=names, color=cm, orient='v',
                        show=self.show, sort=True)
-        assert isinstance(ax, plt.Axes)
+        return
+
+    def test_sort_3_cm(self):
+        d, names = get_chart_data((5, 2))
+        # ax = bar_chart(values=d, labels=names, cmap="hot",
+        #                show=self.show, sort=True)
+        #
+        self.assertRaises(AssertionError, bar_chart, values=d, sort=True)
         return
 
     def test_vertical_without_axis(self):
@@ -142,7 +150,7 @@ class TestBarChart(unittest.TestCase):
     def test_values_as_dict_values(self):
         d, names = get_chart_data(5)
         data = {k:v for k,v in zip(d, names)}
-        ax = bar_chart(data.values(), data.keys(),
+        ax = bar_chart(data.keys(), data.values(),
                   show=self.show)
         assert isinstance(ax, plt.Axes)
         return
@@ -156,6 +164,12 @@ class TestBarChart(unittest.TestCase):
     def test_color_3(self):
         ax = bar_chart(np.random.randint(1, 10, (10, 3)),
                        color=["Blue", 'salmon', 'cadetblue'], show=self.show)
+        assert isinstance(ax, plt.Axes)
+        return
+
+    def test_color_for_each_bar(self):
+        ax = bar_chart(np.random.randint(1, 10, (5, 1)),
+                       color=["Blue", 'salmon', 'cadetblue', "olive", "k"], show=self.show)
         assert isinstance(ax, plt.Axes)
         return
 
@@ -208,20 +222,17 @@ class TestShareAxesFalse(unittest.TestCase):
         d, names = get_chart_data((5, 3))
         cm = make_cols_from_cmap(random.choice(BAR_CMAPS), len(d), 0.2)
 
-        ax_list = bar_chart(values=d, labels=names, color=cm,
-                       show=self.show, sort=True, share_axes=False)
-        for ax_list in ax_list:
-            assert isinstance(ax_list, plt.Axes)
+
+        self.assertRaises(AssertionError, bar_chart, values=d, sort=True,
+                          share_axes=False, color=cm)
         return
 
     def test_v_sorted_3(self):
         d, names = get_chart_data((5, 3))
         cm = make_cols_from_cmap(random.choice(BAR_CMAPS), len(d), 0.2)
 
-        ax_list = bar_chart(values=d, labels=names, color=cm, orient='v',
-                       show=self.show, sort=True, share_axes=False)
-        for ax_list in ax_list:
-            assert isinstance(ax_list, plt.Axes)
+        self.assertRaises(AssertionError, bar_chart, d, share_axes=False, orient='v',
+                          sort=True, color=cm)
         return
 
     def test_color_3(self):
@@ -239,7 +250,6 @@ class TestShareAxesFalse(unittest.TestCase):
         for ax in ax_list:
             assert isinstance(ax, plt.Axes)
         return
-
 
 
 if __name__ == "__main__":

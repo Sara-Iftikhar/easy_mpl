@@ -12,7 +12,7 @@ from .utils import is_rgb
 from .utils import BAR_CMAPS
 from .utils import process_axes
 from .utils import create_subplots
-from .utils import to_1d_array, make_cols_from_cmap
+from .utils import to_1d_array, map_array_to_cmap
 
 
 def bar_chart(
@@ -97,11 +97,6 @@ def bar_chart(
 
     See :ref:`sphx_glr_auto_examples_bar_chart.py` for more examples
 
-    .. _axes.bar:
-        https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.bar.html
-
-    .. _axes.barh:
-        https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.barh.html
     """
 
     if labels is None:
@@ -120,11 +115,15 @@ def bar_chart(
         else:
             naxes = values.shape[1]
 
-    colors = get_color(cmap, color, ncharts, len(values))
+    colors = get_color(cmap, color, ncharts, values)
 
     figsize = None
     if 'figsize' in kwargs:
         figsize = kwargs.pop('figsize')
+
+    if sort:
+        assert ncharts == 1, f"""
+        sorting is not allowed for more than 1 charts. ncharts are {ncharts}"""
 
     ax = maybe_create_axes(ax, naxes, figsize=figsize)
 
@@ -239,15 +238,19 @@ def handle_maxbars(max_bars, values, labels):
     return values, labels
 
 
-def preprocess(values, labels, bar_labels, sort, max_bars, colors):
+def preprocess(data, labels, bar_labels, sort, max_bars, colors):
     if labels is None:
-        labels = [f"F{i}" for i in range(len(values))]
+        labels = [f"F{i}" for i in range(len(data))]
 
-    values, labels, bar_labels, colors = handle_sort(sort, values, labels, bar_labels, colors)
+    data, labels, bar_labels, colors = handle_sort(sort,
+                                                   data,
+                                                   labels,
+                                                   bar_labels,
+                                                   colors)
 
-    values, labels = handle_maxbars(max_bars, values, labels)
+    data, labels = handle_maxbars(max_bars, data, labels)
 
-    return values, labels, bar_labels, colors
+    return data, labels, bar_labels, colors
 
 
 def bar_on_axes(ax, orient, ax_kws, *args, **kwargs):
@@ -317,17 +320,25 @@ def is_1d(array):
     return False
 
 
-def get_color(cmap, color, ncharts, n_bars):
+def get_color(cmap, color, ncharts, data)->list:
+
+    data = np.reshape(data, (len(data), -1))
+
     if not isinstance(cmap, list):
         cmap = [cmap for _ in range(ncharts)]
 
     if not isinstance(color, list):
         color = [color for _ in range(ncharts)]
+    elif ncharts == 1:
+        # the user has specified separate color for each bar
+        # in next for loop we don't want to get just firs color from the list
+        color = [color]
 
     colors = []
     for idx in range(ncharts):
 
-        cm = make_cols_from_cmap(cmap[idx] or random.choice(BAR_CMAPS), n_bars, 0.2)
+        _cmap = cmap[idx] or random.choice(BAR_CMAPS)
+        cm, _ = map_array_to_cmap(data[:, idx], _cmap)
 
         clr = color[idx] if color[idx] is not None else cm
 
