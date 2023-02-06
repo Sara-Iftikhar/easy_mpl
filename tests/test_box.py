@@ -29,6 +29,11 @@ class TestBox(unittest.TestCase):
         _assert_output(ax, out)
         return
 
+    def test_basic_series(self):
+        ax, out = boxplot(df[cols[0]], show=self.show)
+        _assert_output(ax, out)
+        return
+
     def test_1array(self):
         ax, out = boxplot(df['tide_cm'].values, show=self.show)
         _assert_output(ax, out)
