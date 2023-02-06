@@ -1,6 +1,6 @@
 
 __all__ = ["process_cbar", "make_cols_from_cmap", "process_axes",
-           "kde", "make_clrs_from_cmap", "map_array_to_cmap"]
+           "kde", "make_clrs_from_cmap", "map_array_to_cmap", "AddMarginalPlots"]
 
 from typing import Union, Any, Optional, Tuple, List
 from collections.abc import KeysView, ValuesView
@@ -538,13 +538,15 @@ class AddMarginalPlots(object):
         float or tuple of two. Distance between main axes and marginal axes
     size :
         width and height of marginal axes
-    hist : bool
+    hist : bool (default=True)
         whether to draw histogram on marginal axes or not
     hist_kws : dict
         keyword arguments that will go to axes.hist function for drawing
         histograms on maginal plots. It can be a single dictionary or
         a list of two dictionaries. By default following values are used
         "linewidth":0.5, "edgecolor":"k"
+    ridge : bool (default=True)
+        whether to draw ridge line or not
     ridge_line_kws : dict
         keyword arguments that will go to axes.plot function for drawing
         ridge line on maginal plots. It can
@@ -565,6 +567,8 @@ class AddMarginalPlots(object):
     >>> ax = plot(e, show=False)
     >>> AddMarginalPlots(ax, hist=True)(x, y)
     >>> plt.show()
+
+    See :ref:`sphx_glr_auto_examples_marginal_plots.py` for more examples
     """
     def __init__(
             self,
@@ -573,6 +577,7 @@ class AddMarginalPlots(object):
             size:float = 0.7,
             hist:bool = True,
             hist_kws:Union[dict, List[dict]] = None,
+            ridge:bool = True,
             ridge_line_kws:Union[dict, List[dict]] = None,
             fill_kws:Union[dict, List[dict]] = None,
             fix_limits:bool = True
@@ -589,6 +594,7 @@ class AddMarginalPlots(object):
         self.size = size
 
         self.hist = hist
+        self.ridge = ridge
 
         self.HIST_KWS = self.verify_kws(hist_kws)
         self.ridge_line_kws = self.verify_kws(ridge_line_kws)
@@ -604,10 +610,28 @@ class AddMarginalPlots(object):
             right_axes:plt.Axes=None
     )->tuple:
         """
+        draws the top and right marginal axes.
+
+        Parameters
+        -----------
         x : array like
+            the array whose distribution is to be shown on top of
+            main axes
         y : array like
+            the array whose distribution is to be shown on right side of
+            main axes
+        top_axes : plt.Axes
+            the axes on which distribution of y is shown as histogram/ridge.
+            If not given, will be created
+        right_axes : plt.Axes
+            the axes on which distribution of y is shown as histogram/ridge
+            If not given, will be created using matplotlib.make_axes_locatable().append()
         """
-        self.divider = make_axes_locatable(self.ax)
+        if top_axes is not None:
+            assert isinstance(top_axes, plt.Axes)
+            assert isinstance(right_axes, plt.Axes)
+        else:
+            self.divider = make_axes_locatable(self.ax)
 
         axHistx = self.add_ax_marg_x(x, hist_kws=self.HIST_KWS[0], ax=top_axes)
         axHisty = self.add_ax_marg_y(y_data=y, hist_kws=self.HIST_KWS[1],
@@ -627,9 +651,8 @@ class AddMarginalPlots(object):
             hist_kws:dict=None,
             ax:plt.Axes = None,
     ):
-
+        """Adds the axes on top of main axes"""
         line_kws = self._get_line_kws(self.ridge_line_kws[0])
-
 
         if self.fix_limits:
             xlim = np.array(self.ax.get_xlim()) * 1.05
@@ -648,19 +671,23 @@ class AddMarginalPlots(object):
         new_axes.set_yticks([])
 
         if self.hist:
-            # we draw histogram on old axes so that kde line
-            # comes on top
-            ax2 = new_axes.twinx()
+
             new_axes.hist(x_data, **_hist_kws)
-            despine_axes(ax2)
-            ax2.set_yticks([])
+            if self.ridge:
+                # we draw histogram on old axes so that kde line
+                # comes on top
+                ax2 = new_axes.twinx()
+                despine_axes(ax2)
+                ax2.set_yticks([])
         else:
             ax2 = new_axes
 
-        ind, data = kde(x_data, cut=0.2)
-        ax2.plot(ind, data, **line_kws)
+        if self.ridge:
+            ind, data = kde(x_data, cut=0.2)
+            ax2.plot(ind, data, **line_kws)
 
-        if not self.hist:
+        if not self.hist and self.ridge:
+            # filling is only done when ridge is drawn and historgram is not
             fill_kws = self._get_fill_kws(self.fill_kws[0], n=len(ind))
 
             ax2.fill_between(ind, data, **fill_kws)
@@ -670,12 +697,13 @@ class AddMarginalPlots(object):
 
         return new_axes
 
-    def add_ax_marg_y(self,
-                      y_data,
-                      hist_kws: dict = None,
-                      ax:plt.Axes = None
-                      ):
-
+    def add_ax_marg_y(
+            self,
+            y_data,
+            hist_kws: dict = None,
+            ax:plt.Axes = None
+    ):
+        """Adds the axes on right side of main axes"""
         line_kws = self._get_line_kws(self.ridge_line_kws[1])
 
         if self.fix_limits:
@@ -700,17 +728,23 @@ class AddMarginalPlots(object):
         new_axes.set_xticks([])
 
         if self.hist:
-            ax2 = new_axes.twiny()
+
             new_axes.hist(y_data, **_hist_kws)
-            despine_axes(ax2)
-            ax2.set_xticks([])
+
+            if self.ridge:
+                # create a twin axes for ridge so that it comes on top
+                ax2 = new_axes.twiny()
+                despine_axes(ax2)
+                ax2.set_xticks([])
         else:
             ax2 = new_axes
 
-        ind, data = kde(y_data, cut=0.2)
-        ax2.plot(data, ind, **line_kws)
+        if self.ridge:
+            ind, data = kde(y_data, cut=0.2)
+            ax2.plot(data, ind, **line_kws)
 
-        if not self.hist:
+        if not self.hist and self.ridge:
+            # filling is only done when ridge is drawn and historgram is not
             fill_kws = self._get_fill_kws(self.fill_kws[1], n=len(ind))
             ax2.fill_betweenx(ind, data, **fill_kws)
 
@@ -728,7 +762,7 @@ class AddMarginalPlots(object):
 
     @staticmethod
     def _get_fill_kws(fill_kws:dict, n:int)->dict:
-        _fill_kws = {"alpha": 0.5, 'color':'r',
+        _fill_kws = {"alpha": 0.5,
                      'where': np.array([True for _ in range(n)])
                      }
         if fill_kws is not None:

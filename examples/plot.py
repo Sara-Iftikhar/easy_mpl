@@ -15,7 +15,6 @@ import numpy as np
 import pandas as pd
 from easy_mpl import plot
 import matplotlib.pyplot as plt
-from easy_mpl.utils import AddMarginalPlots
 from easy_mpl.utils import version_info
 
 version_info()  # print version information of all the packages being used
@@ -168,31 +167,6 @@ print(f"Type of ax is: {type(ax)}")
 # draw horizontal line on y=0
 ax.axhline(0.0)
 plt.show()
-
-# %%
-# We can add marginal plots to our main plot using ``AddMarginalPlots`` class.
-# The marginal plots are used to show the distribution of x-axis data and y-axis data.
-# The distribution of x-axis data is shown on top of main plot and the distribution
-# of y-axis data is shown on right side of main plot.
-
-ax = plot(
-    e,
-    'o',
-    show=False,
-    markerfacecolor=np.array([225, 121, 144])/256.0,
-    markeredgecolor="black", markeredgewidth=0.5,
-    ax_kws=dict(
-    xlabel="Predicted",
-    ylabel="Residual",
-    xlabel_kws={"fontsize": 14},
-    ylabel_kws={"fontsize": 14}),
-     )
-
-# draw horizontal line on y=0
-ax.axhline(0.0)
-AddMarginalPlots(ax)(x, y)
-plt.show()
-
 
 # %%
 # We can also provide an already existing axes to ``plot`` function using ``ax`` argument.
