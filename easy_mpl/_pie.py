@@ -14,11 +14,12 @@ def pie(
         vals: Union[list, np.ndarray] = None,
         fractions: Union[list, np.ndarray] = None,
         labels: list = None,
+        autopct = '%1.1f%%',
         ax: plt.Axes = None,
         ax_kws: dict = None,
         show: bool = True,
         **kwargs
-) -> plt.Axes:
+) -> tuple:
     """
     draws the pie chart
 
@@ -31,6 +32,7 @@ def pie(
         labels : list, array, optional
             labels for unique values in vals, if given, must be equal to unique vals
             in vals. Otherwise "unique_value (counts)" will be used for labeling.
+        autopct :
         ax : plt.Axes, optional
             the :obj:`matplotlib.axes` on which to draw, if not given current active axes will be used
         ax_kws : dict, optional
@@ -42,8 +44,8 @@ def pie(
 
     Returns
     -------
-    :obj:`matplotlib.axes`
-        a matplotlib axes. This can be used for further processing by making show=False.
+    outs
+        same what is returned by :obj:`matplotlib.axes.Axes.pie`
 
     Example
     -------
@@ -82,11 +84,9 @@ def pie(
     else:
         assert vals is None
 
-    if 'autopct' not in kwargs:
-        kwargs['autopct'] = '%1.1f%%'
-
-    ax.pie(fractions,
-           labels=labels,
+    outs = ax.pie(fractions,
+                  labels=labels,
+                  autopct=autopct,
            **kwargs)
 
     ax.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle.
@@ -97,4 +97,4 @@ def pie(
     if show:
         plt.show()
 
-    return ax
+    return outs
