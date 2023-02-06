@@ -8,7 +8,7 @@ r. Adding Marginal plots
 This lesson shows how to add marginal plots to an existing
 matplotlib axes
 """
-# sphinx_gallery_thumbnail_number = -3
+# sphinx_gallery_thumbnail_number = 2
 
 import numpy as np
 from easy_mpl import plot
@@ -20,11 +20,11 @@ from easy_mpl.utils import AddMarginalPlots
 version_info()
 
 # %%
-
 # We can add marginal plots to our main plot using ``AddMarginalPlots`` class.
 # The marginal plots are used to show the distribution of x-axis data and y-axis data.
 # The distribution of x-axis data is shown on top of main plot and the distribution
 # of y-axis data is shown on right side of main plot.
+
 x = np.random.normal(size=100)
 y = np.random.normal(size=100)
 e = x-y

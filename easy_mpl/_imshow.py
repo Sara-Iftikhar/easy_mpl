@@ -93,7 +93,7 @@ def imshow(
         >>> data = np.random.random((4, 10))
         >>> imshow(data, cmap="YlGn",
         ...        xticklabels=[f"Feature {i}" for i in range(data.shape[1])],
-        ...        white_grid=True, annotate=True,
+        ...        grid_params={'border': True, 'color': 'w', 'linewidth': 2}, annotate=True,
         ...        colorbar=True)
 
     See :ref:`sphx_glr_auto_examples_imshow.py` for more examples

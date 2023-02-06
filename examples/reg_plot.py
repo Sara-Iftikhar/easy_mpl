@@ -6,7 +6,7 @@ h. regplot
 
 This file shows the usage of :func:`regplot` function.
 """
-# sphinx_gallery_thumbnail_number = -3
+# sphinx_gallery_thumbnail_number = -2
 
 import numpy as np
 from easy_mpl import regplot
