@@ -259,7 +259,9 @@ def _unpack_data(x, labels, share_axes:bool)->Tuple[list, list]:
         names = [x.name]
 
     elif isinstance(x, (list, tuple)) and isinstance(x[0], (list, tuple, np.ndarray)):
-        X = [x_ for x_ in x]
+        assert all([len(array)==array.size for array in x]), f"""
+        All arrays must be one dimensional."""
+        X = [np.array(x_).reshape(-1,) for x_ in x]
         names = [None] * len(X)
         if share_axes:
             X = [X]

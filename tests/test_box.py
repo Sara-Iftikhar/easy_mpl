@@ -111,6 +111,12 @@ class TestBox(unittest.TestCase):
         _assert_output(ax, out)
         return
 
+    def test_list_of_arrays_2dim(self):
+        data = np.random.random(100).reshape(-1,1)
+        ax, out = boxplot([data, data, data], show=self.show)
+        _assert_output(ax, out)
+        return
+
     def test_list_of_series(self):
         data = pd.Series(np.random.random(100))
         ax, out = boxplot([data, data, data], show=self.show)
@@ -224,6 +230,13 @@ class TestShareAxes(unittest.TestCase):
         _assert_list(ax, out)
         return
 
+    def test_list_of_arrays_2dim(self):
+        data = np.random.random(100).reshape(-1,1)
+        ax, out = boxplot([data, data, data], show=self.show,
+                          share_axes=False)
+        _assert_list(ax, out)
+        return
+
     def test_list_of_series(self):
         data = pd.Series(np.random.random(100))
         ax, out = boxplot([data, data, data], show=self.show,
@@ -246,6 +259,7 @@ class TestShareAxes(unittest.TestCase):
                           labels=['a', 'b', 'c'])
         _assert_list(ax, out)
         return
+
 
 def _assert_output(ax, out):
     assert isinstance(ax, plt.Axes), ax
