@@ -225,7 +225,7 @@ def parallel_coordinates(
     host.set_xticklabels(names, **_coord_title_kws)
     host.tick_params(axis='x', which='major', pad=7)
     host.spines['right'].set_visible(False)
-    host.xaxis.tick_top()
+
     if title:
         host.set_title(title, fontsize=18)
 
