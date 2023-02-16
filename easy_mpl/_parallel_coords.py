@@ -2,7 +2,7 @@
 __all__ = ["parallel_coordinates"]
 
 
-from typing import Union
+from typing import Union, Any
 
 import numpy as np
 import matplotlib.cm as cm
@@ -14,7 +14,7 @@ from .utils import _rescale
 
 
 def parallel_coordinates(
-        data: Union[np.ndarray,],
+        data: Union[np.ndarray, Any],
         categories: Union[np.ndarray, list] = None,
         names: list = None,
         cmap: str = None,
@@ -268,6 +268,14 @@ def parallel_coordinates(
 
         else:
             cbar = fig.colorbar(cb, orientation="vertical", pad=0.1)
+
+        cax = cbar.ax  # todo
+        # Turn spines off and create white grid.
+        if isinstance(cax.spines, dict):
+            for sp in cax.spines:
+                cax.spines[sp].set_visible(False)
+        else:
+            cax.spines[:].set_visible(False)
 
     plt.tight_layout()
 
