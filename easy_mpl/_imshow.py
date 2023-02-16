@@ -66,7 +66,8 @@ def imshow(
                 - ``upper`` will only show the lower half
                 - ``lower`` will only show the upper half
         cbar_params : dict, optional
-            params for colorbar. for example ``pad`` or ``orientation``
+            parameters that will go to :py:func`easy_mpl.utils.process_cbar` for colorbar.
+            For example ``pad`` or ``orientation``
         ax : plt.Axes, optional
             if not given, current available axes will be used
         ax_kws : dict, optional (default=None)
