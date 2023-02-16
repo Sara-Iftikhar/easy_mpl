@@ -654,8 +654,6 @@ def taylor_plot(
                [p.get_label() for p in dia.samplePoints],
                **leg_kws)
 
-    fig.tight_layout()
-
     if show:
         plt.show()
 
