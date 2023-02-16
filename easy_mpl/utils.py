@@ -1,6 +1,7 @@
 
 __all__ = ["process_cbar", "make_cols_from_cmap", "process_axes",
-           "kde", "make_clrs_from_cmap", "map_array_to_cmap", "AddMarginalPlots"]
+           "kde", "make_clrs_from_cmap", "map_array_to_cmap", "AddMarginalPlots",
+           "create_subplots"]
 
 from typing import Union, Any, Optional, Tuple, List
 from collections.abc import KeysView, ValuesView
@@ -457,12 +458,22 @@ def create_subplots(
         **fig_kws
 )->Tuple:
     """
-    creates the subplots. If naxes is 1 and ax is None, then current available axes
-    is returned using plt.gca(). If naxes is 1 and ax is not None, then ax is returned
-    as it is. If naxes > 1 and ax is None, then new axes are created. If naxes > 1 and
-    ax is not None, then ax is closed with a warning and new axes' are created.
-    If naxes are > 1, then nrows and ncols are calculated automatically unless cols
-    is given. The last redundent axes are switched off in case naxes < (nrows*ncols).
+    creates the subplots.
+
+    Parameters
+    ----------
+    naxes : int
+        If naxes is 1 and ax is None, then current available axes
+        is returned using plt.gca(). If naxes is 1 and ax is not None, then ax is returned
+        as it is. If naxes > 1 and ax is None, then new axes are created. If naxes > 1 and
+        ax is not None, then ax is closed with a warning and new axes' are created.
+        If naxes are > 1, then nrows and ncols are calculated automatically unless cols
+        is given. The last redundent axes are switched off in case naxes < (nrows*ncols).
+    ax : plt.Axes
+    figsize : tuple
+    ncols : int
+    **fig_kws
+        keyword arguments for plt.subplots()
     """
     if ax is None:
 

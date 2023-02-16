@@ -99,4 +99,4 @@ violin_plot
 utils
 =================
 .. automodule:: easy_mpl.utils
-   :members: process_axes, AddMarginalPlots, kde, process_cbar
+   :members: process_axes, AddMarginalPlots, kde, process_cbar, create_subplots

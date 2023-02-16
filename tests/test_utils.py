@@ -167,6 +167,30 @@ class TestCreateSubplots(unittest.TestCase):
 
         return
 
+    def test_ncols(self):
+
+        f, axes = create_subplots(5, ncols=2)
+        axes = axes.flat
+
+        for i in range(5):
+            ax = axes[i]
+            ax.plot([1,2,3])
+
+        if self.show:
+            plt.show()
+
+    def test_ncols3(self):
+
+        f, axes = create_subplots(5, ncols=3)
+        axes = axes.flat
+
+        for i in range(5):
+            ax = axes[i]
+            ax.plot([1, 2, 3])
+
+        if self.show:
+            plt.show()
+
 
 if __name__ == "__main__":
     unittest.main()
