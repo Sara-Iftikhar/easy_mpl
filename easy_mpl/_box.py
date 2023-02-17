@@ -1,6 +1,7 @@
 
 __all__ = ["boxplot"]
 
+import warnings
 from typing import Union, List, Tuple
 
 import matplotlib
@@ -16,7 +17,7 @@ from .utils import make_cols_from_cmap
 
 
 def boxplot(
-        data:Union[np.ndarray, List[np.ndarray]],
+        data:Union[np.ndarray, List[np.ndarray], List[list]],
         line_color:Union[str, List[str]] = None,
         line_width = None,
         fill_color:Union[str, List[str]] = None,
@@ -150,9 +151,9 @@ def _set_ticklabels(ax, share_axes, name, box_kws):
 
         if share_axes:
             if box_kws.get('vert', True):
-                ax.set_xticklabels(name)
+                _maybe_set_ticks(ax, name)
             else:
-                ax.set_yticklabels(name)
+                _maybe_set_ticks(ax, name, "y")
         else:
             if isinstance(name, (str, int)):
                 if box_kws.get('vert', True):
@@ -169,6 +170,17 @@ def _set_ticklabels(ax, share_axes, name, box_kws):
             kws['rotation'] = 90
             ax.xaxis.set_tick_params(rotation=90)
 
+    return
+
+
+def _maybe_set_ticks(axes, ticklabels, which="x"):
+    ticks = getattr(axes, f"get_{which}ticks")()
+
+    if len(ticklabels) == len(ticks):
+        getattr(axes, f"set_{which}ticklabels")(ticklabels)
+    else:
+        warnings.warn(f"""
+{which}ticks ({len(ticks)}) and {which}ticklabels ({len(ticklabels)}) dont match""")
     return
 
 
@@ -258,8 +270,10 @@ def _unpack_data(x, labels, share_axes:bool)->Tuple[list, list]:
         names = [[x.name]]
 
     elif isinstance(x, (list, tuple)) and isinstance(x[0], (list, tuple, np.ndarray)):
-        assert all([len(array)==array.size for array in x]), f"""
+
+        assert all([len(array) == np.array(array).size for array in x]), f"""
         All arrays must be one dimensional."""
+
         X = [np.array(x_).reshape(-1,) for x_ in x]
         names = [None] * len(X)
         if share_axes:
