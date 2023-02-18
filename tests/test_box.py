@@ -142,6 +142,19 @@ class TestBox(unittest.TestCase):
         _assert_output(ax, out)
         return
 
+    def test_two_boxplots_on_same_axes(self):
+        # Some fake data to plot
+        A = [[1, 2, 5, ], [7, 2]]
+        B = [[5, 7, 2, 2, 5], [7, 2, 5]]
+
+        boxplot(A, line_color='#D7191C', positions=[1, 2], sym='', widths=0.6,
+                          show=False)
+        ax, out = boxplot(B, line_color="#2C7BB6", positions=[4, 5], sym='', widths=0.6,
+                         show=False)
+        _assert_output(ax, out)
+
+        return
+
 
 class TestShareAxes(unittest.TestCase):
     show = False

@@ -2,6 +2,7 @@
 __all__ = ["boxplot"]
 
 import warnings
+from itertools import zip_longest
 from typing import Union, List, Tuple
 
 import matplotlib
@@ -39,7 +40,8 @@ def boxplot(
         array likes. If list of array likes, the length of arrays in the list
         can be different.
     line_color :
-        name of color/colors/cmap for lines/boundaries of box
+        name of color/colors/cmap for lines/boundaries of box, whisker, cap, median
+        and mean line
     line_width :
         width of the box lines.
     fill_color :
@@ -173,7 +175,7 @@ def _set_ticklabels(ax, share_axes, name, box_kws):
     return
 
 
-def _maybe_set_ticks(axes, ticklabels, which="x"):
+def _maybe_set_ticks(axes:plt.Axes, ticklabels, which="x"):
     ticks = getattr(axes, f"get_{which}ticks")()
 
     if len(ticklabels) == len(ticks):
@@ -189,6 +191,8 @@ def _unpack_linewidth(line_width, nboxes, share_axes):
         line_widths = [[line_width] for _ in range(nboxes)]
     elif line_width is None:
         line_widths = [[None] for _ in range(nboxes)]
+    else:
+        raise ValueError
 
     if share_axes:
        line_widths = [[line_width[0] for line_width in line_widths]]
@@ -224,20 +228,50 @@ def _set_box_props(fill_color:list,
                    line_width:list,
                    box_out):
 
-    for idx, patch in enumerate(box_out['boxes']):
-        if hasattr(patch, 'set_facecolor'):
-            if fill_color[idx] is not None:
-                patch.set_facecolor(fill_color[idx])
-        elif hasattr(patch, 'set_markerfacecolor'):
-            if fill_color[idx] is not None:
-                patch.set_markerfacecolor(fill_color[idx])
+    whiskers = box_out['whiskers']
+    if len(whiskers)>0:
+        whiskers = np.array(whiskers).reshape(len(line_color), -1)
 
-        if hasattr(patch, 'set_color') and line_color[idx] is not None:
-            patch.set_color(line_color[idx])
+    boxes = box_out['boxes']
+    if len(boxes)>0:
+        boxes = np.array(boxes).reshape(len(line_color), -1)
 
-        if hasattr(patch, 'set_linewidth') and line_width[idx] is not None:
-            patch.set_linewidth(line_width[idx])
+    caps = box_out['caps']
+    if len(caps)>0:
+        caps = np.array(caps).reshape(len(line_color), -1)
 
+    medians = box_out['medians']
+    if len(medians)>0:
+        medians = np.array(medians).reshape(len(line_color), -1)
+
+    means = box_out['means']
+    if len(means)>0:
+        means = np.array(means).reshape(len(line_color), -1)
+
+    fliers = box_out['fliers']
+    if len(fliers)>0:
+        fliers = np.array(fliers).reshape(len(line_color), -1)
+
+    for idx, (patch, whisker, cap, median, mean, flier) in enumerate(zip_longest(
+            boxes, whiskers, caps, medians, means, fliers)):
+
+        if fill_color[idx] is not None:
+            if isinstance(patch[0], matplotlib.lines.Line2D):
+                plt.setp(patch, markerfacecolor=fill_color[idx])
+            elif isinstance(patch[0], matplotlib.patches.PathPatch):
+                plt.setp(patch, facecolor=fill_color[idx])
+
+        if line_color[idx] is not None:
+            plt.setp(patch, color=line_color[idx])
+            plt.setp(whisker, color=line_color[idx])
+            plt.setp(cap, color=line_color[idx])
+            plt.setp(median, color=line_color[idx])
+
+        if line_width[idx] is not None:
+            plt.setp(patch, linewidth=line_width[idx])
+            plt.setp(whisker, linewidth=line_width[idx])
+            plt.setp(cap, linewidth=line_width[idx])
+            plt.setp(median, linewidth=line_width[idx])
     return
 
 

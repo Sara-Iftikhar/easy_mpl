@@ -110,13 +110,16 @@ _ = boxplot(df[cols], fill_color="Pastel1",
             showfliers=False, whis=0.0)
 
 # %%
-# Plot each boxplot on separate axes
+# If we want to draw a separate boxplot on each axes, we can set the value
+# of ``share_axes`` to False.
+
 _ = boxplot(dataframe[cols], flierprops={"ms": 1.0},
             fill_color="ocean", patch_artist=True,
             share_axes=False, figsize=(5, 7))
 
 # %%
-# make boxplots horizontal
+# To draw the horizontal boxplots, we can set ``vert`` to False.
+
 _ = boxplot(dataframe[cols], flierprops={"ms": 1.0},
             fill_color="Set2", patch_artist=True, notch=True,
             medianprops={"color": "black"},
@@ -125,8 +128,10 @@ _ = boxplot(dataframe[cols], flierprops={"ms": 1.0},
             )
 
 # %%
+# The boxplot function returns a tuple. The first argument is the matplotlib axes and
+# second value is a dictionary consisting of output from ``axes.boxplot``.
 
-ax = boxplot(df[cols], fill_color="Pastel2", patch_artist=True,
+ax, _ = boxplot(df[cols], fill_color="Pastel2", patch_artist=True,
             flierprops={"ms": 4.0,
                         "marker": 'o',
                         "color": 'thistle',
@@ -136,52 +141,43 @@ ax = boxplot(df[cols], fill_color="Pastel2", patch_artist=True,
             whiskerprops={'color':'#7570b3', "linewidth":2},
              show=False)
 
-ax[0].yaxis.grid(True, linestyle='-', which='major', color='lightgrey',
+ax.yaxis.grid(True, linestyle='-', which='major', color='lightgrey',
                alpha=0.5)
 
-ax[0].set(
+ax.set(
     axisbelow=True,  # Hide the grid behind plot objects
-    xlabel='Faeture',
+    xlabel='Faetures',
     ylabel='Value',
 )
 
-ax[0].set_facecolor('floralwhite')
+ax.set_facecolor('floralwhite')
 
-plt.tight_layout()
 plt.show()
 
 # %%
-
+# In order to make grouped boxplots, we can drawo two boxplots on same axes.
+# We can specify the position of boxes on the axes using ``positions`` argument.
 
 # Some fake data to plot
 A= [[1, 2, 5,],  [7, 2]]
 B = [[5, 7, 2, 2, 5], [7, 2, 5]]
 
-def set_box_color(bp, color):
-    plt.setp(bp['boxes'], color=color)
-    plt.setp(bp['whiskers'], color=color)
-    plt.setp(bp['caps'], color=color)
-    plt.setp(bp['medians'], color=color)
-
-ax1, bp1 = boxplot(A, fill_color="Pastel2", positions=[1, 2], sym='', widths = 0.6,
+ax, _ = boxplot(A, line_color='#D7191C', positions=[1, 2], sym='', widths = 0.6,
              show=False)
 
-ax2, bp2 = boxplot(B, fill_color="Pastel2", positions=[4, 5], sym='', widths = 0.6,
+_, _ = boxplot(B, line_color="#2C7BB6", positions=[4, 5], sym='', widths = 0.6,
              show=False)
 
-set_box_color(bp1, '#D7191C') # colors are from http://colorbrewer2.org/
-set_box_color(bp2, '#2C7BB6')
-
-ax1.yaxis.grid(True, linestyle='-', which='major', color='lightgrey',
+ax.yaxis.grid(True, linestyle='-', which='major', color='lightgrey',
                alpha=0.5)
-
-ax1.set(
+ax.set_xticks([1.5, 4.5])
+ax.set_xticklabels(['Group1', 'Group2'])
+ax.set(
     axisbelow=True,  # Hide the grid behind plot objects
-    xlabel='Faeture',
+    xlabel='Faetures',
     ylabel='Value',
 )
 
-ax1.set_facecolor('floralwhite')
+ax.set_facecolor('floralwhite')
 
-plt.tight_layout()
 plt.show()
