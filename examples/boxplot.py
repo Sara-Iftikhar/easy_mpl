@@ -8,12 +8,12 @@ p. boxplot
 This file shows the usage of :func:`boxplot` function.
 """
 
-# sphinx_gallery_thumbnail_number = 7
+# sphinx_gallery_thumbnail_number = -3
 
 import pandas as pd
 import matplotlib.pyplot as plt
 
-from easy_mpl import boxplot
+from easy_mpl import boxplot, plot
 from easy_mpl.utils import _rescale
 from easy_mpl.utils import version_info
 
@@ -41,11 +41,13 @@ _ = boxplot(df[cols].values)
 
 # %%
 # We can give the list of arrays
+
 data = df.iloc[:, 0:12]
 _ = boxplot([data[col].values for col in data.columns])
 
 # %%
 # The fill color can be specificed using any valid matplotlib cmap
+
 _ = boxplot(df[cols], fill_color="GnBu", patch_artist=True)
 
 # %%
@@ -53,17 +55,20 @@ _ = boxplot(df[cols], fill_color="thistle", line_width=1.5, patch_artist=True)
 
 # %%
 # change color of median line
+
 _ = boxplot(df[cols], fill_color="thistle", patch_artist=True,
             medianprops={"color": "purple"})
 
 # %%
 # Another color combination
+
 _ = boxplot(df[cols], fill_color="#1b9e77", patch_artist=True,
             medianprops={"color": "#b2df8a",
                          "linewidth": 2})
 
 # %%
 # show the mean line
+
 _ = boxplot(df[cols], fill_color="khaki", patch_artist=True,
             medianprops={"color": "brown",
                          "linewidth": 2},
@@ -71,11 +76,13 @@ _ = boxplot(df[cols], fill_color="khaki", patch_artist=True,
 
 # %%
 # customize mean line color
+
 _ = boxplot(df[cols], fill_color="Pastel2", patch_artist=True,
             meanline=True, showmeans=True, meanprops={"color": "black"})
 
 # %%
 # show notches
+
 _ = boxplot(df[cols],
         fill_color="pink",
         notch=True,
@@ -84,16 +91,19 @@ _ = boxplot(df[cols],
 
 # %%
 # don't show outliers
+
 _ = boxplot(df[cols], fill_color="bone", patch_artist=True, showfliers=False,
             medianprops={"color": "gold"})
 
 # %%
 # change circle size of fliers
+
 _ = boxplot(df[cols], fill_color="gray", patch_artist=True,notch=True,
             flierprops={"ms": 1.0})
 
 # %%
 # edit caps and whiskers properties
+
 _ = boxplot(df[cols], fill_color="Pastel2", patch_artist=True,
             flierprops={"ms": 4.0,
                         "marker": 'o',
@@ -105,6 +115,7 @@ _ = boxplot(df[cols], fill_color="Pastel2", patch_artist=True,
 
 # %%
 # don't show whiskers
+
 _ = boxplot(df[cols], fill_color="Pastel1",
             patch_artist=True, notch=True,
             showfliers=False, whis=0.0)
@@ -133,9 +144,10 @@ _ = boxplot(dataframe[cols], flierprops={"ms": 1.0},
 
 ax, _ = boxplot(df[cols], fill_color="Pastel2", patch_artist=True,
             flierprops={"ms": 4.0,
-                        "marker": 'o',
-                        "color": 'thistle',
-                        "alpha":0.8},
+                        "marker": 's',
+                        "markerfacecolor": 'lightcoral',
+                        "alpha":0.8
+                        },
             medianprops={"color": "black"},
             capprops={'color':'#7570b3', "linewidth":2},
             whiskerprops={'color':'#7570b3', "linewidth":2},
@@ -143,15 +155,12 @@ ax, _ = boxplot(df[cols], fill_color="Pastel2", patch_artist=True,
 
 ax.yaxis.grid(True, linestyle='-', which='major', color='lightgrey',
                alpha=0.5)
-
 ax.set(
     axisbelow=True,  # Hide the grid behind plot objects
     xlabel='Faetures',
     ylabel='Value',
 )
-
 ax.set_facecolor('floralwhite')
-
 plt.show()
 
 # %%
@@ -181,3 +190,19 @@ ax.set(
 ax.set_facecolor('floralwhite')
 
 plt.show()
+
+# %%
+# join mean of each box through a line
+
+ax, _ = boxplot(df[cols], fill_color="thistle",
+            patch_artist=True, notch=True,
+            boxprops = {"linewidth":1.5,
+                        "color":'purple'},
+            showmeans=True, meanprops={"markerfacecolor": "black",
+                                       "markeredgecolor":'black',
+                                        "marker":"o"},
+            showfliers=False, whis=0.0,
+            show=False)
+
+plot(ax.get_xticks(), df[cols].mean().values,
+     color="darkorchid", ax=ax)
