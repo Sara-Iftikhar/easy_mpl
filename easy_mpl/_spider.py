@@ -23,7 +23,8 @@ def spider_plot(
         leg_kws: dict = None,
         labels: list = None,
         show: Optional[bool] = True,
-        figsize=None,
+        figsize:tuple = None,
+        ax:plt.Axes = None,
 )->plt.Axes:
     """
     Draws spider plot on an axes
@@ -56,6 +57,8 @@ def spider_plot(
             the labels for values
         show : bool, optional (default=True)
             whether to show the plot or not
+        ax : :obj:`matplotlib.axes`, optional
+            axes to use while plotting
 
     Returns
     -------
@@ -90,11 +93,15 @@ def spider_plot(
     if isinstance(data, (list, tuple)):
         data = np.array(data).reshape(-1, 1)
 
+    N = len(data)
+
     if tick_labels is None:
         if hasattr(data, "index"):
             tick_labels = data.index
         else:
-            tick_labels = [f"F{i}" for i in range(len(data))]
+            tick_labels = ['' for _ in range(N)]
+    else:
+        assert len(tick_labels) == N
 
     if labels is None:
         if hasattr(data, "name"):
@@ -106,9 +113,6 @@ def spider_plot(
 
     if hasattr(data, "values"):
         data = data.values
-
-    N = len(tick_labels)
-    assert N == len(data)
 
     if not isinstance(plot_kws, list):
         plot_kws = [plot_kws for _ in range(data.shape[1])]
@@ -128,18 +132,24 @@ def spider_plot(
     angles = [n / float(N) * 2 * math.pi for n in range(N)]
     angles += angles[:1]
 
-    if frame == "polygon":
-        register_projections(N, frame)
-        fig, ax = plt.subplots(figsize=figsize, nrows=1, ncols=1,
-                                subplot_kw= dict(projection='radar'))
-    else:
-        ax = plt.subplot(polar=True)
+    user_defined_ax = True
+    if ax is None:
+        user_defined_ax = False
+        if frame == "polygon":
+            register_projections(N, frame)
+            fig, ax = plt.subplots(figsize=figsize, nrows=1, ncols=1,
+                                    subplot_kw= dict(projection='radar'))
+        else:
+            ax = plt.subplot(polar=True)
+    assert ax.name in ['radar', 'polar'], f"""
+    The axes must be radar or polar but it is {ax.name}"""
 
     _xtick_kws = {'color': 'grey', 'size': 14}
     xtick_kws = xtick_kws or {}
     _xtick_kws.update(xtick_kws)
 
-    plt.xticks(angles[:-1], tick_labels, **_xtick_kws)
+    if tick_labels is not None:
+        ax.set_xticks(angles[:-1], tick_labels, **_xtick_kws)
 
     for idx in range(data.shape[1]):
 
@@ -167,8 +177,9 @@ def spider_plot(
                         color='red',
                         zorder=10)
 
-    plt.gca().set_rmax(np.max(data) + np.max(data)*0.2)
-    plt.gca().set_rmin(np.min(data) - abs(np.min(data) * 0.2))
+    if not user_defined_ax:
+        ax.set_rmax(np.max(data) + np.max(data)*0.2)
+        ax.set_rmin(np.min(data) - abs(np.min(data) * 0.2))
 
     _leg_kws = {'labelspacing': 0.1, 'fontsize': 12, 'bbox_to_anchor': (1.3, 1.1)}
     leg_kws = leg_kws or {}
