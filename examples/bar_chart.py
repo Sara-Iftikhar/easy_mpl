@@ -128,6 +128,10 @@ ax.set_xticklabels(ax.get_xticks().astype(int), size=12, weight='bold')
 ax.set_yticklabels(ax.get_yticklabels(), size=12, weight='bold')
 labels = np.unique(list(continents.values()))
 handles = [plt.Rectangle((0,0),1,1, color=colors[l]) for l in labels]
+ax.xaxis.grid(True, linestyle='-', which='major', color='lightgrey',
+               alpha=0.7)
+ax.set(axisbelow=True)  # Hide the grid behind plot objects
+ax.set_facecolor('floralwhite')
 plt.legend(handles, labels, loc='lower right')
 plt.tight_layout()
 plt.show()

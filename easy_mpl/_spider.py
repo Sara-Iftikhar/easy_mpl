@@ -31,7 +31,7 @@ def spider_plot(
 
     Parameters
     ----------
-        data :
+        data : list/numpy array / dict / DataFrame/ Series
             values to display. It should be array like/numpy array or pandas DataFrame/Series
         tick_labels : list, optional (default=None)
             tick labels. It's length should be equal to length of values
@@ -44,16 +44,16 @@ def spider_plot(
         highlight : int/float optional (default=None)
             whether to highlight a certain circular line or not
         color : str, optional (default=None)
-            colormap to use
+            colormap to use. This color will be used to plot line/lines.
         frame: str, optional (default="circle")
             whether the outer frame and grids should be polygon or circle
         figsize : tuple, optional (default=None)
-            figure size
+            figure size (width, height)
         fill_color :
             color to use for filling
         leg_kws : dict
             keyword arguments that will go to ax.legend()
-        labels: list, optional (default=None)
+        labels : list, optional (default=None)
             the labels for values
         show : bool, optional (default=True)
             whether to show the plot or not
@@ -108,8 +108,6 @@ def spider_plot(
             labels = [data.name]
         elif hasattr(data, "columns"):
             labels = data.columns.tolist()
-        else:
-            labels = [f'Value_{i}' for i in range(data.shape[1])]
 
     if hasattr(data, "values"):
         data = data.values
@@ -184,10 +182,10 @@ def spider_plot(
     _leg_kws = {'labelspacing': 0.1, 'fontsize': 12, 'bbox_to_anchor': (1.3, 1.1)}
     leg_kws = leg_kws or {}
     _leg_kws.update(leg_kws)
-    legend = ax.legend(labels, **_leg_kws)
+    if labels is not None:
+        legend = ax.legend(labels, **_leg_kws)
 
     if show:
-        plt.tight_layout()
         plt.show()
 
     return ax
