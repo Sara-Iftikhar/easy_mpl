@@ -33,7 +33,7 @@ class TestBarChart(unittest.TestCase):
 
         plt.close('all')
         _, ax = plt.subplots()
-        ax = bar_chart(values=d, labels=names, ax=ax, color=cm,
+        ax = bar_chart(data=d, labels=names, ax=ax, color=cm,
                        show=self.show)
         assert isinstance(ax, plt.Axes)
         return
@@ -52,24 +52,30 @@ class TestBarChart(unittest.TestCase):
 
     def test_without_labels(self):
         d = np.random.randint(2, 50, 10)
-        ax = bar_chart(values=d, sort=True, show=self.show)
+        ax = bar_chart(data=d, sort=True, show=self.show)
         assert isinstance(ax, plt.Axes)
         return
 
-    def test_max_bars(self):
+    def test_deprecation_warn(self):
         d = np.random.randint(2, 50, 20)
         ax = bar_chart(values=d, sort=True, max_bars=10, show=self.show)
         assert isinstance(ax, plt.Axes)
         return
 
+    def test_max_bars(self):
+        d = np.random.randint(2, 50, 20)
+        ax = bar_chart(data=d, sort=True, max_bars=10, show=self.show)
+        assert isinstance(ax, plt.Axes)
+        return
+
     def test_with_nan_vals(self):
-        ax = bar_chart(values=[1, 2, np.nan, 4, 5], show=self.show,
+        ax = bar_chart(data=[1, 2, np.nan, 4, 5], show=self.show,
             ax_kws={'title':'test_with_nan_vals'})
         assert isinstance(ax, plt.Axes)
         return
 
     def test_figsize(self):
-        ax = bar_chart(values=[1, 2, 3, 4, 5],
+        ax = bar_chart(data=[1, 2, 3, 4, 5],
             figsize=(10, 10),
             show=self.show,
             ax_kws={'title':'test_with_nan_vals'})
@@ -150,7 +156,7 @@ class TestShareAxesFalse(unittest.TestCase):
 
         plt.close('all')
         _, ax = plt.subplots()
-        ax_list = bar_chart(values=d, labels=names, ax=ax, color=cm,
+        ax_list = bar_chart(data=d, labels=names, ax=ax, color=cm,
                        show=self.show, share_axes=False)
         for ax in ax_list:
             assert isinstance(ax, plt.Axes)
@@ -162,7 +168,7 @@ class TestShareAxesFalse(unittest.TestCase):
 
         plt.close('all')
         _, ax = plt.subplots()
-        ax_list = bar_chart(values=d, labels=names, ax=ax, color=cm,
+        ax_list = bar_chart(data=d, labels=names, ax=ax, color=cm,
                             show=self.show, share_axes=False,
                             orient='v'
                             )
@@ -175,7 +181,7 @@ class TestShareAxesFalse(unittest.TestCase):
         cm = make_cols_from_cmap(random.choice(BAR_CMAPS), len(d), 0.2)
 
 
-        self.assertRaises(AssertionError, bar_chart, values=d, sort=True,
+        self.assertRaises(AssertionError, bar_chart, data=d, sort=True,
                           share_axes=False, color=cm)
         return
 

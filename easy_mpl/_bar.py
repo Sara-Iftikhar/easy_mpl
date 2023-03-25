@@ -13,11 +13,12 @@ from .utils import BAR_CMAPS
 from .utils import process_axes
 from .utils import create_subplots
 from .utils import is_series, is_dataframe
-from .utils import to_1d_array, map_array_to_cmap
+from .utils import to_1d_array, map_array_to_cmap, deprecated_argument
 
 
+@deprecated_argument(values="data")
 def bar_chart(
-        values,
+        data,
         labels=None,
         orient:str = 'h',
         sort:bool = False,
@@ -40,8 +41,9 @@ def bar_chart(
 
     Parameters
     -----------
-        values : array like
+        data : array like
             array like e.g. list/numpy array/ pandas series/ pandas dataframe / tuple
+            alias for "values".
         labels : list, optional
             used for labeling each bar
         orient : `str`, optional
@@ -101,15 +103,15 @@ def bar_chart(
     """
 
     if labels is None:
-        if is_series(values) or is_dataframe(values):
-            labels = values.index
+        if is_series(data) or is_dataframe(data):
+            labels = data.index
 
     naxes = 1
     ncharts = 1
-    if is_1d(values):
-        values = to_1d_array(values)
+    if is_1d(data):
+        values = to_1d_array(data)
     else:
-        values = np.array(values)
+        values = np.array(data)
         ncharts = values.shape[1]
         if share_axes:
             kwargs['edgecolor'] = kwargs.get('edgecolor', 'k')
