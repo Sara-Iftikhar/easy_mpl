@@ -7,13 +7,15 @@ import site
 site.addsitedir(package_path)
 
 import numpy as np
+import pandas as pd
 
 from easy_mpl import taylor_plot
 
 
 class TestTaylorPlot(unittest.TestCase):
 
-    show = False
+    show = True
+
 
     def test_basic(self):
         np.random.seed(313)
@@ -25,7 +27,46 @@ class TestTaylorPlot(unittest.TestCase):
         taylor_plot(observations=observations,
                     simulations=simus,
                     title="Taylor Plot", show=self.show)
-        return 
+        return
+
+    # def test_basic_with_extend(self):
+    #     # todo not working
+    #     np.random.seed(313)
+    #     observations =  np.random.normal(20, 40, 10)
+    #     simus =  {"LSTM": np.random.normal(20, 40, 10),
+    #               "CNN": np.random.normal(20, 40, 10),
+    #               "TCN": np.random.normal(20, 40, 10),
+    #               "CNN-LSTM": np.random.normal(20, 40, 10)}
+    #     taylor_plot(observations=observations,
+    #                 simulations=simus,
+    #                 extend=True,
+    #                 show=self.show)
+    #     return
+
+    def test_basic_series(self):
+        np.random.seed(313)
+        observations =  pd.Series(np.random.normal(20, 40, 10))
+        simus =  {"LSTM": pd.Series(np.random.normal(20, 40, 10)),
+                  "CNN": pd.Series(np.random.normal(20, 40, 10)),
+                  "TCN": pd.Series(np.random.normal(20, 40, 10)),
+                  "CNN-LSTM": pd.Series(np.random.normal(20, 40, 10))}
+        taylor_plot(observations=observations,
+                    simulations=simus,
+                    title="Taylor Plot", show=self.show)
+        return
+
+    def test_basic_df(self):
+        np.random.seed(313)
+        observations =  pd.DataFrame(np.random.normal(20, 40, 10))
+        simus =  {"LSTM": pd.DataFrame(np.random.normal(20, 40, 10)),
+                  "CNN": pd.DataFrame(np.random.normal(20, 40, 10)),
+                  "TCN": pd.DataFrame(np.random.normal(20, 40, 10)),
+                  "CNN-LSTM": pd.DataFrame(np.random.normal(20, 40, 10))}
+        taylor_plot(observations=observations,
+                    simulations=simus,
+                    title="Taylor Plot", show=self.show)
+        return
+
 
     def test_multiple_subplots(self):
         # multiple taylor plots in one figure
@@ -68,7 +109,7 @@ class TestTaylorPlot(unittest.TestCase):
                     cont_kws={'colors': 'blue', 'linewidths': 1.0, 'linestyles': 'dotted'},
                     grid_kws={'axis': 'x', 'color': 'g', 'lw': 1.0},
                     title="mutiple subplots", show=self.show)
-        return 
+        return
 
     def test_stats(self):
         # with statistical parameters
@@ -86,7 +127,7 @@ class TestTaylorPlot(unittest.TestCase):
             predictions,
             title="with statistical parameters",
             plot_bias=True, show=self.show)
-        return 
+        return
 
     def test_custom_markers(self):
         # with customized markers
@@ -102,7 +143,7 @@ class TestTaylorPlot(unittest.TestCase):
                     marker_kws={'markersize': 10, 'markeredgewidth': 1.5,
                      'markeredgecolor': 'black'},
                       show=self.show)
-        return 
+        return
 
     def test_custom_legends(self):
         # with customizing bbox
@@ -116,9 +157,9 @@ class TestTaylorPlot(unittest.TestCase):
                     simulations=simus,
                     title="custom_legend",
                     leg_kws={'facecolor': 'white',
-                     'edgecolor': 'black','bbox_to_anchor':(1.1, 1.05)}, 
+                     'edgecolor': 'black','bbox_to_anchor':(1.1, 1.05)},
                      show=self.show)
-        return 
+        return
 
 if __name__ == '__main__':
     unittest.main() 

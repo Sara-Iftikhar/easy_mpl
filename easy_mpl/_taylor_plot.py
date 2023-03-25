@@ -10,6 +10,8 @@ from matplotlib.projections import PolarAxes
 import mpl_toolkits.axisartist.grid_finder as GF
 import mpl_toolkits.axisartist.floating_axes as FA
 
+from easy_mpl.utils import is_dataframe, is_series
+
 
 COLORS = {
     0: np.array([0.89411765, 0.10196078, 0.10980392, 1.]),
@@ -470,7 +472,11 @@ def taylor_plot(
     if isinstance(observations, np.ndarray): 
         observations = {'Reference': observations}
         simulations = {'Reference': simulations}
+    elif is_dataframe(observations) or is_series(observations):
+        observations = {'Reference': observations.values}
+        simulations = {'Reference': simulations}
 
+    # if observations is a dictionary with statistics
     if isinstance(observations, dict) and len(observations) == 1 and 'std' in observations.keys():
         observations = {'Reference': observations}
         simulations = {'Reference': simulations}
@@ -604,13 +610,15 @@ def taylor_plot(
                     _ = list(model.keys())[2]
                     third_val = list(model.values())[2]
             else:
-                assert model.size == len(model)
-                assert observations[season].size == len(observations[season])
-                stddev = np.std(model)
-                corrcoef = corr_coeff(observations[season].reshape(-1,), model.reshape(-1,))
+                sim = np.array(model)
+                obs = np.array(observations[season])
+                assert sim.size == len(sim)
+                assert obs.size == len(obs)
+                stddev = np.std(sim)
+                corrcoef = corr_coeff(obs.reshape(-1,), sim.reshape(-1,))
                 third_val = None
                 if plot_bias:
-                    third_val = pbias(observations[season], model)
+                    third_val = pbias(obs, sim)
 
             marker = get_marker(third_val, model_name)
 
