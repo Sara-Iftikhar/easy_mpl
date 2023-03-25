@@ -12,6 +12,7 @@ from .utils import is_rgb
 from .utils import BAR_CMAPS
 from .utils import process_axes
 from .utils import create_subplots
+from .utils import is_series, is_dataframe
 from .utils import to_1d_array, map_array_to_cmap
 
 
@@ -100,7 +101,7 @@ def bar_chart(
     """
 
     if labels is None:
-        if hasattr(values, "index") and hasattr("values", "name"):
+        if is_series(values) or is_dataframe(values):
             labels = values.index
 
     naxes = 1
