@@ -22,6 +22,10 @@ class Testhist(unittest.TestCase):
         hist(np.random.random((10, 1)), show=self.show)
         return
 
+    def test_hist_with_deprecation_warn(self):
+        hist(x=np.random.random((10, 1)), show=self.show)
+        return
+
     def test_hist_return_axes(self):
         out, ax = hist(np.random.random((10, 1)), show=self.show,
              return_axes=True)
@@ -114,6 +118,22 @@ class Testhist(unittest.TestCase):
         data = np.random.random((100, 3))
         hist(data, ax_kws={'title':"labels"}, show=self.show, labels=['a', 'b', 'c'])
         return
+
+    def test_list_of_arrays(self):
+
+        hist([np.random.random(50), np.random.random(50)],
+             show=self.show)
+        return
+
+    def test_list_of_series(self):
+        hist([pd.Series(np.random.random(50)), pd.Series(np.random.random(50))],
+             show=self.show)
+        return
+
+    def test_list_of_dfs(self):
+        hist([pd.DataFrame(np.random.random(50)), pd.DataFrame(np.random.random(50))],
+             show=self.show)
+        return 
 
 
 if __name__ == "__main__":
