@@ -10,11 +10,12 @@ This file shows the usage of :func:`pie` function.
 import numpy as np
 from easy_mpl import pie
 import matplotlib.pyplot as plt
+import matplotlib.colors as mcolors
 from easy_mpl.utils import version_info, map_array_to_cmap
 
 version_info()
 
-# sphinx_gallery_thumbnail_number = 3
+# sphinx_gallery_thumbnail_number = 5
 
 #############################
 
@@ -50,5 +51,29 @@ patches, labels, dummy =  zip(*sorted(zip(patches, labels, y),
 
 plt.legend(patches, labels, bbox_to_anchor=(1.1, 1.),
            fontsize=8)
+plt.tight_layout()
+plt.show()
+
+# %%
+
+seg_colors = ["#F5B800", "#4461A1", "#DF5F50"]
+
+# Change the saturation of seg_colors to 70% for the interior segments
+rgb = mcolors.to_rgba_array(seg_colors)[:,:-1]
+hsv = mcolors.rgb_to_hsv(rgb)
+hsv[:,1] = 0.7 * hsv[:, 1]
+interior_colors = mcolors.hsv_to_rgb(hsv)
+
+pie(fractions=[0.55, 0.2, 0.25],  colors=seg_colors,
+       labels=['Experimental', 'Physical', 'Synthesis'],
+       wedgeprops=dict(edgecolor="w", width=0.03), radius=1,
+autopct=None,
+       startangle=90, counterclock=False, show=False)
+
+pie(fractions=[0.55, 0.2, 0.25], colors=interior_colors,
+       autopct='%1.0f%%',
+       wedgeprops=dict(edgecolor="w"), radius=1-2*0.03,
+       startangle=90, counterclock=False, ax=plt.gca(), show=False)
+
 plt.tight_layout()
 plt.show()
