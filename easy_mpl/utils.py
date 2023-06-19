@@ -947,6 +947,7 @@ class NN:
 
     Example
     -------
+    >>> from easy_mpl.utils import NN
     >>> nn = NN()
     >>> nn.add_layer(3, labels=[f'$x_{j}$' for j in range(4)], color='purple')
     >>> nn.add_layer(4, color="yellow", linestyle='-')
@@ -957,6 +958,7 @@ class NN:
 
     Autoencoder
 
+    >>> from easy_mpl.utils import NN
     >>> nn = NN()
     >>> nn.add_layer(4, labels=[f'$x_{j}$' for j in range(4)], color='#c6dae2',
     ...         linecolor='#a5a5a5', circle_kws=dict(lw=None))
@@ -1092,7 +1094,8 @@ class NN:
 
         Parameters
         -----------
-        spacing :
+        spacing : tuple
+            a tuple which for dx and dy
         margin :
         x_offset : float
         ax : plt.Axes
@@ -1222,6 +1225,7 @@ def plot_nn(
 
     Examples
     ---------
+    >>> from easy_mpl.utils import plot_nn
     >>> plot_nn(4, [3,4,4,2])
 
     >>> plot_nn(
