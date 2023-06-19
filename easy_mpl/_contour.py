@@ -15,13 +15,13 @@ def contour(
         show_points: bool = False,
         colorbar: bool = True,
         label_contours: bool = False,
-        contour_kws: dict = None,
         fill_between_kws: dict = None,
         show_points_kws: dict = None,
         label_contour_kws: dict = None,
         ax: plt.Axes = None,
         show: bool = True,
         ax_kws:dict = None,
+        **kwargs
 ):
     """A contour plot of irregularly spaced data coordinates.
 
@@ -42,10 +42,9 @@ def contour(
         colorbar : bool, optional
             whether to show the colorbar or not. Only valid if `fill_between` is
             True
-        contour_kws : dict, optional
-            any keword argument for `axes.tricontour`_
         fill_between_kws : dict, optional
-            any keword argument for `axes.tricontourf`_
+            any keword argument for `axes.tricontourf`_ for example ``levels`` or
+            ``cmap``.
         show_points_kws : dict, optional
             any keword argument for `axes.plot`_
         label_contour_kws : dict, optional
@@ -57,6 +56,8 @@ def contour(
             any keyword arguments for :py:func:`easy_mpl.utils.process_axes`.
         show : bool, optional
             whether to show the plot or not
+        **kwargs :
+            any keword argument for `axes.tricontour`_
 
     Returns
     -------
@@ -108,8 +109,10 @@ def contour(
             figsize = ax_kws.pop('figsize')
             ax.figure.set_size_inches(figsize)
 
-    kws = contour_kws or {"levels": 14, "linewidth": 0.5, "colors": "k"}
-    CS = ax.tricontour(x, y, z, **kws)
+    _kws = {"levels": 14, "linewidth": 0.5, "colors": "k"}
+    if kwargs:
+        _kws.update(kwargs)
+    CS = ax.tricontour(x, y, z, **_kws)
 
     if fill_between:
         kws = fill_between_kws or {'levels': 14, 'cmap': 'RdBu_r'}
