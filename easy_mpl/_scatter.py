@@ -102,7 +102,7 @@ def scatter(
 
     if colorbar:
         fig: plt.Figure = ax.get_figure()
-        fig.colorbar(sc, orientation=colorbar_orientation, pad=0.1)
+        fig.colorbar(sc, ax=ax, orientation=colorbar_orientation, pad=0.1)
 
     if ax_kws:
         process_axes(ax=ax, **ax_kws)
