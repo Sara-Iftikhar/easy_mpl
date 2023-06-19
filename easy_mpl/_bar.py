@@ -220,8 +220,6 @@ def handle_sort(sort, values, labels, bar_labels, color):
         if bar_labels is not None:
             bar_labels = np.array(bar_labels)
             bar_labels = bar_labels[sort_idx]
-            if 'float' in bar_labels.dtype.name:
-                bar_labels = np.round(bar_labels, decimals=2)
 
         if isinstance(color, (list, np.ndarray, tuple)):
             if is_rgb(color[0]) or isinstance(color[0], str):
