@@ -16,6 +16,7 @@ it provides some functionalities which are not available for ``plot`` function.
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+
 from easy_mpl.utils import process_cbar
 from matplotlib.lines import Line2D
 from easy_mpl.utils import version_info
