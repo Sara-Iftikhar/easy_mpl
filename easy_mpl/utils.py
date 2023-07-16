@@ -672,10 +672,6 @@ class AddMarginalPlots(object):
         if self.fix_limits:
             xlim = np.array(self.ax.get_xlim()) * 1.05
 
-        _hist_kws = {"linewidth":0.5, "edgecolor":"k"}
-        if hist_kws is not None:
-            _hist_kws.update(hist_kws)
-
         if ax is None:
             new_axes = self.divider.append_axes("top", self.size[0],
                                        pad=self.pad[0], sharex=self.ax)
@@ -687,7 +683,7 @@ class AddMarginalPlots(object):
 
         if self.hist:
 
-            new_axes.hist(x_data, **_hist_kws)
+            self._add_hist_on_side(new_axes, x_data, hist_kws)
             if self.ridge:
                 # we draw histogram on old axes so that kde line
                 # comes on top
@@ -698,8 +694,7 @@ class AddMarginalPlots(object):
             ax2 = new_axes
 
         if self.ridge:
-            ind, data = kde(x_data, cut=0.2)
-            ax2.plot(ind, data, **line_kws)
+            ind, data = self._add_ridge_on_top(ax2, x_data, cut = 0.2, **line_kws)
 
         if not self.hist and self.ridge:
             # filling is only done when ridge is drawn and historgram is not
@@ -724,12 +719,6 @@ class AddMarginalPlots(object):
         if self.fix_limits:
             ylim = self.ax.get_ylim()
 
-        _hist_kws = {"linewidth":0.5,
-                     "edgecolor":"k",
-                     'orientation':'horizontal'}
-        if hist_kws is not None:
-            _hist_kws.update(hist_kws)
-
         if ax is None:
             new_axes = self.divider.append_axes(
                 "right",
@@ -743,8 +732,7 @@ class AddMarginalPlots(object):
         new_axes.set_xticks([])
 
         if self.hist:
-
-            new_axes.hist(y_data, **_hist_kws)
+            self._add_hist_on_top(new_axes, y_data, hist_kws)
 
             if self.ridge:
                 # create a twin axes for ridge so that it comes on top
@@ -755,8 +743,7 @@ class AddMarginalPlots(object):
             ax2 = new_axes
 
         if self.ridge:
-            ind, data = kde(y_data, cut=0.2)
-            ax2.plot(data, ind, **line_kws)
+            ind, data = self._add_ridge_on_side(ax2, y_data, cut = 0.2, **line_kws)
 
         if not self.hist and self.ridge:
             # filling is only done when ridge is drawn and historgram is not
@@ -795,6 +782,57 @@ class AddMarginalPlots(object):
 
         assert len(kws) == 2
         return kws
+
+    def _add_hist_on_top(
+            self,
+            axes:plt.Axes,
+            y_data,
+            hist_kws=None
+    ):
+        _hist_kws = {"linewidth":0.5,
+                     "edgecolor":"k",
+                     'orientation':'horizontal'}
+
+        if hist_kws is not None:
+            _hist_kws.update(hist_kws)
+
+        axes.hist(y_data, **_hist_kws)
+        return
+
+    def _add_hist_on_side(
+            self,
+            axes:plt.Axes,
+            x_data,
+            hist_kws=None
+    ):
+        _hist_kws = {"linewidth":0.5, "edgecolor":"k"}
+        if hist_kws is not None:
+            _hist_kws.update(hist_kws)
+
+        axes.hist(x_data, **_hist_kws)
+        return
+
+    def _add_ridge_on_top(
+            self,
+            ax:plt.Axes,
+            x_data,
+            cut=0.2,
+            **line_kws
+    ):
+        ind, density = kde(x_data, cut=cut)
+        ax.plot(ind, density, **line_kws)
+        return ind, density
+
+    def _add_ridge_on_side(
+            self,
+            ax: plt.Axes,
+            y_data,
+            cut:float=0.2,
+            **line_kws
+    )->tuple:
+        ind, density = kde(y_data, cut=cut)
+        ax.plot(density, ind, **line_kws)
+        return ind, density
 
 
 def despine_axes(axes, keep=None):

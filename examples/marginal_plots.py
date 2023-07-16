@@ -132,7 +132,7 @@ AddMarginalPlots(
 plt.show()
 
 # %%
-# Showing distributions of histograms
+# Showing distributions using histograms
 
 ax = regplot(x, y, line_color='k',
              marker_color='orange', marker_size=35, fill_color='orange',
