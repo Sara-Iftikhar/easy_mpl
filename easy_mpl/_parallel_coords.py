@@ -260,14 +260,14 @@ def parallel_coordinates(
         cb = cm.ScalarMappable(norm, cmap=cmap)
 
         if _is_categorical:
-            cbar = fig.colorbar(cb, orientation="vertical", pad=0.1)
+            cbar = fig.colorbar(cb, orientation="vertical", pad=0.1, ax=ax)
             ticks = cbar.get_ticks()
             new_ticks = np.linspace(ticks[0], ticks[-1], len(np.unique(categories)))
             cbar.set_ticks(new_ticks)
             cbar.set_ticklabels(np.unique(categories))
 
         else:
-            cbar = fig.colorbar(cb, orientation="vertical", pad=0.1)
+            cbar = fig.colorbar(cb, orientation="vertical", pad=0.1, ax=ax)
 
         cax = cbar.ax  # todo
         # Turn spines off and create white grid.
