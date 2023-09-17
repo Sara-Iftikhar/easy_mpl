@@ -262,7 +262,7 @@ def _set_box_props(fill_color:list,
                 plt.setp(patch, facecolor=fill_color[idx])
 
         if line_color[idx] is not None:
-            plt.setp(patch, color=line_color[idx])
+            #plt.setp(patch, color=line_color[idx])
             plt.setp(whisker, color=line_color[idx])
             plt.setp(cap, color=line_color[idx])
             plt.setp(median, color=line_color[idx])

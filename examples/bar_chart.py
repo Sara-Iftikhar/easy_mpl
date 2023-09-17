@@ -68,7 +68,7 @@ _ = bar_chart([1,2,3,4,4,5,3,2,5], orient='v')
 
 # %%
 # define color for each bar individually
-_ = bar_chart([1,2,3,4,5], color=['c', 'm', 'y', 'royalblue', 'brown'])
+_ = bar_chart([4,2,5,1,3], color=['#BD76B2', '#3BAAE2', '#2BB67B', '#9FA537', '#F5746F'])
 
 #%%
 # error bars
