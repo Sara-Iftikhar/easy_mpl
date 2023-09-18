@@ -17,7 +17,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
-from easy_mpl.utils import process_cbar
+from easy_mpl.utils import add_cbar
 from matplotlib.lines import Line2D
 from easy_mpl.utils import version_info
 from easy_mpl.utils import map_array_to_cmap
@@ -226,7 +226,7 @@ def draw_scatter(target, ax):
                       ax_kws=dict(logy=True, ylabel=target, ylabel_kws={"fontsize": 12},
                                   top_spine=False, right_spine=False, bottom_spine=False),
                       ax=ax, show=False)
-    process_cbar(ax_, mappable=mapper, orientation="horizontal", pad=0.3,
+    add_cbar(ax_, mappable=mapper, orientation="horizontal", pad=0.3,
                  border=False,
                  title="Precipitation", title_kws=dict(fontsize=12))
     return

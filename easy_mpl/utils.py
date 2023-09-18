@@ -876,7 +876,7 @@ def map_array_to_cmap(array, cmap:str, clip:bool = True)->tuple:
     return colors, mapper
 
 
-def process_cbar(
+def add_cbar(
         ax,
         mappable,
         border:bool = True,
@@ -934,6 +934,30 @@ def process_cbar(
         else:
             cbar.ax.set_xlabel(title, **title_kws)
     return cbar
+
+
+def process_cbar(ax,
+                 mappable,
+                 border: bool = True,
+                 width: Union[int, float] = None,
+                 pad: Union[int, float] = 0.2,
+                 orientation: str = "vertical",
+                 title: str = None,
+                 title_kws: dict = None):
+
+
+    warnings.warn(
+        message=(
+            f"`process_cbar` is deprecated as a function name; use"
+            f" `add_cbar` instead."
+        ),
+        category=DeprecationWarning,
+        stacklevel=3,
+    )
+
+    add_cbar(ax, mappable, border, width,
+             pad, orientation,
+             title, title_kws)
 
 
 def deprecated_argument(**aliases: str) -> Callable:
