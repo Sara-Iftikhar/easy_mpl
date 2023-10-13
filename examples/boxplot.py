@@ -179,6 +179,7 @@ plt.show()
 # %%
 # join mean of each box through a line
 
+plt.close('all')
 ax, _ = boxplot(df[cols], fill_color="thistle",
             patch_artist=True, notch=True,
             boxprops = {"linewidth":1.5,

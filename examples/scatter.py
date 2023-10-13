@@ -78,8 +78,8 @@ _ = scatter(x, y, color=colors, colorbar=True)
 # `wrong <https://stackoverflow.com/q/70634122/5982232>`_.
 
 colors, mapper = map_array_to_cmap(y, "Blues")
-_, sc = scatter(x, y, color=colors, show=False)
-plt.colorbar(mapper)  # we must provide the mapper to ``colorbar`` otherwise colorbar will be wrong
+ax, sc = scatter(x, y, color=colors, show=False)
+plt.colorbar(mapper, ax=ax)  # we must provide the mapper to ``colorbar`` otherwise colorbar will be wrong
 plt.show()
 
 #%%
@@ -219,6 +219,8 @@ plt.show()
 df = dataframe.dropna().reset_index(drop=True)
 
 def draw_scatter(target, ax):
+    #``visible`` argument for ``ax.grid`` not available in
+    # matplotlib version 3.3
     ax.grid(visible=True, ls='--', color='lightgrey')
     c, mapper = map_array_to_cmap(df['pcp12_mm'].values, "inferno")
     ax_, _ = scatter(np.arange(len(df)), df[target],

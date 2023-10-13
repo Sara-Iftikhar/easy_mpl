@@ -14,7 +14,7 @@ from easy_mpl import taylor_plot
 
 class TestTaylorPlot(unittest.TestCase):
 
-    show = True
+    show = False
 
 
     def test_basic(self):

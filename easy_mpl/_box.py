@@ -120,7 +120,7 @@ def boxplot(
 
         # in version 3.2.. giving DataFrame to ax.boxplot makes boxes for each row
         # in version 3.3.. giving DataFrame to ax.boxplot tries to make boxp for first row (columns)
-        if is_dataframe(x) and matplotlib.__version__ < "3.3.0":
+        if is_dataframe(x) and matplotlib.__version__ <= "3.3.0":
             x = x.values
 
         box_out = ax.boxplot(x, **_box_kws)

@@ -5,6 +5,7 @@ import random
 from typing import Union, List
 
 import numpy as np
+import matplotlib
 import matplotlib.pyplot as plt
 from collections.abc import KeysView, ValuesView
 
@@ -255,6 +256,7 @@ def preprocess(data, labels, bar_labels, sort, max_bars, colors):
 
 
 def bar_on_axes(ax, orient, ax_kws, *args, **kwargs):
+
     if orient in ['h', 'horizontal']:
         horizontal_bar(ax, *args, **kwargs)
     else:
@@ -268,6 +270,11 @@ def bar_on_axes(ax, orient, ax_kws, *args, **kwargs):
 
 def horizontal_bar(ax, ind, values, width, ticks, labels, color, bar_labels,
                    rotation, errors, bar_label_kws, kwargs):
+
+    # Matplotlib version 3.8.0 gives error ('int' object has no attribute 'startswith')
+    # if label is an integer
+    if isinstance(kwargs.get('label', None), int) and matplotlib.__version__>'3.7':
+        kwargs['label'] = str(kwargs['label'])
 
     if width:
         bar = ax.barh(ind, values, width, color=color, **kwargs)

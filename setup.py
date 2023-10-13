@@ -48,11 +48,11 @@ setup(
     packages=['easy_mpl'],
 
     # 3.6.0 version has problem with parallel coords
-    install_requires=['matplotlib>=3.0.0, <4.0.0',
+    install_requires=['matplotlib>=3.3.0, <3.9.0',
                        ],
     extras_require = {"all": [
         "numpy>=1.16.2, <2.0.0",
-        "matplotlib>=3.0.0, <4.0.0",
+        "matplotlib>=3.3.0, <3.9.0",
         "pandas>=0.23.3, <2.0.0",
         "scipy"]}
 )

@@ -14,6 +14,7 @@ import numpy as np
 from easy_mpl import bar_chart
 import matplotlib.pyplot as plt
 from easy_mpl.utils import version_info
+from easy_mpl.utils import despine_axes
 
 version_info()  # print version information of all the packages being used
 
@@ -88,7 +89,7 @@ ax = bar_chart(sv_bar, names,
 
 print(f"Type of ax is {type(ax)}")
 
-ax.spines[['top', 'right']].set_visible(False)
+despine_axes(ax, keep=['bottom', 'left'])
 ax.set_xlabel(xlabel='mean(|SHAP value|)', fontsize=14, weight='bold')
 ax.set_xticklabels(ax.get_xticks().astype(int), size=12, weight='bold')
 ax.set_yticklabels(ax.get_yticklabels(), size=12, weight='bold')

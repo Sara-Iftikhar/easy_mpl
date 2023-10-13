@@ -145,6 +145,12 @@ class TestBarChart(unittest.TestCase):
         assert isinstance(ax, plt.Axes)
         return
 
+    def test_legend(self):
+        data = np.random.randint(1, 10, (5, 2))
+        ax = bar_chart(data, color=['salmon', 'cadetblue'])
+        assert  isinstance(ax, plt.Axes)
+        return
+
 
 class TestShareAxesFalse(unittest.TestCase):
 
