@@ -51,7 +51,6 @@ setup(
     install_requires=['matplotlib>=3.3.0, <3.9.0',
                        ],
     extras_require = {"all": [
-        "numpy>=1.16.2, <2.0.0",
         "matplotlib>=3.3.0, <3.9.0",
         "pandas>=0.23.3, <2.0.0",
         "scipy"]}
