@@ -8,6 +8,8 @@ s. neural network
 This file shows the usage of :func:`plot_nn` function.
 """
 
+# sphinx_gallery_thumbnail_number = 2
+
 from easy_mpl.utils import plot_nn
 from easy_mpl.utils import version_info
 

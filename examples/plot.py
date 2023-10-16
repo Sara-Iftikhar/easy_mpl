@@ -15,7 +15,8 @@ import numpy as np
 import pandas as pd
 from easy_mpl import plot
 import matplotlib.pyplot as plt
-from easy_mpl.utils import version_info
+import matplotlib.dates as mdates
+from easy_mpl.utils import version_info, despine_axes
 
 version_info()  # print version information of all the packages being used
 
@@ -300,3 +301,45 @@ axes[1].fill_between(x=[0, 50], y1=0, y2=-5, color='#DA4167',
 axes[1].tick_params(color='lightgrey', labelsize=14, labelcolor='grey')
 plt.show()
 
+# %%
+# working with axes ticks and ticklabels
+
+data = pd.read_json('https://climatereanalyzer.org/clim/t2_daily/json/cfsr_world_t2_day.json')
+index = data.pop('name')
+data = pd.DataFrame(
+    np.array([np.array(data.iloc[row, :].values[0]) for row in range(45)]),
+    index=pd.to_datetime(index[0:45])
+)
+data = data.astype(float)
+
+f, ax = plt.subplots(facecolor="#f5efdf",)
+for i in range(len(data)):
+    plot(data.iloc[i, :].values, show=False, ax=ax, color='#e1dbc3')
+
+xindex = pd.date_range('19790101', freq='D', periods=data.shape[1])
+plot(data.iloc[-1, :],
+     show=False, ax=ax, color='#c1481c', label='2023')
+plot(data.mean(axis=0), ax=ax, color='#0b3363', show=False,
+     label="1979-2023 Avg.")
+yticklabels = []
+for label in ax.get_yticklabels():
+    yticklabels.append(f"{label.get_text()}℃")
+ax.set_yticklabels(yticklabels)
+ax.grid(visible=True, ls='--', color='lightgrey')
+ax.set_facecolor('#f5efdf')
+despine_axes(ax)
+ax.tick_params(axis=u'both', which=u'both',length=0) # Hide ticks but show tick labels
+ax.yaxis.tick_right()
+# show month names as tick labels
+ax.xaxis.set_major_locator(mdates.MonthLocator())
+ax.xaxis.set_major_formatter(mdates.DateFormatter('%b'))
+# Remove y label
+ax.set_ylabel('')
+ax.legend(frameon=False, fancybox=False, bbox_to_anchor=(0.38, 0.9))
+ax.text(0.5, 1.05,
+    f"The hotest day was {data.max().max()} ℃",
+    fontsize=11, va="center",
+        color="red", zorder=10,
+        transform=ax.transAxes
+)
+plt.show()
