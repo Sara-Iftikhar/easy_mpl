@@ -140,3 +140,69 @@ ax.set_facecolor('floralwhite')
 plt.legend(handles, labels, loc='lower right')
 plt.tight_layout()
 plt.show()
+
+# %%
+# Stacked bar chart
+
+# Values of each group
+bars1 = [12, 28, 1, 8, 22]
+bars2 = [28, 7, 16, 4, 10]
+bars3 = [25, 3, 23, 25, 17]
+bars4 = [5, 11, 7, 3, 19]
+
+# Heights of bars1 + bars2
+bars = np.add(bars1, np.add(bars2, bars3).tolist()).tolist()
+
+# Names of group and bar width
+names = ['A', 'B', 'C', 'D', 'E']
+barWidth = 0.65
+
+bar_chart(bars1, color='#006db6', edgecolor='white',
+          width=barWidth, orient='v', show=False)
+
+bar_chart(bars2, bottom=bars1, color='#f8aa59',
+          edgecolor='white', width=barWidth, orient='v',
+          show=False)
+
+bar_chart(bars3, bottom=np.add(bars1, bars2).tolist(), color='#eb5c23',
+          edgecolor='white', width=barWidth, orient='v',
+          show=False)
+
+bar_chart(bars4, bottom=bars, color='#b72c10',
+          edgecolor='white', width=barWidth, orient='v',
+          show=False)
+
+# Custom X axis
+plt.xticks([0, 1, 2, 3, 4], names, fontweight='bold')
+plt.xlabel("group")
+plt.show()
+
+# %%
+# negative values in the data
+
+names = ['JAN','FEB','MAR','APR','MAY','JUN',
+         'JUL','AUG','SEP','OCT','NOV','DEC']
+
+temp_max = [-1,0,5,12,18,24,27,26,21,14,8,2]
+temp_min = [-7,-6,-2,4,10,15,18,17,13,7,2,-3]
+
+
+def listOfTuples(l1, l2):
+    return list(map(lambda x, y:(x,y), l1, l2))
+
+temp = listOfTuples(temp_min, temp_max)
+
+f, ax = plt.subplots(facecolor = "#EFE9E6")
+
+bar_chart(temp, color=['#c9807d', '#22a1bd'],
+              orient='v', labels=names, ax=ax,
+              show=False)
+
+ax.grid(axis='y', ls='dotted', color='lightgrey')
+
+for spine in ax.spines.values():
+    spine.set_edgecolor('lightgrey')
+    spine.set_linestyle('dashed')
+
+plt.legend(['Minimum temperature', 'Maximum temperature'])
+plt.show()
