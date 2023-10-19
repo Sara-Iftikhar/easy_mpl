@@ -304,7 +304,7 @@ plt.show()
 # %%
 # working with axes ticks and ticklabels
 
-data = pd.read_json('https://climatereanalyzer.org/clim/t2_daily/json/cfsr_world_t2_day.json')
+data = pd.read_json('https://climatereanalyzer.org/clim/t2_daily/json_cfsr/cfsr_world_t2_day.json')
 index = data.pop('name')
 data = pd.DataFrame(
     np.array([np.array(data.iloc[row, :].values[0]) for row in range(45)]),
