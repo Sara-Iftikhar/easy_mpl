@@ -210,6 +210,7 @@ plt.legend(['Minimum temperature', 'Maximum temperature'])
 plt.show()
 
 # %%
+# Displaying nagative values with a specific color
 
 data = [-0.4, -0.5, 0.1, -2, 0.6, 0.2, -0.5, -1, -1.2,
 -0.7, -0.6, -0.6, 0.2, -0.2, 0, 0.6, -2.3, -0.6, 0.2, -1.1, -0.3, -2.1, -0.8, 0.4,
@@ -226,15 +227,15 @@ colors = ['#063970' if e >= 0 else '#e28743' for e in data]
 ax = bar_chart(data, orient='v', color=colors,
           width=0.7, rotation=45,
           labels='', show=False)
-#plot(np.zeros(50), ax=ax, show=False, color='black', ls='dashed', lw=1)
+plot(np.zeros(128), ax=ax, show=False, color='black', lw=0.5)
 
 ax.grid(axis='y', ls='dotted', color='lightgrey')
-#ax.set_xticks([])
 
 times = np.arange(np.datetime64('1894'),
                   np.datetime64('2022'), np.timedelta64(1, 'Y'))
 
 ax.set_xticklabels(times)
 ax.xaxis.set_major_locator(plt.MaxNLocator(10))
-ax.set_title('United States Anual Average Temperature Anomaly (°F)')
+ax.set_title('United States Anual Average Temperature Anomaly (°F)',
+             fontdict={'fontsize': 14})
 plt.show()
