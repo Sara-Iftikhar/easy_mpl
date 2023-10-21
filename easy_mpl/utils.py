@@ -1,7 +1,8 @@
 
 __all__ = ["process_cbar", "make_cols_from_cmap", "process_axes",
            "kde", "make_clrs_from_cmap", "map_array_to_cmap", "AddMarginalPlots",
-           "create_subplots", "NN", "plot_nn"]
+           "create_subplots", "NN", "plot_nn", "version_info", "despine_axes",
+           "add_cbar"]
 
 import functools
 import warnings
