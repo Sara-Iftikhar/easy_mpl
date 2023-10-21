@@ -11,8 +11,10 @@ This file shows the usage of :func:`bar_chart` function.
 # sphinx_gallery_thumbnail_number = 4
 
 import numpy as np
-from easy_mpl import bar_chart
+from easy_mpl import bar_chart, plot
 import matplotlib.pyplot as plt
+import datetime
+from matplotlib.dates import YearLocator, MonthLocator, DateFormatter
 from easy_mpl.utils import version_info
 from easy_mpl.utils import despine_axes
 
@@ -205,4 +207,34 @@ for spine in ax.spines.values():
     spine.set_linestyle('dashed')
 
 plt.legend(['Minimum temperature', 'Maximum temperature'])
+plt.show()
+
+# %%
+
+data = [-0.4, -0.5, 0.1, -2, 0.6, 0.2, -0.5, -1, -1.2,
+-0.7, -0.6, -0.6, 0.2, -0.2, 0, 0.6, -2.3, -0.6, 0.2, -1.1, -0.3, -2.1, -0.8, 0.4,
+-1.5, 1.3, 0.2, -0.3, -1, 0.8, -0.5, 0, -0.2, -0.9, 0.2, 0.6, 0.8, 0, 2.1, 0.7, -0.2,
+-0.4, 0.9, 0.9, 0.2, 0.4, 0.1, 0.3, -0.2, -0.1, 0.4, 0, -0.2, -0.4, -0.5, -0.3, 0, 0.7,
+1.4, 0.3, -0.3, 0.3, -0.2, 0.3, -0.6, 0.1, -0.7, 0.4, -0.1, -0.9, 0, -0.2, -0.6, -0.5,
+-0.5, -0.7, 0.2, -0.7, 0.5, -0.7, 0.5, -0.4, -0.6, -1.6, 0.5, 1.1, -0.6, 0.4, -0.6, -0.1,
+0.7, 1.2, 0.7, 0.3, 1.1, 1.1, 0.9, -0.8, 0.3, 0.9, 0.1, 0, 1.6, 1.6, 2.7, 0.3, 1.9, 0.8,
+1.1, 1.7, 2.2, 1.6, 0.6, 0.7, 0.6, 0.9,3.3, 1.1, -0.1, 1.8, 3.1, 2.8, 2, 0.6, 1.8,
+2.1, 2.4, 1.5]
+
+colors = ['#063970' if e >= 0 else '#e28743' for e in data]
+
+ax = bar_chart(data, orient='v', color=colors,
+          width=0.7, rotation=45,
+          labels='', show=False)
+#plot(np.zeros(50), ax=ax, show=False, color='black', ls='dashed', lw=1)
+
+ax.grid(axis='y', ls='dotted', color='lightgrey')
+#ax.set_xticks([])
+
+times = np.arange(np.datetime64('1894'),
+                  np.datetime64('2022'), np.timedelta64(1, 'Y'))
+
+ax.set_xticklabels(times)
+ax.xaxis.set_major_locator(plt.MaxNLocator(10))
+ax.set_title('United States Anual Average Temperature Anomaly (°F)')
 plt.show()

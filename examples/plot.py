@@ -336,8 +336,12 @@ ax.xaxis.set_major_formatter(mdates.DateFormatter('%b'))
 # Remove y label
 ax.set_ylabel('')
 ax.legend(frameon=False, fancybox=False, bbox_to_anchor=(0.38, 0.9))
+data1 = pd.concat([data.iloc[i, :] for i in range(data.shape[0])]).dropna()
+data1.index = pd.date_range(data.index[0], periods=len(data1), freq="D")
+max_temp = data1.idxmax()
 ax.text(0.5, 1.05,
-    f"The hotest day was {data.max().max()} ℃",
+    f"""The hotest day was 
+{max_temp.day_name()}, {max_temp.day} {max_temp.month_name()} {max_temp.year} with {data.max().max()} ℃""",
     fontsize=11, va="center",
         color="red", zorder=10,
         transform=ax.transAxes

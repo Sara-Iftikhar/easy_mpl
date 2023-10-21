@@ -46,7 +46,7 @@ def boxplot(
         width of the box lines.
     fill_color :
         name of color/colors/cmap to fill the boxes. It can be any valid
-         matplotlib color or cmap.
+        matplotlib color or cmap.
     labels : str/list (default=None)
         used for ticklabels of x-axes
     share_axes : bool (default=True)

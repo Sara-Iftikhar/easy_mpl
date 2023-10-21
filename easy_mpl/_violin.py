@@ -24,6 +24,8 @@ FILL_COLORS = [np.array([253,160,231])/255,
                ]
 
 
+# todo, add orientation
+
 def violin_plot(
         data: Union[np.ndarray, List[np.ndarray]],
         X: Union[np.ndarray, List[np.ndarray]] = None,
