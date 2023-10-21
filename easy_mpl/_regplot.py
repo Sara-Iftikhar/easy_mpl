@@ -75,6 +75,7 @@ def regplot(
             keyword arguments for :obj:`matplotlib.axes.scatter`
         line_style : str (default='-')
             line style will be used as ax.plot(x,y,line_style)
+            Set this to None if you don't want to plot line
         line_color : optional
             color of line
         line_kws : dict
@@ -278,12 +279,13 @@ def _regplot(x, y, ax, ci=None,
 
     grid, yhat, err_bands = _regplot_paras(x, y, ci)
 
-    ax.plot(grid[:, 1], yhat, line_style, color=line_color, **kwargs)
+    if line_style is not None:
+        ax.plot(grid[:, 1], yhat, line_style, color=line_color, **kwargs)
 
-    if ci:
-        ax.fill_between(grid[:, 1], *err_bands,
-                        facecolor=fill_color,
-                        alpha=.15,
-                        where=np.array([True for _ in range(len(grid))])
+        if ci:
+            ax.fill_between(grid[:, 1], *err_bands,
+                            facecolor=fill_color,
+                            alpha=.15,
+                            where=np.array([True for _ in range(len(grid))])
                         )
     return ax

@@ -110,6 +110,12 @@ class TestRegplot(unittest.TestCase):
         plt.close('all')
         return
 
+    def test_hist_kws(self):
+        # make sure that histogram kws are working
+        regplot(self.x, self.y, marginals=True, show=self.show,
+                hist_kws={'bins': 100, 'color': 'khaki'})
+        plt.close('all')
+        return
 
 if __name__ == "__main__":
     unittest.main()

@@ -8,6 +8,8 @@ This file shows the usage of :func:`parallel_coordinates` function.
 """
 
 import random
+
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from easy_mpl import parallel_coordinates
@@ -33,38 +35,45 @@ data_df = pd.DataFrame(data_np, columns=ynames)
 _ = parallel_coordinates(data_df, names=ynames)
 
 #############################
-
 # using continuous values for categories
+
 _ = parallel_coordinates(data_df, names=ynames, categories=np.random.randint(0, 5, N))
 
 #############################
-
 # using categorical classes
+
 _ = parallel_coordinates(data_df, names=ynames, categories=random.choices(categories_, k=N))
 
 #############################
-
 # using numpy array instead of DataFrame
+
 _ = parallel_coordinates(data_df.values, names=ynames)
 
 #############################
-
 # with customized tick labels
+
 _ = parallel_coordinates(data_df.values, ticklabel_kws={"fontsize": 8, "color": "red"})
 
 #############################
-
 # using straight lines instead of bezier
+
 _ = parallel_coordinates(data_df, linestyle="straight")
 
 #############################
-
 # with categorical class labels
+
 data_df['P5'] = random.choices(categories_, k=N)
 _ = parallel_coordinates(data_df, names=ynames)
 
 #############################
-
 # with categorical class labels and customized ticklabels
+
 data_df['P5'] = random.choices(categories_, k=N)
 _ = parallel_coordinates(data_df,  ticklabel_kws={"fontsize": 8, "color": "red"})
+
+# %%
+# show parameter labels at the top
+
+axes = parallel_coordinates(data_df, show=False)
+axes.xaxis.tick_top()
+plt.show()

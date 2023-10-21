@@ -9,6 +9,7 @@ package_path = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__f
 site.addsitedir(package_path)
 
 import numpy as np
+import pandas as pd
 import matplotlib.pyplot as plt
 
 from easy_mpl import bar_chart
@@ -32,92 +33,49 @@ class TestBarChart(unittest.TestCase):
 
         plt.close('all')
         _, ax = plt.subplots()
-        ax = bar_chart(values=d, labels=names, ax=ax, color=cm,
+        ax = bar_chart(data=d, labels=names, ax=ax, color=cm,
                        show=self.show)
         assert isinstance(ax, plt.Axes)
         return
 
-    def test_bar_h_3(self):
-        d, names = get_chart_data((5, 3))
-        cm = make_cols_from_cmap(random.choice(BAR_CMAPS), len(d), 0.2)
-
-        plt.close('all')
-        _, ax = plt.subplots()
-        ax = bar_chart(values=d, labels=names, ax=ax, color=cm,
-                       show=self.show)
+    def test_series_without_labels(self):
+        data = pd.Series([1,2,3,3,5])
+        ax = bar_chart(data, show=self.show)
         assert isinstance(ax, plt.Axes)
         return
 
-    def test_bar_v_without_axis(self):
-        d, names = get_chart_data(5)
-        cm = make_cols_from_cmap(random.choice(BAR_CMAPS), len(d), 0.2)
-
-        ax = bar_chart(values=d, labels=names, color=cm, sort=True, show=self.show)
-        assert isinstance(ax, plt.Axes)
-        return
-
-    def test_sort_with_str_colors(self):
-        d, names = get_chart_data(5)
-        cm = ['r', 'k', 'olive', 'yellow', 'green']
-
-        ax = bar_chart(values=d, labels=names, color=cm, sort=True, show=self.show)
-        assert isinstance(ax, plt.Axes)
-        return
-
-    def test_h_sorted(self):
-        d, names = get_chart_data(5)
-        cm = make_cols_from_cmap(random.choice(BAR_CMAPS), len(d), 0.2)
-
-        ax = bar_chart(values=d, labels=names, color=cm, orient='v',
-                       show=self.show, sort=True)
-        assert isinstance(ax, plt.Axes)
-        return
-
-    def test_h_sorted_3(self):
-        d, names = get_chart_data((5, 3))
-        cm = make_cols_from_cmap(random.choice(BAR_CMAPS), len(d), 0.2)
-
-        self.assertRaises(AssertionError, bar_chart, values=d,
-                          labels=names, color=cm, orient='v',
-                       show=self.show, sort=True)
-        return
-
-    def test_sort_3_cm(self):
-        d, names = get_chart_data((5, 2))
-        # ax = bar_chart(values=d, labels=names, cmap="hot",
-        #                show=self.show, sort=True)
-        #
-        self.assertRaises(AssertionError, bar_chart, values=d, sort=True)
-        return
-
-    def test_vertical_without_axis(self):
-        d, names = get_chart_data(5)
-        cm = make_cols_from_cmap(random.choice(BAR_CMAPS), len(d), 0.2)
-        ax = bar_chart(values=d, labels=names, color=cm,
-                       orient='v', show=self.show)
+    def test_df_without_labels(self):
+        data = pd.DataFrame([1,2,3,3,5])
+        ax = bar_chart(data, show=self.show)
         assert isinstance(ax, plt.Axes)
         return
 
     def test_without_labels(self):
         d = np.random.randint(2, 50, 10)
-        ax = bar_chart(values=d, sort=True, show=self.show)
+        ax = bar_chart(data=d, sort=True, show=self.show)
         assert isinstance(ax, plt.Axes)
         return
 
-    def test_max_bars(self):
+    def test_deprecation_warn(self):
         d = np.random.randint(2, 50, 20)
         ax = bar_chart(values=d, sort=True, max_bars=10, show=self.show)
         assert isinstance(ax, plt.Axes)
         return
 
+    def test_max_bars(self):
+        d = np.random.randint(2, 50, 20)
+        ax = bar_chart(data=d, sort=True, max_bars=10, show=self.show)
+        assert isinstance(ax, plt.Axes)
+        return
+
     def test_with_nan_vals(self):
-        ax = bar_chart(values=[1, 2, np.nan, 4, 5], show=self.show,
+        ax = bar_chart(data=[1, 2, np.nan, 4, 5], show=self.show,
             ax_kws={'title':'test_with_nan_vals'})
         assert isinstance(ax, plt.Axes)
         return
 
     def test_figsize(self):
-        ax = bar_chart(values=[1, 2, 3, 4, 5],
+        ax = bar_chart(data=[1, 2, 3, 4, 5],
             figsize=(10, 10),
             show=self.show,
             ax_kws={'title':'test_with_nan_vals'})
@@ -187,6 +145,12 @@ class TestBarChart(unittest.TestCase):
         assert isinstance(ax, plt.Axes)
         return
 
+    def test_legend(self):
+        data = np.random.randint(1, 10, (5, 2))
+        ax = bar_chart(data, color=['salmon', 'cadetblue'])
+        assert  isinstance(ax, plt.Axes)
+        return
+
 
 class TestShareAxesFalse(unittest.TestCase):
 
@@ -198,7 +162,7 @@ class TestShareAxesFalse(unittest.TestCase):
 
         plt.close('all')
         _, ax = plt.subplots()
-        ax_list = bar_chart(values=d, labels=names, ax=ax, color=cm,
+        ax_list = bar_chart(data=d, labels=names, ax=ax, color=cm,
                        show=self.show, share_axes=False)
         for ax in ax_list:
             assert isinstance(ax, plt.Axes)
@@ -210,7 +174,7 @@ class TestShareAxesFalse(unittest.TestCase):
 
         plt.close('all')
         _, ax = plt.subplots()
-        ax_list = bar_chart(values=d, labels=names, ax=ax, color=cm,
+        ax_list = bar_chart(data=d, labels=names, ax=ax, color=cm,
                             show=self.show, share_axes=False,
                             orient='v'
                             )
@@ -223,7 +187,7 @@ class TestShareAxesFalse(unittest.TestCase):
         cm = make_cols_from_cmap(random.choice(BAR_CMAPS), len(d), 0.2)
 
 
-        self.assertRaises(AssertionError, bar_chart, values=d, sort=True,
+        self.assertRaises(AssertionError, bar_chart, data=d, sort=True,
                           share_axes=False, color=cm)
         return
 

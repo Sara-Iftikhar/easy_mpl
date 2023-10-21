@@ -109,18 +109,6 @@ cov = np.array(
 data = rng.multivariate_normal(np.zeros(3),
                                cov, size=100)
 
-ax = regplot(data[:, 0], data[:, 1], line_color='orange',
-             marker_color='orange', marker_size=35, fill_color='orange',
-             scatter_kws={'edgecolors':'black', 'linewidth':0.8, 'alpha': 0.8},
-             show=False, label="data 1")
-_ = regplot(data[:, 0], data[:, 2], line_color='royalblue', ax=ax,
-                marker_color='royalblue', marker_size=35, fill_color='royalblue',
-             scatter_kws={'edgecolors':'black', 'linewidth':0.8, 'alpha': 0.8},
-             show=False, label="data 2", ax_kws=dict(legend_kws=dict(loc=(0.1, 0.8))))
-plt.show()
-
-# %%
-
 ax = regplot(x, y, line_color='k',
              marker_color='orange', marker_size=35, fill_color='orange',
              scatter_kws={'edgecolors':'black', 'linewidth':0.8, 'alpha': 0.8},
@@ -144,7 +132,7 @@ AddMarginalPlots(
 plt.show()
 
 # %%
-# Showing distributions of histograms
+# Showing distributions using histograms
 
 ax = regplot(x, y, line_color='k',
              marker_color='orange', marker_size=35, fill_color='orange',

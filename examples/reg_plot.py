@@ -10,6 +10,7 @@ This file shows the usage of :func:`regplot` function.
 
 import numpy as np
 from easy_mpl import regplot
+import matplotlib.pyplot as plt
 from easy_mpl.utils import version_info
 
 version_info()
@@ -52,3 +53,25 @@ _ = regplot(x, y, marker_color='crimson', marker_size=40,
 _ = regplot(x, y, marker_color='crimson', marker_size=40,
            scatter_kws={'marker':"o", 'edgecolors':'black'},
             ci=None, line_color='olive')
+
+# %%
+# multiple regression lines with customized marker, line
+# and fill style
+
+cov = np.array(
+    [[1.0, 0.9, 0.7],
+     [0.9, 1.2, 0.8],
+     [0.7, 0.8, 1.4]]
+)
+data = rng.multivariate_normal(np.zeros(3),
+                               cov, size=100)
+
+ax = regplot(data[:, 0], data[:, 1], line_color='orange',
+             marker_color='orange', marker_size=35, fill_color='orange',
+             scatter_kws={'edgecolors':'black', 'linewidth':0.8, 'alpha': 0.8},
+             show=False, label="data 1")
+_ = regplot(data[:, 0], data[:, 2], line_color='royalblue', ax=ax,
+                marker_color='royalblue', marker_size=35, fill_color='royalblue',
+             scatter_kws={'edgecolors':'black', 'linewidth':0.8, 'alpha': 0.8},
+             show=False, label="data 2", ax_kws=dict(legend_kws=dict(loc=(0.1, 0.8))))
+plt.show()

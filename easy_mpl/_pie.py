@@ -32,7 +32,9 @@ def pie(
         labels : list, array, optional
             labels for unique values in vals, if given, must be equal to unique vals
             in vals. Otherwise "unique_value (counts)" will be used for labeling.
-        autopct :
+        autopct : str (default='%1.1f%%')
+            string defining method to represent percentage. Set this to
+            None to not use this argument.
         ax : plt.Axes, optional
             the :obj:`matplotlib.axes` on which to draw, if not given current active axes will be used
         ax_kws : dict, optional

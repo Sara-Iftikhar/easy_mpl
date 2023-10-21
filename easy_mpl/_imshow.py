@@ -8,7 +8,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 from .utils import despine_axes
-from .utils import process_cbar
+from .utils import add_cbar
 from .utils import process_axes
 from .utils import annotate_imshow
 
@@ -66,7 +66,8 @@ def imshow(
                 - ``upper`` will only show the lower half
                 - ``lower`` will only show the upper half
         cbar_params : dict, optional
-            params for colorbar. for example ``pad`` or ``orientation``
+            parameters that will go to :py:func`easy_mpl.utils.process_cbar` for colorbar.
+            For example ``pad`` or ``orientation``
         ax : plt.Axes, optional
             if not given, current available axes will be used
         ax_kws : dict, optional (default=None)
@@ -177,7 +178,7 @@ def imshow(
     if colorbar:
         if cbar_params is None:
             cbar_params = {}
-        process_cbar(ax, im, **cbar_params)
+        add_cbar(ax, im, **cbar_params)
         # cb_tick_params = cb_tick_params or {'pad': 0.2, 'orientation': 'vertical'}
         # # https://stackoverflow.com/a/18195921/5982232
         # divider = make_axes_locatable(ax)

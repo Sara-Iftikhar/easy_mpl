@@ -1,8 +1,13 @@
 
 __all__ = ["process_cbar", "make_cols_from_cmap", "process_axes",
-           "kde", "make_clrs_from_cmap", "map_array_to_cmap", "AddMarginalPlots"]
+           "kde", "make_clrs_from_cmap", "map_array_to_cmap", "AddMarginalPlots",
+           "create_subplots", "NN", "plot_nn", "version_info", "despine_axes",
+           "add_cbar"]
 
-from typing import Union, Any, Optional, Tuple, List
+import functools
+import warnings
+import itertools
+from typing import Union, Any, Optional, Tuple, List, Dict, Callable
 from collections.abc import KeysView, ValuesView
 
 import numpy as np
@@ -11,6 +16,7 @@ import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 from matplotlib.path import Path
 from matplotlib.spines import Spine
+from matplotlib.patches import Circle
 from matplotlib.colors import Normalize
 from matplotlib.transforms import Affine2D
 from matplotlib.projections.polar import PolarAxes
@@ -434,6 +440,12 @@ def version_info():
     except Exception:
         pass
 
+    try:
+        import scipy
+        info['scipy'] = scipy.__version__
+    except Exception:
+        pass
+
     return info
 
 
@@ -457,12 +469,22 @@ def create_subplots(
         **fig_kws
 )->Tuple:
     """
-    creates the subplots. If naxes is 1 and ax is None, then current available axes
-    is returned using plt.gca(). If naxes is 1 and ax is not None, then ax is returned
-    as it is. If naxes > 1 and ax is None, then new axes are created. If naxes > 1 and
-    ax is not None, then ax is closed with a warning and new axes' are created.
-    If naxes are > 1, then nrows and ncols are calculated automatically unless cols
-    is given. The last redundent axes are switched off in case naxes < (nrows*ncols).
+    creates the subplots.
+
+    Parameters
+    ----------
+    naxes : int
+        If naxes is 1 and ax is None, then current available axes
+        is returned using plt.gca(). If naxes is 1 and ax is not None, then ax is returned
+        as it is. If naxes > 1 and ax is None, then new axes are created. If naxes > 1 and
+        ax is not None, then ax is closed with a warning and new axes' are created.
+        If naxes are > 1, then nrows and ncols are calculated automatically unless cols
+        is given. The last redundent axes are switched off in case naxes < (nrows*ncols).
+    ax : plt.Axes
+    figsize : tuple
+    ncols : int
+    **fig_kws
+        keyword arguments for plt.subplots()
     """
     if ax is None:
 
@@ -657,10 +679,6 @@ class AddMarginalPlots(object):
         if self.fix_limits:
             xlim = np.array(self.ax.get_xlim()) * 1.05
 
-        _hist_kws = {"linewidth":0.5, "edgecolor":"k"}
-        if hist_kws is not None:
-            _hist_kws.update(hist_kws)
-
         if ax is None:
             new_axes = self.divider.append_axes("top", self.size[0],
                                        pad=self.pad[0], sharex=self.ax)
@@ -672,7 +690,7 @@ class AddMarginalPlots(object):
 
         if self.hist:
 
-            new_axes.hist(x_data, **_hist_kws)
+            self._add_hist_on_side(new_axes, x_data, hist_kws)
             if self.ridge:
                 # we draw histogram on old axes so that kde line
                 # comes on top
@@ -683,8 +701,7 @@ class AddMarginalPlots(object):
             ax2 = new_axes
 
         if self.ridge:
-            ind, data = kde(x_data, cut=0.2)
-            ax2.plot(ind, data, **line_kws)
+            ind, data = self._add_ridge_on_top(ax2, x_data, cut = 0.2, **line_kws)
 
         if not self.hist and self.ridge:
             # filling is only done when ridge is drawn and historgram is not
@@ -709,12 +726,6 @@ class AddMarginalPlots(object):
         if self.fix_limits:
             ylim = self.ax.get_ylim()
 
-        _hist_kws = {"linewidth":0.5,
-                     "edgecolor":"k",
-                     'orientation':'horizontal'}
-        if hist_kws is not None:
-            _hist_kws.update(hist_kws)
-
         if ax is None:
             new_axes = self.divider.append_axes(
                 "right",
@@ -728,8 +739,7 @@ class AddMarginalPlots(object):
         new_axes.set_xticks([])
 
         if self.hist:
-
-            new_axes.hist(y_data, **_hist_kws)
+            self._add_hist_on_top(new_axes, y_data, hist_kws)
 
             if self.ridge:
                 # create a twin axes for ridge so that it comes on top
@@ -740,8 +750,7 @@ class AddMarginalPlots(object):
             ax2 = new_axes
 
         if self.ridge:
-            ind, data = kde(y_data, cut=0.2)
-            ax2.plot(data, ind, **line_kws)
+            ind, data = self._add_ridge_on_side(ax2, y_data, cut = 0.2, **line_kws)
 
         if not self.hist and self.ridge:
             # filling is only done when ridge is drawn and historgram is not
@@ -780,6 +789,57 @@ class AddMarginalPlots(object):
 
         assert len(kws) == 2
         return kws
+
+    def _add_hist_on_top(
+            self,
+            axes:plt.Axes,
+            y_data,
+            hist_kws=None
+    ):
+        _hist_kws = {"linewidth":0.5,
+                     "edgecolor":"k",
+                     'orientation':'horizontal'}
+
+        if hist_kws is not None:
+            _hist_kws.update(hist_kws)
+
+        axes.hist(y_data, **_hist_kws)
+        return
+
+    def _add_hist_on_side(
+            self,
+            axes:plt.Axes,
+            x_data,
+            hist_kws=None
+    ):
+        _hist_kws = {"linewidth":0.5, "edgecolor":"k"}
+        if hist_kws is not None:
+            _hist_kws.update(hist_kws)
+
+        axes.hist(x_data, **_hist_kws)
+        return
+
+    def _add_ridge_on_top(
+            self,
+            ax:plt.Axes,
+            x_data,
+            cut=0.2,
+            **line_kws
+    ):
+        ind, density = kde(x_data, cut=cut)
+        ax.plot(ind, density, **line_kws)
+        return ind, density
+
+    def _add_ridge_on_side(
+            self,
+            ax: plt.Axes,
+            y_data,
+            cut:float=0.2,
+            **line_kws
+    )->tuple:
+        ind, density = kde(y_data, cut=cut)
+        ax.plot(density, ind, **line_kws)
+        return ind, density
 
 
 def despine_axes(axes, keep=None):
@@ -823,7 +883,7 @@ def map_array_to_cmap(array, cmap:str, clip:bool = True)->tuple:
     return colors, mapper
 
 
-def process_cbar(
+def add_cbar(
         ax,
         mappable,
         border:bool = True,
@@ -881,3 +941,409 @@ def process_cbar(
         else:
             cbar.ax.set_xlabel(title, **title_kws)
     return cbar
+
+
+def process_cbar(ax,
+                 mappable,
+                 border: bool = True,
+                 width: Union[int, float] = None,
+                 pad: Union[int, float] = 0.2,
+                 orientation: str = "vertical",
+                 title: str = None,
+                 title_kws: dict = None):
+
+
+    warnings.warn(
+        message=(
+            f"`process_cbar` is deprecated as a function name; use"
+            f" `add_cbar` instead."
+        ),
+        category=DeprecationWarning,
+        stacklevel=3,
+    )
+
+    add_cbar(ax, mappable, border, width,
+             pad, orientation,
+             title, title_kws)
+
+
+def deprecated_argument(**aliases: str) -> Callable:
+    """
+    https://stackoverflow.com/a/49802489
+    Decorator for deprecated function and method arguments.
+
+    Use as follows:
+
+    @deprecated_alias(old_arg='new_arg')
+    def myfunc(new_arg):
+        ...
+
+    """
+
+    def deco(f: Callable):
+        @functools.wraps(f)
+        def wrapper(*args, **kwargs):
+            rename_kwargs(f.__name__, kwargs, aliases)
+            return f(*args, **kwargs)
+
+        return wrapper
+
+    return deco
+
+
+def rename_kwargs(func_name: str, kwargs: Dict[str, Any], aliases: Dict[str, str]):
+    """Helper function for deprecating function arguments."""
+    for alias, new in aliases.items():
+        if alias in kwargs:
+            if new in kwargs:
+                raise TypeError(
+                    f"{func_name} received both {alias} and {new} as arguments!"
+                    f" {alias} is deprecated, use {new} instead."
+                )
+            warnings.warn(
+                message=(
+                    f"`{alias}` is deprecated as an argument to `{func_name}`; use"
+                    f" `{new}` instead."
+                ),
+                category=DeprecationWarning,
+                stacklevel=3,
+            )
+            kwargs[new] = kwargs.pop(alias)
+
+
+class NN:
+    """A class which can be used to plot fully connected neural networks
+
+    Example
+    -------
+    >>> from easy_mpl.utils import NN
+    >>> import matplotlib.pyplot as plt
+    >>> nn = NN()
+    >>> nn.add_layer(3, labels=[f'$x_{j}$' for j in range(4)], color='purple')
+    >>> nn.add_layer(4, color="yellow", linestyle='-')
+    >>> nn.add_layer(4, color='r')
+    >>> nn.add_layer(2, labels=['$\mu$', '$\sigma$'], color='g')
+    >>> _ = nn.plot(spacing=(1, 0.5))
+    >>> plt.show()
+
+    Autoencoder
+
+    >>> from easy_mpl.utils import NN
+    >>> import matplotlib.pyplot as plt
+    >>> nn = NN()
+    >>> nn.add_layer(4, labels=[f'$x_{j}$' for j in range(4)], color='#c6dae2',
+    ...         linecolor='#a5a5a5', circle_kws=dict(lw=None))
+    >>> nn.add_layer(3, color="#e3baac", linestyle=None)
+    >>> nn.add_layer(3, color='#e3baac', linecolor='#a5a5a5')
+    >>> nn.add_layer(4, color='#cad09c', circle_kws=dict(lw=None),
+    ...         labels=[f'$y_{j}$' for j in range(4)],)
+    >>> _ = nn.plot(spacing=(1, 0.5), x_offset=0.18)
+    >>> plt.show()
+
+    """
+
+    def __init__(self):
+        self.height: Union[int, float] = 0
+        self.length: Union[int, float] = 0
+
+        self.layers = []
+        self.labels = []
+        self.colors = []
+        self.linestyles = []
+        self.linecolors = []
+        self.line_kws = []
+        self.circle_kws = []
+        self.radius_factors = []
+
+    def add_layer(
+            self,
+            nodes: int,
+            radius_factor: float = 0.25,
+            labels: List[str] = None,
+            color: Union[Any, List[Any]] = None,
+            linestyle: Union[str, List[str], type(None)] = '-',
+            linecolor: Union[Any, List[Any]] = "k",
+            circle_kws: Union[dict, List[dict]] = None,
+            line_kws: Union[dict, List[dict]] = None,
+    ):
+        """
+
+        Parameters
+        ----------
+        nodes : int
+            number of nodes to add
+        radius_factor : float (default=0.25)
+            determins radius of circles in the layer
+        labels :
+            labels to put inside the circle for each node. If given,
+            then the circle for each node will be labeled accordingly
+        color :
+            color for each circle/circles. If a single color is specified,
+            it will be used for all the cirlces in this layer
+        linestyle :
+            line style for the connections. Set this to ``None`` if you
+            don't want to show connections.
+        linecolor :
+            any keyword arguments for matploltib.axes.Axes.plot
+        circle_kws :
+            keyword arguments for :obj:`matplotlib.patches.Circle`
+        line_kws :
+            any keyword arguments for drawing lines that will go to
+            :obj:`matplotlib.axes.Axes.plot`
+
+        Return
+        ------
+        None
+
+        """
+
+        if labels is None:
+            labels = [None for _ in range(nodes)]
+        else:
+            assert isinstance(labels, list)
+
+        if color is not None:
+            if is_rgb(color) or isinstance(color, str):
+                colors = [color for _ in range(nodes)]
+            else:
+                assert len(color) == nodes
+                colors = color
+        else:
+            colors = [None for _ in range(nodes)]
+
+        if not isinstance(linecolor, list):
+            linecolor = [linecolor for _ in range(nodes)]
+
+        if not isinstance(linestyle, list):
+            linestyle = [linestyle for _ in range(nodes)]
+
+        if not isinstance(radius_factor, list):
+            radius_factor = [radius_factor for _ in range(nodes)]
+
+        _line_kws = dict(zorder=0)
+        if line_kws is None:
+            line_kws = [_line_kws for _ in range(nodes)]
+        elif not isinstance(line_kws, list):
+            line_kws = [line_kws for _ in range(nodes)]
+
+        _circle_kws = dict(edgecolor='k', zorder=1)
+        if circle_kws is None:
+            circle_kws = [_circle_kws for _ in range(nodes)]
+        elif not isinstance(circle_kws, list):
+            circle_kws = [circle_kws for _ in range(nodes)]
+
+        if nodes > self.height:
+            self.height = nodes
+        if nodes > 1:
+            a = nodes / 2
+            y = np.linspace(-a, a, nodes)
+        else:
+            y = [0]
+
+        # append
+        self.layers.append([(self.length, z) for z in y])
+        self.labels.append(labels)
+        self.colors.append(colors)
+        self.linestyles.append(linestyle)
+        self.linecolors.append(linecolor)
+        self.line_kws.append(line_kws)
+        self.circle_kws.append(circle_kws)
+        self.radius_factors.append(radius_factor)
+
+        self.length += 1
+
+    def plot(
+            self,
+            spacing: Tuple[Union[int, float], Union[int, float]] = (2, 1),
+            margin: Tuple[float, float] = (0.5, 0.5),
+            x_offset: float = 0.15,
+            ax: plt.Axes = None,
+            name: str = None,
+            **fig_kws,
+    ) -> plt.Axes:
+        """
+
+        Parameters
+        -----------
+        spacing : tuple
+            a tuple which for dx and dy
+        margin :
+        x_offset : float
+        ax : plt.Axes
+            the :obj:`matplotlib.axes` on which to draw, if not given a new axes
+            will be created
+        name : str
+            name of file to save the figure
+
+        Returns
+        -------
+        plt.Axes
+            matplotlib axes on which the plot is drawn
+        """
+        dx, dy = spacing
+        scale = np.sqrt(dx * dy)
+        xlim = -dx * margin[0], (self.length - margin[0]) * dx
+        ylim = -(self.height / 2 + margin[1]) * dy, (self.height / 2 +
+                                                     margin[1]) * dy
+
+        if ax is None:
+            fig = plt.figure(figsize=(xlim[1] - xlim[0], ylim[1] - ylim[0]),
+                             **fig_kws)
+            ax = fig.add_axes([0.0, 0.0, 1.0, 1.0])
+
+        ax.set_aspect('equal')
+        ax.axis('off')
+        ax.set_xlim(*xlim)
+        ax.set_ylim(*ylim)
+
+        # plot lines
+        lyr_idx = 0
+        for l1, l2 in zip(self.layers[0:-1], self.layers[1:]):
+            for (x1, y1), (x2, y2) in itertools.product(l1, l2):
+                if self.linestyles[lyr_idx][0] is not None:
+                    ax.plot(
+                        [x1 * dx + x_offset, x2 * dx - x_offset], [y1 * dy, y2 * dy],
+                        ls=self.linestyles[lyr_idx][0],
+                        color=self.linecolors[lyr_idx][0],
+                        **self.line_kws[lyr_idx][0]
+                    )
+
+            lyr_idx += 1
+
+        # plot circles
+        for layer, labels, colors, kws, radiuses in zip(
+                self.layers, self.labels, self.colors, self.circle_kws, self.radius_factors):
+
+            for (x, y), label, _kws, color, radius in zip(
+                    layer, labels, kws, colors, radiuses):
+                center = (x * dx, y * dy)
+                c = Circle(center,
+                           radius=radius * scale,
+                           facecolor=color,
+                           **_kws
+                           )
+                ax.add_artist(c)
+                if label is not None:
+                    ax.text(*center,
+                            s=label,
+                            horizontalalignment='center',
+                            verticalalignment='center')
+
+        # save
+        if name:
+            plt.savefig(name, dpi=300, bbox_inches="tight")
+
+        return ax
+
+
+def to_list(obj, length: int) -> list:
+    if not isinstance(obj, list):
+        obj = [obj for _ in range(length)]
+    assert isinstance(obj, list)
+    assert len(obj) == length
+    return obj
+
+
+def plot_nn(
+        layers: int,
+        nodes: Union[int, List[int]],
+        labels=None,
+        fill_color=None,
+        circle_edge_lw: Union[float, List[float]] = 1.0,
+        connection_style: Union[str, List[str]] = '-',
+        connection_color='k',
+        spacing: Tuple[Union[int, float], Union[int, float]] = (2, 1),
+        margin: Tuple[float, float] = (0.5, 0.5),
+        x_offset: float = 0.15,
+        ax: plt.Axes = None,
+        show: bool = True
+) -> plt.Axes:
+    """
+    function to plot artificial neural networks or multi-layer perceptron
+
+    Parameters
+    ----------
+    layers : int
+        number of layers of neural network including input layer and output layer
+    nodes :
+        nodes in layers of neural network. If integer, then same nodes will be
+        used for each layer. Otherwise specify nodes for each layer as list.
+        Each node will be represented as circle.
+    labels :
+        text/label to put inside the circles. If a single string is given, it will
+        be used for all nodes in all layers.
+    fill_color :
+        color to fill the circles/nodes. The user can specify separate color for each
+        node in each layer or a separate color for each layer.
+    circle_edge_lw :
+        width of edge line of circles
+    connection_style :
+        line style for connections
+    connection_color :
+        color to used for line depicting connection of nodes
+    spacing :
+    margin :
+    x_offset :
+    ax : plt.Axes
+        the :obj:`matplotlib.axes` on which to draw, if not given a new axes
+        will be created
+    show :
+        whether to show the plot or not
+
+    Returns
+    --------
+    plt.Axes
+
+    Examples
+    ---------
+    >>> from easy_mpl.utils import plot_nn
+    >>> plot_nn(4, [3,4,4,2])
+
+    >>> plot_nn(
+    ...     4, nodes=[3, 4, 4, 2],
+    ...     fill_color=['#fff2cc', "#fde6d9", '#dae3f2', '#a9d18f'],
+    ...     labels=[[f'$x_{j}$' for j in range(1,4)], None, None, ['$\mu$', '$\sigma$']],
+    ...     connection_color='#c3c2c3',
+    ...     spacing=(1, 0.5)
+    ...     )
+
+    Autoencoder
+
+    >>> plot_nn(
+    ...     4,
+    ...     nodes=[4, 3, 3, 4],
+    ...     fill_color=['#c6dae2', "#e3baac", '#e3baac', '#cad09c'],
+    ...     labels=[[f'$x_{j}$' for j in range(4)], None, None, [f'$y_{j}$' for j in range(4)]],
+    ...     connection_color='#a5a5a5',
+    ...     connection_style=['-', None, '-', '-'],
+    ...     circle_edge_lw = [0.0, 1.0, 1.0, 0.],
+    ...     spacing=(1, 0.5),
+    ...     x_offset=0.18
+    ...     )
+    """
+    assert isinstance(layers, int)
+
+    nodes = to_list(nodes, layers)
+    labels = to_list(labels, layers)
+    fill_color = to_list(fill_color, layers)
+    circle_edge_lw = to_list(circle_edge_lw, layers)
+    connection_style = to_list(connection_style, layers)
+    connection_color = to_list(connection_color, layers)
+
+    nn = NN()
+    for lyr in range(layers):
+        nn.add_layer(
+            nodes[lyr],
+            labels=labels[lyr],
+            color=fill_color[lyr],
+            linecolor=connection_color[lyr],
+            linestyle=connection_style[lyr],
+            circle_kws=dict(lw=circle_edge_lw[lyr],
+                            edgecolor='k', zorder=1)
+        )
+
+    ax = nn.plot(spacing=spacing, x_offset=x_offset, margin=margin, ax=ax)
+
+    if show:
+        plt.show()
+    return ax

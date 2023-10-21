@@ -5,6 +5,7 @@ import random
 from typing import Union, List
 
 import numpy as np
+import matplotlib
 import matplotlib.pyplot as plt
 from collections.abc import KeysView, ValuesView
 
@@ -12,11 +13,13 @@ from .utils import is_rgb
 from .utils import BAR_CMAPS
 from .utils import process_axes
 from .utils import create_subplots
-from .utils import to_1d_array, map_array_to_cmap
+from .utils import is_series, is_dataframe
+from .utils import to_1d_array, map_array_to_cmap, deprecated_argument
 
 
+@deprecated_argument(values="data")
 def bar_chart(
-        values,
+        data,
         labels=None,
         orient:str = 'h',
         sort:bool = False,
@@ -39,8 +42,9 @@ def bar_chart(
 
     Parameters
     -----------
-        values : array like
+        data : array like
             array like e.g. list/numpy array/ pandas series/ pandas dataframe / tuple
+            alias for "values".
         labels : list, optional
             used for labeling each bar
         orient : `str`, optional
@@ -100,15 +104,15 @@ def bar_chart(
     """
 
     if labels is None:
-        if hasattr(values, "index") and hasattr("values", "name"):
-            labels = values.index
+        if is_series(data) or is_dataframe(data):
+            labels = data.index
 
     naxes = 1
     ncharts = 1
-    if is_1d(values):
-        values = to_1d_array(values)
+    if is_1d(data):
+        values = to_1d_array(data)
     else:
-        values = np.array(values)
+        values = np.array(data)
         ncharts = values.shape[1]
         if share_axes:
             kwargs['edgecolor'] = kwargs.get('edgecolor', 'k')
@@ -217,8 +221,6 @@ def handle_sort(sort, values, labels, bar_labels, color):
         if bar_labels is not None:
             bar_labels = np.array(bar_labels)
             bar_labels = bar_labels[sort_idx]
-            if 'float' in bar_labels.dtype.name:
-                bar_labels = np.round(bar_labels, decimals=2)
 
         if isinstance(color, (list, np.ndarray, tuple)):
             if is_rgb(color[0]) or isinstance(color[0], str):
@@ -254,6 +256,7 @@ def preprocess(data, labels, bar_labels, sort, max_bars, colors):
 
 
 def bar_on_axes(ax, orient, ax_kws, *args, **kwargs):
+
     if orient in ['h', 'horizontal']:
         horizontal_bar(ax, *args, **kwargs)
     else:
@@ -267,6 +270,11 @@ def bar_on_axes(ax, orient, ax_kws, *args, **kwargs):
 
 def horizontal_bar(ax, ind, values, width, ticks, labels, color, bar_labels,
                    rotation, errors, bar_label_kws, kwargs):
+
+    # Matplotlib version 3.8.0 gives error ('int' object has no attribute 'startswith')
+    # if label is an integer
+    if isinstance(kwargs.get('label', None), int) and matplotlib.__version__>'3.7':
+        kwargs['label'] = str(kwargs['label'])
 
     if width:
         bar = ax.barh(ind, values, width, color=color, **kwargs)

@@ -12,6 +12,7 @@ from .utils import is_dataframe
 from .utils import make_cols_from_cmap
 from .utils import despine_axes
 
+# todo, single array with labels argument
 
 # colormaps for ridge plot
 RIDGE_CMAPS = [
@@ -217,9 +218,9 @@ def ridge(
 
         if idx == n - 1:
             if xlabel:
-                ax.set_xlabel(xlabel, fontsize=26, fontweight="bold")
+                ax.set_xlabel(xlabel)
 
-            ax.tick_params(axis="x", labelsize=20)
+            ax.tick_params(axis="x")
         else:
             if nrows > 1:
                 ax.set_xticklabels([])
@@ -230,7 +231,7 @@ def ridge(
             ax.set_yticklabels([])
             ax.set_yticks([])
         else:
-            ax.tick_params(axis="y", labelsize=20)
+            ax.tick_params(axis="y")
 
         despine_axes(ax)
 
@@ -238,7 +239,6 @@ def ridge(
             ax.text(xs[col][0],
                              0.2,
                              col,
-                             fontsize=20,
                              ha="right")
         idx += 1
 
@@ -246,7 +246,7 @@ def ridge(
         plt.subplots_adjust(hspace=hspace)
 
     if title:
-        plt.suptitle(title, fontsize=25)
+        plt.suptitle(title)
 
     if show:
         if share_axes:

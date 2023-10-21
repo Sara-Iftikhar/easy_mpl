@@ -6,12 +6,12 @@ from typing import Union, List
 import numpy as np
 import matplotlib.pyplot as plt
 
-from .utils import kde
+from .utils import kde, deprecated_argument
 from .utils import process_axes, is_dataframe, create_subplots, is_series
 
-
+@deprecated_argument(x="data")
 def hist(
-        x: Union[list, np.ndarray],
+        data: Union[list, np.ndarray],
         labels:Union[str, List[str]] = None,
         share_axes:bool = True,
         grid: bool = True,
@@ -30,7 +30,7 @@ def hist(
 
     Parameters
     -----------
-        x : list, array, optional
+        data : list, array, optional
             array like, numpy ndarray or pandas DataFrame, or list of arrays
         labels : list/str optional
             names of the arrays, used for setting the legend
@@ -78,35 +78,39 @@ def hist(
         https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.hist.html
     """
 
-    if isinstance(x, np.ndarray):
-        if len(x) == x.size:
-            X = [x]
+    if isinstance(data, np.ndarray):
+        if len(data) == data.size:
+            X = [data]
             names = [None]
         else:
-            X = [x[:, i] for i in range(x.shape[1])]
-            names = [f"{i}" for i in range(x.shape[1])]
+            X = [data[:, i] for i in range(data.shape[1])]
+            names = [f"{i}" for i in range(data.shape[1])]
 
-    elif is_dataframe(x):
+    elif is_dataframe(data):
         X = []
-        for col in x.columns:
-            X.append(x[col].values)
-        names = x.columns.tolist()
+        for col in data.columns:
+            X.append(data[col].values)
+        names = data.columns.tolist()
 
-    elif is_series(x):
-        X = x.values
-        names = [x.name]
+    elif is_series(data):
+        X = data.values
+        names = [data.name]
 
-    elif isinstance(x, (list, tuple)) and isinstance(x[0], (list, tuple, np.ndarray)):
-        assert all([len(np.array(array_like))==np.array(array_like).size for array_like in x]), f"""
+    elif isinstance(data, (list, tuple)) and isinstance(data[0], (list, tuple, np.ndarray)):
+        assert all([len(np.array(array_like))==np.array(array_like).size for array_like in data]), f"""
         All arrays must be one dimensional."""
-        X = [np.array(x_).reshape(-1,) for x_ in x]
+        X = [np.array(x_).reshape(-1,) for x_ in data]
         names = [None]*len(X)
 
-    elif isinstance(x, (list, tuple)) and not is_dataframe(x[0]):
-        X = [x]
+    elif isinstance(data, (list, tuple)) and is_dataframe(data[0]):
+        X = [*data]
+        names = [None]*len(X)
+
+    elif isinstance(data, (list, tuple)) and not is_dataframe(data[0]):
+        X = [data]
         names = [None]
     else:
-        raise ValueError(f"unrecognized type of x {type(x)}")
+        raise ValueError(f"unrecognized type of x {type(data)}")
 
     if labels is not None:
         if isinstance(labels, str):

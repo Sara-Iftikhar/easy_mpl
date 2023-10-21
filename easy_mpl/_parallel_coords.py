@@ -2,7 +2,7 @@
 __all__ = ["parallel_coordinates"]
 
 
-from typing import Union
+from typing import Union, Any
 
 import numpy as np
 import matplotlib.cm as cm
@@ -14,7 +14,7 @@ from .utils import _rescale
 
 
 def parallel_coordinates(
-        data: Union[np.ndarray,],
+        data: Union[np.ndarray, Any],
         categories: Union[np.ndarray, list] = None,
         names: list = None,
         cmap: str = None,
@@ -225,7 +225,7 @@ def parallel_coordinates(
     host.set_xticklabels(names, **_coord_title_kws)
     host.tick_params(axis='x', which='major', pad=7)
     host.spines['right'].set_visible(False)
-    host.xaxis.tick_top()
+
     if title:
         host.set_title(title, fontsize=18)
 
@@ -260,14 +260,22 @@ def parallel_coordinates(
         cb = cm.ScalarMappable(norm, cmap=cmap)
 
         if _is_categorical:
-            cbar = fig.colorbar(cb, orientation="vertical", pad=0.1)
+            cbar = fig.colorbar(cb, orientation="vertical", pad=0.1, ax=ax)
             ticks = cbar.get_ticks()
             new_ticks = np.linspace(ticks[0], ticks[-1], len(np.unique(categories)))
             cbar.set_ticks(new_ticks)
             cbar.set_ticklabels(np.unique(categories))
 
         else:
-            cbar = fig.colorbar(cb, orientation="vertical", pad=0.1)
+            cbar = fig.colorbar(cb, orientation="vertical", pad=0.1, ax=ax)
+
+        cax = cbar.ax  # todo
+        # Turn spines off and create white grid.
+        if isinstance(cax.spines, dict):
+            for sp in cax.spines:
+                cax.spines[sp].set_visible(False)
+        else:
+            cax.spines[:].set_visible(False)
 
     plt.tight_layout()
 

@@ -1,6 +1,8 @@
 
 __all__ = ["boxplot"]
 
+import warnings
+from itertools import zip_longest
 from typing import Union, List, Tuple
 
 import matplotlib
@@ -16,7 +18,7 @@ from .utils import make_cols_from_cmap
 
 
 def boxplot(
-        data:Union[np.ndarray, List[np.ndarray]],
+        data:Union[np.ndarray, List[np.ndarray], List[list]],
         line_color:Union[str, List[str]] = None,
         line_width = None,
         fill_color:Union[str, List[str]] = None,
@@ -38,12 +40,13 @@ def boxplot(
         array likes. If list of array likes, the length of arrays in the list
         can be different.
     line_color :
-        name of color/colors/cmap for lines/boundaries of box
+        name of color/colors/cmap for lines/boundaries of box, whisker, cap, median
+        and mean line
     line_width :
         width of the box lines.
     fill_color :
         name of color/colors/cmap to fill the boxes. It can be any valid
-         matplotlib color or cmap.
+        matplotlib color or cmap.
     labels : str/list (default=None)
         used for ticklabels of x-axes
     share_axes : bool (default=True)
@@ -117,7 +120,7 @@ def boxplot(
 
         # in version 3.2.. giving DataFrame to ax.boxplot makes boxes for each row
         # in version 3.3.. giving DataFrame to ax.boxplot tries to make boxp for first row (columns)
-        if is_dataframe(x) and matplotlib.__version__ < "3.3.0":
+        if is_dataframe(x) and matplotlib.__version__ <= "3.3.0":
             x = x.values
 
         box_out = ax.boxplot(x, **_box_kws)
@@ -150,9 +153,9 @@ def _set_ticklabels(ax, share_axes, name, box_kws):
 
         if share_axes:
             if box_kws.get('vert', True):
-                ax.set_xticklabels(name)
+                _maybe_set_ticks(ax, name)
             else:
-                ax.set_yticklabels(name)
+                _maybe_set_ticks(ax, name, "y")
         else:
             if isinstance(name, (str, int)):
                 if box_kws.get('vert', True):
@@ -172,11 +175,24 @@ def _set_ticklabels(ax, share_axes, name, box_kws):
     return
 
 
+def _maybe_set_ticks(axes:plt.Axes, ticklabels, which="x"):
+    ticks = getattr(axes, f"get_{which}ticks")()
+
+    if len(ticklabels) == len(ticks):
+        getattr(axes, f"set_{which}ticklabels")(ticklabels)
+    else:
+        warnings.warn(f"""
+{which}ticks ({len(ticks)}) and {which}ticklabels ({len(ticklabels)}) dont match""")
+    return
+
+
 def _unpack_linewidth(line_width, nboxes, share_axes):
     if isinstance(line_width, (float, int)):
         line_widths = [[line_width] for _ in range(nboxes)]
     elif line_width is None:
         line_widths = [[None] for _ in range(nboxes)]
+    else:
+        raise ValueError
 
     if share_axes:
        line_widths = [[line_width[0] for line_width in line_widths]]
@@ -212,20 +228,50 @@ def _set_box_props(fill_color:list,
                    line_width:list,
                    box_out):
 
-    for idx, patch in enumerate(box_out['boxes']):
-        if hasattr(patch, 'set_facecolor'):
-            if fill_color[idx] is not None:
-                patch.set_facecolor(fill_color[idx])
-        elif hasattr(patch, 'set_markerfacecolor'):
-            if fill_color[idx] is not None:
-                patch.set_markerfacecolor(fill_color[idx])
+    whiskers = box_out['whiskers']
+    if len(whiskers)>0:
+        whiskers = np.array(whiskers).reshape(len(line_color), -1)
 
-        if hasattr(patch, 'set_color') and line_color[idx] is not None:
-            patch.set_color(line_color[idx])
+    boxes = box_out['boxes']
+    if len(boxes)>0:
+        boxes = np.array(boxes).reshape(len(line_color), -1)
 
-        if hasattr(patch, 'set_linewidth') and line_width[idx] is not None:
-            patch.set_linewidth(line_width[idx])
+    caps = box_out['caps']
+    if len(caps)>0:
+        caps = np.array(caps).reshape(len(line_color), -1)
 
+    medians = box_out['medians']
+    if len(medians)>0:
+        medians = np.array(medians).reshape(len(line_color), -1)
+
+    means = box_out['means']
+    if len(means)>0:
+        means = np.array(means).reshape(len(line_color), -1)
+
+    fliers = box_out['fliers']
+    if len(fliers)>0:
+        fliers = np.array(fliers).reshape(len(line_color), -1)
+
+    for idx, (patch, whisker, cap, median, mean, flier) in enumerate(zip_longest(
+            boxes, whiskers, caps, medians, means, fliers)):
+
+        if fill_color[idx] is not None:
+            if isinstance(patch[0], matplotlib.lines.Line2D):
+                plt.setp(patch, markerfacecolor=fill_color[idx])
+            elif isinstance(patch[0], matplotlib.patches.PathPatch):
+                plt.setp(patch, facecolor=fill_color[idx])
+
+        if line_color[idx] is not None:
+            #plt.setp(patch, color=line_color[idx])
+            plt.setp(whisker, color=line_color[idx])
+            plt.setp(cap, color=line_color[idx])
+            plt.setp(median, color=line_color[idx])
+
+        if line_width[idx] is not None:
+            plt.setp(patch, linewidth=line_width[idx])
+            plt.setp(whisker, linewidth=line_width[idx])
+            plt.setp(cap, linewidth=line_width[idx])
+            plt.setp(median, linewidth=line_width[idx])
     return
 
 
@@ -258,8 +304,10 @@ def _unpack_data(x, labels, share_axes:bool)->Tuple[list, list]:
         names = [[x.name]]
 
     elif isinstance(x, (list, tuple)) and isinstance(x[0], (list, tuple, np.ndarray)):
-        assert all([len(array)==array.size for array in x]), f"""
+
+        assert all([len(array) == np.array(array).size for array in x]), f"""
         All arrays must be one dimensional."""
+
         X = [np.array(x_).reshape(-1,) for x_ in x]
         names = [None] * len(X)
         if share_axes:

@@ -5,6 +5,7 @@ import math
 from typing import Union, List, Optional
 
 import numpy as np
+import matplotlib
 import matplotlib.pyplot as plt
 
 from .utils import register_projections
@@ -23,14 +24,15 @@ def spider_plot(
         leg_kws: dict = None,
         labels: list = None,
         show: Optional[bool] = True,
-        figsize=None,
+        figsize:tuple = None,
+        ax:plt.Axes = None,
 )->plt.Axes:
     """
     Draws spider plot on an axes
 
     Parameters
     ----------
-        data :
+        data : list/numpy array / dict / DataFrame/ Series
             values to display. It should be array like/numpy array or pandas DataFrame/Series
         tick_labels : list, optional (default=None)
             tick labels. It's length should be equal to length of values
@@ -43,19 +45,21 @@ def spider_plot(
         highlight : int/float optional (default=None)
             whether to highlight a certain circular line or not
         color : str, optional (default=None)
-            colormap to use
+            colormap to use. This color will be used to plot line/lines.
         frame: str, optional (default="circle")
             whether the outer frame and grids should be polygon or circle
         figsize : tuple, optional (default=None)
-            figure size
+            figure size (width, height)
         fill_color :
             color to use for filling
         leg_kws : dict
             keyword arguments that will go to ax.legend()
-        labels: list, optional (default=None)
+        labels : list, optional (default=None)
             the labels for values
         show : bool, optional (default=True)
             whether to show the plot or not
+        ax : :obj:`matplotlib.axes`, optional
+            axes to use while plotting
 
     Returns
     -------
@@ -90,25 +94,24 @@ def spider_plot(
     if isinstance(data, (list, tuple)):
         data = np.array(data).reshape(-1, 1)
 
+    N = len(data)
+
     if tick_labels is None:
         if hasattr(data, "index"):
             tick_labels = data.index
         else:
-            tick_labels = [f"F{i}" for i in range(len(data))]
+            tick_labels = ['' for _ in range(N)]
+    else:
+        assert len(tick_labels) == N
 
     if labels is None:
         if hasattr(data, "name"):
             labels = [data.name]
         elif hasattr(data, "columns"):
             labels = data.columns.tolist()
-        else:
-            labels = [f'Value_{i}' for i in range(data.shape[1])]
 
     if hasattr(data, "values"):
         data = data.values
-
-    N = len(tick_labels)
-    assert N == len(data)
 
     if not isinstance(plot_kws, list):
         plot_kws = [plot_kws for _ in range(data.shape[1])]
@@ -128,18 +131,28 @@ def spider_plot(
     angles = [n / float(N) * 2 * math.pi for n in range(N)]
     angles += angles[:1]
 
-    if frame == "polygon":
-        register_projections(N, frame)
-        fig, ax = plt.subplots(figsize=figsize, nrows=1, ncols=1,
-                                subplot_kw= dict(projection='radar'))
-    else:
-        ax = plt.subplot(polar=True)
+    user_defined_ax = True
+    if ax is None:
+        user_defined_ax = False
+        if frame == "polygon":
+            register_projections(N, frame)
+            fig, ax = plt.subplots(figsize=figsize, nrows=1, ncols=1,
+                                    subplot_kw= dict(projection='radar'))
+        else:
+            ax = plt.subplot(polar=True)
+    assert ax.name in ['radar', 'polar'], f"""
+    The axes must be radar or polar but it is {ax.name}"""
 
-    _xtick_kws = {'color': 'grey', 'size': 14}
+    _xtick_kws = {'color': 'grey'}
     xtick_kws = xtick_kws or {}
     _xtick_kws.update(xtick_kws)
 
-    plt.xticks(angles[:-1], tick_labels, **_xtick_kws)
+    if tick_labels is not None:
+        if matplotlib.__version__ < '3.5':
+            ax.tick_params(axis='x', colors=_xtick_kws['color'])
+            #ax.set_xticks(angles[:-1])
+        else:
+            ax.set_xticks(angles[:-1], tick_labels, **_xtick_kws)
 
     for idx in range(data.shape[1]):
 
@@ -167,16 +180,17 @@ def spider_plot(
                         color='red',
                         zorder=10)
 
-    plt.gca().set_rmax(np.max(data) + np.max(data)*0.2)
-    plt.gca().set_rmin(np.min(data) - abs(np.min(data) * 0.2))
+    if not user_defined_ax:
+        ax.set_rmax(np.max(data) + np.max(data)*0.2)
+        ax.set_rmin(np.min(data) - abs(np.min(data) * 0.2))
 
     _leg_kws = {'labelspacing': 0.1, 'fontsize': 12, 'bbox_to_anchor': (1.3, 1.1)}
     leg_kws = leg_kws or {}
     _leg_kws.update(leg_kws)
-    legend = ax.legend(labels, **_leg_kws)
+    if labels is not None:
+        legend = ax.legend(labels, **_leg_kws)
 
     if show:
-        plt.tight_layout()
         plt.show()
 
     return ax

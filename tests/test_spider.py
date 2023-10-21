@@ -25,9 +25,8 @@ class TestSpiderPlot(unittest.TestCase):
 
     def test_specify_tick_labels(self):
 
-
         ax = spider_plot(data=self.values,
-                         labels=self.labels, show=self.show)
+                         tick_labels=self.labels, show=self.show)
         assert isinstance(ax, plt.Axes)
         return
 
@@ -61,6 +60,12 @@ class TestSpiderPlot(unittest.TestCase):
 
     def test_2d_np_array(self):
         ax = spider_plot(self.df.values, labels=self.df.columns.tolist(), show=self.show)
+        assert isinstance(ax, plt.Axes)
+        return
+
+    def test_user_defined_ax(self):
+        _, ax = plt.subplots(subplot_kw= dict(projection='polar'))
+        ax = spider_plot(data=self.values, ax=ax, show=self.show)
         assert isinstance(ax, plt.Axes)
         return
 

@@ -73,11 +73,10 @@ class TestScatter(unittest.TestCase):
         y = np.sin(x)
         colors, mapper = map_array_to_cmap(y, "Blues")
         ax, sc = scatter(x, y, color=colors, show=False)
-        plt.colorbar(mapper)
+        plt.colorbar(mapper, ax=ax)
         plt.close('all')
 
         return
-
 
 
 if __name__ == "__main__":

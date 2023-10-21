@@ -11,9 +11,12 @@ This file shows the usage of :func:`bar_chart` function.
 # sphinx_gallery_thumbnail_number = 4
 
 import numpy as np
-from easy_mpl import bar_chart
+from easy_mpl import bar_chart, plot
 import matplotlib.pyplot as plt
+import datetime
+from matplotlib.dates import YearLocator, MonthLocator, DateFormatter
 from easy_mpl.utils import version_info
+from easy_mpl.utils import despine_axes
 
 version_info()  # print version information of all the packages being used
 
@@ -66,6 +69,10 @@ _ = bar_chart(
 # vertical orientation
 _ = bar_chart([1,2,3,4,4,5,3,2,5], orient='v')
 
+# %%
+# define color for each bar individually
+_ = bar_chart([4,2,5,1,3], color=['#BD76B2', '#3BAAE2', '#2BB67B', '#9FA537', '#F5746F'])
+
 #%%
 # error bars
 errors = [0.1, 0.2, 0.3, 0.24, 0.32, 0.11, 0.32, 0.12, 0.42]
@@ -84,7 +91,7 @@ ax = bar_chart(sv_bar, names,
 
 print(f"Type of ax is {type(ax)}")
 
-ax.spines[['top', 'right']].set_visible(False)
+despine_axes(ax, keep=['bottom', 'left'])
 ax.set_xlabel(xlabel='mean(|SHAP value|)', fontsize=14, weight='bold')
 ax.set_xticklabels(ax.get_xticks().astype(int), size=12, weight='bold')
 ax.set_yticklabels(ax.get_yticklabels(), size=12, weight='bold')
@@ -128,6 +135,107 @@ ax.set_xticklabels(ax.get_xticks().astype(int), size=12, weight='bold')
 ax.set_yticklabels(ax.get_yticklabels(), size=12, weight='bold')
 labels = np.unique(list(continents.values()))
 handles = [plt.Rectangle((0,0),1,1, color=colors[l]) for l in labels]
+ax.xaxis.grid(True, linestyle='-', which='major', color='lightgrey',
+               alpha=0.7)
+ax.set(axisbelow=True)  # Hide the grid behind plot objects
+ax.set_facecolor('floralwhite')
 plt.legend(handles, labels, loc='lower right')
 plt.tight_layout()
+plt.show()
+
+# %%
+# Stacked bar chart
+
+# Values of each group
+bars1 = [12, 28, 1, 8, 22]
+bars2 = [28, 7, 16, 4, 10]
+bars3 = [25, 3, 23, 25, 17]
+bars4 = [5, 11, 7, 3, 19]
+
+# Heights of bars1 + bars2
+bars = np.add(bars1, np.add(bars2, bars3).tolist()).tolist()
+
+# Names of group and bar width
+names = ['A', 'B', 'C', 'D', 'E']
+barWidth = 0.65
+
+bar_chart(bars1, color='#006db6', edgecolor='white',
+          width=barWidth, orient='v', show=False)
+
+bar_chart(bars2, bottom=bars1, color='#f8aa59',
+          edgecolor='white', width=barWidth, orient='v',
+          show=False)
+
+bar_chart(bars3, bottom=np.add(bars1, bars2).tolist(), color='#eb5c23',
+          edgecolor='white', width=barWidth, orient='v',
+          show=False)
+
+bar_chart(bars4, bottom=bars, color='#b72c10',
+          edgecolor='white', width=barWidth, orient='v',
+          show=False)
+
+# Custom X axis
+plt.xticks([0, 1, 2, 3, 4], names, fontweight='bold')
+plt.xlabel("group")
+plt.show()
+
+# %%
+# negative values in the data
+
+names = ['JAN','FEB','MAR','APR','MAY','JUN',
+         'JUL','AUG','SEP','OCT','NOV','DEC']
+
+temp_max = [-1,0,5,12,18,24,27,26,21,14,8,2]
+temp_min = [-7,-6,-2,4,10,15,18,17,13,7,2,-3]
+
+
+def listOfTuples(l1, l2):
+    return list(map(lambda x, y:(x,y), l1, l2))
+
+temp = listOfTuples(temp_min, temp_max)
+
+f, ax = plt.subplots(facecolor = "#EFE9E6")
+
+bar_chart(temp, color=['#c9807d', '#22a1bd'],
+              orient='v', labels=names, ax=ax,
+              show=False)
+
+ax.grid(axis='y', ls='dotted', color='lightgrey')
+
+for spine in ax.spines.values():
+    spine.set_edgecolor('lightgrey')
+    spine.set_linestyle('dashed')
+
+plt.legend(['Minimum temperature', 'Maximum temperature'])
+plt.show()
+
+# %%
+# Displaying nagative values with a specific color
+
+data = [-0.4, -0.5, 0.1, -2, 0.6, 0.2, -0.5, -1, -1.2,
+-0.7, -0.6, -0.6, 0.2, -0.2, 0, 0.6, -2.3, -0.6, 0.2, -1.1, -0.3, -2.1, -0.8, 0.4,
+-1.5, 1.3, 0.2, -0.3, -1, 0.8, -0.5, 0, -0.2, -0.9, 0.2, 0.6, 0.8, 0, 2.1, 0.7, -0.2,
+-0.4, 0.9, 0.9, 0.2, 0.4, 0.1, 0.3, -0.2, -0.1, 0.4, 0, -0.2, -0.4, -0.5, -0.3, 0, 0.7,
+1.4, 0.3, -0.3, 0.3, -0.2, 0.3, -0.6, 0.1, -0.7, 0.4, -0.1, -0.9, 0, -0.2, -0.6, -0.5,
+-0.5, -0.7, 0.2, -0.7, 0.5, -0.7, 0.5, -0.4, -0.6, -1.6, 0.5, 1.1, -0.6, 0.4, -0.6, -0.1,
+0.7, 1.2, 0.7, 0.3, 1.1, 1.1, 0.9, -0.8, 0.3, 0.9, 0.1, 0, 1.6, 1.6, 2.7, 0.3, 1.9, 0.8,
+1.1, 1.7, 2.2, 1.6, 0.6, 0.7, 0.6, 0.9,3.3, 1.1, -0.1, 1.8, 3.1, 2.8, 2, 0.6, 1.8,
+2.1, 2.4, 1.5]
+
+colors = ['#063970' if e >= 0 else '#e28743' for e in data]
+
+ax = bar_chart(data, orient='v', color=colors,
+          width=0.7, rotation=45,
+          labels='', show=False)
+plot(np.zeros(128), ax=ax, show=False, color='black', lw=0.5)
+
+ax.grid(axis='y', ls='dotted', color='lightgrey')
+
+times = np.arange(np.datetime64('1894'),
+                  np.datetime64('2022'), np.timedelta64(1, 'Y'))
+
+ax.set_xticklabels(times)
+ax.xaxis.set_major_locator(plt.MaxNLocator(10))
+ax.set_title('United States Anual Average Temperature Anomaly (°F)',
+             fontdict={'fontsize': 14})
 plt.show()
