@@ -316,18 +316,16 @@ f, ax = plt.subplots(facecolor="#f5efdf",)
 for i in range(len(data)):
     plot(data.iloc[i, :].values, show=False, ax=ax, color='#e1dbc3')
 
-xindex = pd.date_range('19790101', freq='D', periods=data.shape[1])
 plot(data.iloc[-1, :],
      show=False, ax=ax, color='#c1481c', label='2023')
 plot(data.mean(axis=0), ax=ax, color='#0b3363', show=False,
      label="1979-2023 Avg.")
+
 yticklabels = []
 for label in ax.get_yticklabels():
-    yticklabels.append(f"{label.get_text()}℃")
+    yticklabels.append(f"{label.get_text()}?")
 ax.set_yticklabels(yticklabels)
-ax.grid(visible=True, ls='--', color='lightgrey')
-ax.set_facecolor('#f5efdf')
-despine_axes(ax)
+
 ax.tick_params(axis=u'both', which=u'both',length=0) # Hide ticks but show tick labels
 ax.yaxis.tick_right()
 # show month names as tick labels
@@ -336,14 +334,26 @@ ax.xaxis.set_major_formatter(mdates.DateFormatter('%b'))
 # Remove y label
 ax.set_ylabel('')
 ax.legend(frameon=False, fancybox=False, bbox_to_anchor=(0.38, 0.9))
-data1 = pd.concat([data.iloc[i, :] for i in range(data.shape[0])]).dropna()
-data1.index = pd.date_range(data.index[0], periods=len(data1), freq="D")
-max_temp = data1.idxmax()
+
+# setting grid, facecolor and spines
+ax.grid(visible=True, ls='--', color='lightgrey')
+ax.set_facecolor('#f5efdf')
+despine_axes(ax)
+
+ts = pd.concat([data.iloc[i, :] for i in range(data.shape[0])]).dropna()
+ts.index = pd.date_range(data.index[0], periods=len(ts), freq="D")
+max_temp = ts.idxmax()
 ax.text(0.5, 1.05,
-    f"""The hotest day was 
-{max_temp.day_name()}, {max_temp.day} {max_temp.month_name()} {max_temp.year} with {data.max().max()} ℃""",
+    f"""The hotest day was {max_temp.day_name()}, 
+{max_temp.day} {max_temp.month_name()} {max_temp.year} with {data.max().max()} ?""",
     fontsize=11, va="center",
         color="red", zorder=10,
         transform=ax.transAxes
 )
+ax.plot(data.iloc[-1, :].idxmax(), data.iloc[-1, :].max(), 'ro',
+        markersize=10, fillstyle='none', markeredgewidth=0.8)
+ax.plot(data.iloc[-1, :].idxmax(), data.iloc[-1, :].max(), 'ro',
+        markersize=15, fillstyle='none', markeredgewidth=0.6)
+ax.plot(data.iloc[-1, :].idxmax(), data.iloc[-1, :].max(), 'ro',
+        markersize=20, fillstyle='none', markeredgewidth=0.4)
 plt.show()

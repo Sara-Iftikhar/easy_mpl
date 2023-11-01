@@ -1040,6 +1040,18 @@ class NN:
     >>> _ = nn.plot(spacing=(1, 0.5), x_offset=0.18)
     >>> plt.show()
 
+    >>> from easy_mpl.utils import NN
+    >>> import matplotlib.pyplot as plt
+
+    >>> nn = NN()
+    >>> nn.add_layer(3, labels=[f'$x_{j}$' for j in range(4)], color='purple')
+    >>> nn.add_layer(4, color="yellow", linestyle='-')
+    >>> nn.add_layer(4, color='r')
+    >>> nn.add_layer(4, color='r')
+    >>> nn.add_layer(4, color='r')
+    >>> nn.add_layer(2, labels=['$\mu$', '$\sigma$'], color='g')
+    >>> _ = nn.plot(spacing=(1, 0.5))
+    >>> plt.show()
     """
 
     def __init__(self):
