@@ -1,5 +1,4 @@
 
-matplotlib
-numpy
-pandas
+matplotlib<4
+pandas<2
 scipy
