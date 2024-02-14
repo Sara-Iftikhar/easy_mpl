@@ -46,7 +46,7 @@ def boxplot(
         width of the box lines.
     fill_color :
         name of color/colors/cmap to fill the boxes. It can be any valid
-         matplotlib color or cmap.
+        matplotlib color or cmap.
     labels : str/list (default=None)
         used for ticklabels of x-axes
     share_axes : bool (default=True)
@@ -120,7 +120,7 @@ def boxplot(
 
         # in version 3.2.. giving DataFrame to ax.boxplot makes boxes for each row
         # in version 3.3.. giving DataFrame to ax.boxplot tries to make boxp for first row (columns)
-        if is_dataframe(x) and matplotlib.__version__ < "3.3.0":
+        if is_dataframe(x) and matplotlib.__version__ <= "3.3.0":
             x = x.values
 
         box_out = ax.boxplot(x, **_box_kws)
@@ -262,7 +262,7 @@ def _set_box_props(fill_color:list,
                 plt.setp(patch, facecolor=fill_color[idx])
 
         if line_color[idx] is not None:
-            plt.setp(patch, color=line_color[idx])
+            #plt.setp(patch, color=line_color[idx])
             plt.setp(whisker, color=line_color[idx])
             plt.setp(cap, color=line_color[idx])
             plt.setp(median, color=line_color[idx])

@@ -205,7 +205,7 @@ def circular_bar_plot(
     if colorbar:
         if mapper:
             fig: plt.Figure = ax.get_figure()
-            cbar = fig.colorbar(mapper, orientation='horizontal')
+            cbar = fig.colorbar(mapper, ax=ax, orientation='horizontal')
             cbar.ax.tick_params('both', labelsize=16)
         else:
             warnings.warn(f"For single color, colorbar does not make sense!")

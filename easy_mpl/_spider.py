@@ -5,6 +5,7 @@ import math
 from typing import Union, List, Optional
 
 import numpy as np
+import matplotlib
 import matplotlib.pyplot as plt
 
 from .utils import register_projections
@@ -142,12 +143,16 @@ def spider_plot(
     assert ax.name in ['radar', 'polar'], f"""
     The axes must be radar or polar but it is {ax.name}"""
 
-    _xtick_kws = {'color': 'grey', 'size': 14}
+    _xtick_kws = {'color': 'grey'}
     xtick_kws = xtick_kws or {}
     _xtick_kws.update(xtick_kws)
 
     if tick_labels is not None:
-        ax.set_xticks(angles[:-1], tick_labels, **_xtick_kws)
+        if matplotlib.__version__ < '3.5':
+            ax.tick_params(axis='x', colors=_xtick_kws['color'])
+            #ax.set_xticks(angles[:-1])
+        else:
+            ax.set_xticks(angles[:-1], tick_labels, **_xtick_kws)
 
     for idx in range(data.shape[1]):
 

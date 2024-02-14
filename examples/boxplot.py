@@ -60,22 +60,7 @@ _ = boxplot(df[cols], fill_color="thistle", patch_artist=True,
             medianprops={"color": "purple"})
 
 # %%
-# Another color combination
-
-_ = boxplot(df[cols], fill_color="#1b9e77", patch_artist=True,
-            medianprops={"color": "#b2df8a",
-                         "linewidth": 2})
-
-# %%
-# show the mean line
-
-_ = boxplot(df[cols], fill_color="khaki", patch_artist=True,
-            medianprops={"color": "brown",
-                         "linewidth": 2},
-            meanline=True, showmeans=True)
-
-# %%
-# customize mean line color
+# different color for box boundary and filling the box
 
 _ = boxplot(df[cols], fill_color="Pastel2", patch_artist=True,
             meanline=True, showmeans=True, meanprops={"color": "black"})
@@ -194,6 +179,7 @@ plt.show()
 # %%
 # join mean of each box through a line
 
+plt.close('all')
 ax, _ = boxplot(df[cols], fill_color="thistle",
             patch_artist=True, notch=True,
             boxprops = {"linewidth":1.5,

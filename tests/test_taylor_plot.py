@@ -1,9 +1,9 @@
 
+import os
+import site
 import unittest
 
-import os
-package_path = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__)))) 
-import site
+package_path = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 site.addsitedir(package_path)
 
 import numpy as np
@@ -14,7 +14,7 @@ from easy_mpl import taylor_plot
 
 class TestTaylorPlot(unittest.TestCase):
 
-    show = True
+    show = False
 
 
     def test_basic(self):

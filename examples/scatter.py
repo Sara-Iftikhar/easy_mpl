@@ -17,7 +17,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
-from easy_mpl.utils import process_cbar
+from easy_mpl.utils import add_cbar
 from matplotlib.lines import Line2D
 from easy_mpl.utils import version_info
 from easy_mpl.utils import map_array_to_cmap
@@ -78,8 +78,8 @@ _ = scatter(x, y, color=colors, colorbar=True)
 # `wrong <https://stackoverflow.com/q/70634122/5982232>`_.
 
 colors, mapper = map_array_to_cmap(y, "Blues")
-_, sc = scatter(x, y, color=colors, show=False)
-plt.colorbar(mapper)  # we must provide the mapper to ``colorbar`` otherwise colorbar will be wrong
+ax, sc = scatter(x, y, color=colors, show=False)
+plt.colorbar(mapper, ax=ax)  # we must provide the mapper to ``colorbar`` otherwise colorbar will be wrong
 plt.show()
 
 #%%
@@ -219,6 +219,8 @@ plt.show()
 df = dataframe.dropna().reset_index(drop=True)
 
 def draw_scatter(target, ax):
+    #``visible`` argument for ``ax.grid`` not available in
+    # matplotlib version 3.3
     ax.grid(visible=True, ls='--', color='lightgrey')
     c, mapper = map_array_to_cmap(df['pcp12_mm'].values, "inferno")
     ax_, _ = scatter(np.arange(len(df)), df[target],
@@ -226,7 +228,7 @@ def draw_scatter(target, ax):
                       ax_kws=dict(logy=True, ylabel=target, ylabel_kws={"fontsize": 12},
                                   top_spine=False, right_spine=False, bottom_spine=False),
                       ax=ax, show=False)
-    process_cbar(ax_, mappable=mapper, orientation="horizontal", pad=0.3,
+    add_cbar(ax_, mappable=mapper, orientation="horizontal", pad=0.3,
                  border=False,
                  title="Precipitation", title_kws=dict(fontsize=12))
     return

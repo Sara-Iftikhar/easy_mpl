@@ -1,7 +1,8 @@
 
 __all__ = ["process_cbar", "make_cols_from_cmap", "process_axes",
            "kde", "make_clrs_from_cmap", "map_array_to_cmap", "AddMarginalPlots",
-           "create_subplots", "NN", "plot_nn"]
+           "create_subplots", "NN", "plot_nn", "version_info", "despine_axes",
+           "add_cbar"]
 
 import functools
 import warnings
@@ -436,6 +437,12 @@ def version_info():
     try:
         import pandas as pd
         info['pandas'] = pd.__version__
+    except Exception:
+        pass
+
+    try:
+        import scipy
+        info['scipy'] = scipy.__version__
     except Exception:
         pass
 
@@ -876,7 +883,7 @@ def map_array_to_cmap(array, cmap:str, clip:bool = True)->tuple:
     return colors, mapper
 
 
-def process_cbar(
+def add_cbar(
         ax,
         mappable,
         border:bool = True,
@@ -936,6 +943,30 @@ def process_cbar(
     return cbar
 
 
+def process_cbar(ax,
+                 mappable,
+                 border: bool = True,
+                 width: Union[int, float] = None,
+                 pad: Union[int, float] = 0.2,
+                 orientation: str = "vertical",
+                 title: str = None,
+                 title_kws: dict = None):
+
+
+    warnings.warn(
+        message=(
+            f"`process_cbar` is deprecated as a function name; use"
+            f" `add_cbar` instead."
+        ),
+        category=DeprecationWarning,
+        stacklevel=3,
+    )
+
+    add_cbar(ax, mappable, border, width,
+             pad, orientation,
+             title, title_kws)
+
+
 def deprecated_argument(**aliases: str) -> Callable:
     """
     https://stackoverflow.com/a/49802489
@@ -986,6 +1017,7 @@ class NN:
     Example
     -------
     >>> from easy_mpl.utils import NN
+    >>> import matplotlib.pyplot as plt
     >>> nn = NN()
     >>> nn.add_layer(3, labels=[f'$x_{j}$' for j in range(4)], color='purple')
     >>> nn.add_layer(4, color="yellow", linestyle='-')
@@ -997,6 +1029,7 @@ class NN:
     Autoencoder
 
     >>> from easy_mpl.utils import NN
+    >>> import matplotlib.pyplot as plt
     >>> nn = NN()
     >>> nn.add_layer(4, labels=[f'$x_{j}$' for j in range(4)], color='#c6dae2',
     ...         linecolor='#a5a5a5', circle_kws=dict(lw=None))
@@ -1007,6 +1040,18 @@ class NN:
     >>> _ = nn.plot(spacing=(1, 0.5), x_offset=0.18)
     >>> plt.show()
 
+    >>> from easy_mpl.utils import NN
+    >>> import matplotlib.pyplot as plt
+
+    >>> nn = NN()
+    >>> nn.add_layer(3, labels=[f'$x_{j}$' for j in range(4)], color='purple')
+    >>> nn.add_layer(4, color="yellow", linestyle='-')
+    >>> nn.add_layer(4, color='r')
+    >>> nn.add_layer(4, color='r')
+    >>> nn.add_layer(4, color='r')
+    >>> nn.add_layer(2, labels=['$\mu$', '$\sigma$'], color='g')
+    >>> _ = nn.plot(spacing=(1, 0.5))
+    >>> plt.show()
     """
 
     def __init__(self):
