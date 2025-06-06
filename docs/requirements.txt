@@ -1,6 +1,6 @@
 
 pandas<2
-matplotlib<4
+matplotlib<3.11
 sphinx<7
 sphinx-prompt
 sphinx_copybutton

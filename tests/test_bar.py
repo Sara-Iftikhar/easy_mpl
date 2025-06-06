@@ -147,7 +147,8 @@ class TestBarChart(unittest.TestCase):
 
     def test_legend(self):
         data = np.random.randint(1, 10, (5, 2))
-        ax = bar_chart(data, color=['salmon', 'cadetblue'])
+        ax = bar_chart(data, color=['salmon', 'cadetblue'],
+                       show=self.show)
         assert  isinstance(ax, plt.Axes)
         return
 

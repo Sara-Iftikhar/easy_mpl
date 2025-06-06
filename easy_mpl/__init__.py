@@ -16,6 +16,7 @@ from ._circular_bar_plot import circular_bar_plot
 from ._spider import spider_plot
 from ._box import boxplot
 from ._violin import violin_plot
+from ._surf import surf
 
 
 from .utils import process_axes

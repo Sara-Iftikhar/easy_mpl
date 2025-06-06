@@ -127,7 +127,7 @@ class TaylorDiagram(object):
         assert not np.isnan(self.refstd), f"""
         stdandard deviation of {name} Observations is nan."""
 
-        tr = PolarAxes.PolarTransform()
+        tr = PolarAxes.PolarTransform(apply_theta_transforms=False)
 
         # Correlation labels
         rlocs = np.array([0, 0.2, 0.4, 0.6, 0.7, 0.8, 0.9, 0.95, 0.99, 1])

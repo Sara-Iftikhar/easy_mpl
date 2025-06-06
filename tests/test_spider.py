@@ -52,8 +52,8 @@ class TestSpiderPlot(unittest.TestCase):
     def test_dict_polygon(self):
 
         ax = spider_plot(self.df, xtick_kws={'size': 13}, frame="polygon",
-                    color=['b', 'r', 'g', 'm'],
-                    fill_color=['b', 'r', 'g', 'm'],
+                    color=['b', 'r', 'g'],
+                    fill_color=['b', 'r', 'g'],
                          show=self.show)
         assert isinstance(ax, plt.Axes)
         return
