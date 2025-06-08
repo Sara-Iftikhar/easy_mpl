@@ -52,6 +52,6 @@ setup(
                        ],
     extras_require = {"all": [
         "matplotlib>=3.3.0, <3.11.0",
-        "pandas>=0.23.3, <2.0.0",
+        "pandas>=0.23.3, <2.3.0",
         "scipy"]}
 )
