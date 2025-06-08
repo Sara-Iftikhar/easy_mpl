@@ -13,8 +13,6 @@ This file shows the usage of :func:`bar_chart` function.
 import numpy as np
 from easy_mpl import bar_chart, plot
 import matplotlib.pyplot as plt
-import datetime
-from matplotlib.dates import YearLocator, MonthLocator, DateFormatter
 from easy_mpl.utils import version_info
 from easy_mpl.utils import despine_axes
 

@@ -11,7 +11,7 @@ from .utils import process_axes, is_dataframe, create_subplots, is_series
 
 @deprecated_argument(x="data")
 def hist(
-        data: Union[list, np.ndarray],
+        data: Union[list, np.ndarray, "Dataframe", "Series"],
         labels:Union[str, List[str]] = None,
         share_axes:bool = True,
         grid: bool = True,
@@ -93,7 +93,7 @@ def hist(
         names = data.columns.tolist()
 
     elif is_series(data):
-        X = data.values
+        X = [data.values]
         names = [data.name]
 
     elif isinstance(data, (list, tuple)) and isinstance(data[0], (list, tuple, np.ndarray)):

@@ -10,6 +10,8 @@ import matplotlib.pyplot as plt
 
 from .utils import register_projections
 
+from packaging.version import parse as parse_version
+
 
 def spider_plot(
         data: Union[np.ndarray, list],
@@ -116,7 +118,11 @@ def spider_plot(
     if not isinstance(plot_kws, list):
         plot_kws = [plot_kws for _ in range(data.shape[1])]
 
-    def_color = plt.cm.get_cmap('Set2', data.shape[1])
+    if parse_version(matplotlib.__version__) <= parse_version("3.7.0"):
+        def_color = plt.cm.get_cmap('Set2', data.shape[1])
+    else:
+        def_color = plt.colormaps.get_cmap('Set2')
+        # def_color = [cmap(i / data.shape[1]) for i in range(data.shape[1])]
 
     if color is None:
         color = [def_color(i) for i in range(data.shape[1])]

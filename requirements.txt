@@ -1,5 +1,4 @@
 
-matplotlib
-numpy
-pandas
+matplotlib<3.11
+pandas<2.3
 scipy

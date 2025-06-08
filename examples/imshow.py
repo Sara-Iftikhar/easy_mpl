@@ -6,7 +6,7 @@ c. imshow
 
 This file shows the usage of :func:`imshow` function.
 
-``imshow`` can be used to draw heatmap of a two dimensional array/data.
+``imshow`` can be used to draw heatmap of a two-dimensional array/data.
 """
 
 # sphinx_gallery_thumbnail_number = 3
@@ -36,14 +36,18 @@ _ = imshow(x, annotate=True)
 _ = imshow(x, colorbar=True)
 
 # %%
+# do not show border around colorbar
+
 _ = imshow(x, colorbar=True, cbar_params={"border": False})
 
 # %%
+# Move the colorbar below the heatmap
+
 _ = imshow(x, colorbar=True, cbar_params={"border": False, 'pad': 0.4,
                                           "orientation":"horizontal"})
 
 #%%
-# Annotation
+# show white grid line
 
 data = np.random.random((4, 10))
 
@@ -74,13 +78,13 @@ _ = imshow(data, cmap="Blues",
 # We can decide which portion of heatmap to show using ``mask`` argument
 
 x = np.random.random((20, 20))
-imshow(x, mask=True)
+_ = imshow(x, mask=True)
 
 # %%
-imshow(x, mask="upper")
+_ = imshow(x, mask="upper")
 
 # %%
-imshow(x, mask="lower")
+_ = imshow(x, mask="lower")
 
 # %%
 # get axes from im and show its processing
@@ -102,9 +106,11 @@ data_np = np.full(shape=(12, nyrs), fill_value=np.nan)
 for ii, i in enumerate(range(0, len(mon_data), 12)):
     data_np[:, ii] = mon_data.iloc[i:i + 12].values
 
+print(data_np.shape)
+
 im = imshow(
     data_np,
-    cmap="coolwarm",
+    cmap="RdBu_r",
     aspect="auto",
     colorbar=True,
     cbar_params=dict(border=False, title="Mean Temperature",
@@ -121,5 +127,10 @@ im.axes.set_xticks(np.linspace(0, data_np.shape[-1], 6))
 im.axes.set_xticklabels(np.linspace(data.index.year.min(), data.index.year.max(), 6, dtype=int))
 despine_axes(im.axes)
 im.axes.tick_params(axis=u'y', which=u'both',length=0)
+ticklabels = []
+for ticklabel in im.colorbar.ax.get_yticklabels():
+    ticklabel.set_text(f"{ticklabel.get_text()}℃")
+    ticklabels.append(ticklabel)
+im.colorbar.set_ticklabels(ticklabels)
 plt.tight_layout()
 plt.show()

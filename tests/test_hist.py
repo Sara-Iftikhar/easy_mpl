@@ -13,6 +13,12 @@ import matplotlib.pyplot as plt
 
 from easy_mpl import hist
 
+rng = np.random.default_rng(313)
+
+data = rng.random((10, 2))
+array_1d = data[:, 0]
+df = pd.DataFrame(data)
+
 
 class Testhist(unittest.TestCase):
 
@@ -73,7 +79,11 @@ class Testhist(unittest.TestCase):
         return
 
     def test_df(self):
-        hist(pd.DataFrame(np.random.random((10, 2))), show=self.show)
+        hist(df, show=self.show)
+        return
+
+    def test_df_1col(self):
+        hist(pd.DataFrame(df.iloc[:,0]), show=self.show)
         return
 
     def test_df_with_ax(self):
@@ -83,6 +93,14 @@ class Testhist(unittest.TestCase):
 
     def test_df_shareax_false(self):
         hist(pd.DataFrame(np.random.random((10, 2))), share_axes=False, show=self.show)
+        return
+
+    def test_np_1d(self):
+        hist(array_1d, show=self.show)
+        return
+
+    def test_np_1d_1(self):
+        hist(array_1d.reshape(-1,1),  show=self.show)
         return
 
     def test_np_2d(self):
@@ -122,6 +140,11 @@ class Testhist(unittest.TestCase):
     def test_list_of_arrays(self):
 
         hist([np.random.random(50), np.random.random(50)],
+             show=self.show)
+        return
+
+    def test_series(self):
+        hist(pd.Series(np.random.random(50)),
              show=self.show)
         return
 

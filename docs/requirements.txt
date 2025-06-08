@@ -1,7 +1,6 @@
 
-pandas
-numpy
-matplotlib
+pandas<2.3
+matplotlib<3.11
 sphinx<7
 sphinx-prompt
 sphinx_copybutton

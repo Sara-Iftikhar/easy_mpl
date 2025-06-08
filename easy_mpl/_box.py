@@ -18,10 +18,10 @@ from .utils import make_cols_from_cmap
 
 
 def boxplot(
-        data:Union[np.ndarray, List[np.ndarray], List[list]],
+        data:Union[np.ndarray, List[np.ndarray], List[list], list, "Series", "DataFrame"],
         line_color:Union[str, List[str]] = None,
         line_width = None,
-        fill_color:Union[str, List[str]] = None,
+        fill_color:Union[str, List[str], List[float], np.ndarray] = None,
         labels:Union[str, List[str]] = None,
         share_axes:bool = True,
         figsize:tuple = None,
