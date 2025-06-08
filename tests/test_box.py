@@ -15,6 +15,9 @@ for col in df.columns:
 
 colors = ['pink', 'lightblue', 'lightgreen', 'pink', 'lightblue', 'lightgreen']
 
+rng = np.random.default_rng(313)
+array_1d = rng.random(100)
+
 
 class TestBox(unittest.TestCase):
     show = False
@@ -107,6 +110,16 @@ class TestBox(unittest.TestCase):
         data = np.random.random((100, 3))
         ax, out = boxplot(pd.DataFrame(data), show=self.show,
                           labels=['a', 'b', 'c'])
+        _assert_output(ax, out)
+        return
+
+    def test_1d_array(self):
+        ax, out = boxplot(array_1d, show=self.show)
+        _assert_output(ax, out)
+        return
+
+    def test_1d_array_1(self):
+        ax, out = boxplot(array_1d.reshape(-1,1), show=self.show)
         _assert_output(ax, out)
         return
 

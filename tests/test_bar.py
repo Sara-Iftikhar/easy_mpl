@@ -22,6 +22,9 @@ def get_chart_data(n):
         return d, [f'Feature {i}' for i in range(len(d))]
     return d, [f'feature_{i}' for i in d]
 
+rng = np.random.default_rng(313)
+x = rng.integers(1, 10, 10)
+err = rng.random(10)
 
 class TestBarChart(unittest.TestCase):
 
@@ -83,10 +86,14 @@ class TestBarChart(unittest.TestCase):
         return
 
     def test_err_h(self):
-        x = np.random.randint(1, 10, 10)
-        err = np.random.random(10)
         ax = bar_chart(x, errors=err, orient="v",
-                  show=self.show)
+                  show=True)
+        assert isinstance(ax, plt.Axes)
+        return
+
+    def test_1d_array(self):
+        ax = bar_chart(x.reshape(-1,1), errors=err, orient="v",
+                  show=True)
         assert isinstance(ax, plt.Axes)
         return
 
