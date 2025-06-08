@@ -263,7 +263,10 @@ def kde(
     """
 
     # don't want to make whole easy_mpl dependent upon scipy
-    from scipy.stats import gaussian_kde
+    try:
+        from scipy.stats import gaussian_kde
+    except (ImportError, ModuleNotFoundError):
+        raise Exception(f"scipy module is required for ridge plot. Please install scipy using 'pip install scipy'.")
 
     if isinstance(cut, float):
         cut = (cut, cut)
