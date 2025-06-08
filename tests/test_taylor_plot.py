@@ -29,19 +29,19 @@ class TestTaylorPlot(unittest.TestCase):
                     title="Taylor Plot", show=self.show)
         return
 
-    # def test_basic_with_extend(self):
-    #     # todo not working
-    #     np.random.seed(313)
-    #     observations =  np.random.normal(20, 40, 10)
-    #     simus =  {"LSTM": np.random.normal(20, 40, 10),
-    #               "CNN": np.random.normal(20, 40, 10),
-    #               "TCN": np.random.normal(20, 40, 10),
-    #               "CNN-LSTM": np.random.normal(20, 40, 10)}
-    #     taylor_plot(observations=observations,
-    #                 simulations=simus,
-    #                 extend=True,
-    #                 show=self.show)
-    #     return
+    def test_basic_with_extend(self):
+
+        np.random.seed(313)
+        observations =  np.random.normal(20, 40, 10)
+        simus =  {"LSTM": np.random.normal(20, 40, 10),
+                  "CNN": np.random.normal(20, 40, 10),
+                  "TCN": np.random.normal(20, 40, 10),
+                  "CNN-LSTM": np.random.normal(20, 40, 10)}
+        taylor_plot(observations=observations,
+                    simulations=simus,
+                    extend=True,
+                    show=self.show)
+        return
 
     def test_basic_series(self):
         np.random.seed(313)
@@ -160,6 +160,20 @@ class TestTaylorPlot(unittest.TestCase):
                      'edgecolor': 'black','bbox_to_anchor':(1.1, 1.05)},
                      show=self.show)
         return
+
+    def test_change_alias_text(self):
+        np.random.seed(313)
+        observations =  np.random.normal(20, 40, 10)
+        simus =  {"LSTM": np.random.normal(20, 40, 10),
+                  "CNN": np.random.normal(20, 40, 10),
+                  "TCN": np.random.normal(20, 40, 10),
+                  "CNN-LSTM": np.random.normal(20, 40, 10)}
+        taylor_plot(observations=observations,
+                    simulations=simus,
+                    title="Taylor Plot", show=self.show,
+                    corr_alias='Corr', std_alias='Std. Dev.')
+        return
+
 
 if __name__ == '__main__':
     unittest.main() 

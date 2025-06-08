@@ -100,7 +100,9 @@ class TaylorDiagram(object):
                  srange=(0, 1.5),
                  extend=False,
                  axis_fontdict: dict = None,
-                 name: str = ''
+                 name: str = '',
+                 corr_alias:str = "Correlation",
+                 std_alias:str = "Standard Deviation"
                  ):
         """
         Set up Taylor diagram axes, i.e. single quadrant polar
@@ -162,20 +164,26 @@ class TaylorDiagram(object):
         ax.axis["top"].toggle(ticklabels=True, label=True)
         ax.axis["top"].major_ticklabels.set_axis_direction("top")
         ax.axis["top"].label.set_axis_direction("top")
-        ax.axis["top"].label.set_text("Correlation")
+        ax.axis["top"].label.set_text(corr_alias)
         ax.axis['top'].label.set_fontsize(axis_fontdict['top'].get('fontsize', 18))
         ax.axis['top'].label.set_color(axis_fontdict['top'].get('color', 'k'))
         ax.axis['top'].major_ticklabels.set_fontsize(axis_fontdict['top'].get('ticklabel_fs', 10))
 
         ax.axis["left"].set_axis_direction("bottom")  # "X axis"
-        ax.axis["left"].label.set_text("Standard deviation")
+        if extend:
+            ax.text(0.5, -0.12, std_alias, transform=ax.transAxes,
+                    rotation=0, va='center', ha='center', fontdict={'size': axis_fontdict['top'].get('fontsize', 18)})
+        else:
+            ax.axis["left"].label.set_text(std_alias)
         ax.axis['left'].label.set_fontsize(axis_fontdict['bottom'].get('fontsize', 18))
         ax.axis['left'].label.set_color(axis_fontdict['bottom'].get('color', 'k'))
         ax.axis['left'].major_ticklabels.set_fontsize(axis_fontdict['bottom'].get('ticklabel_fs', 10))
 
         ax.axis["right"].set_axis_direction("top")  # "Y-axis"
         ax.axis["right"].toggle(ticklabels=True)
-        ax.axis["right"].label.set_text("Standard deviation")  # todo, not working
+        if not extend:
+            ax.text(-0.08, 0.5, std_alias, transform=ax.transAxes,
+                    rotation=90, va='center', ha='center', fontdict={'size': axis_fontdict['top'].get('fontsize', 18)})
         ax.axis['right'].label.set_fontsize(axis_fontdict['left'].get('fontsize', 18))
         ax.axis['right'].label.set_color(axis_fontdict['left'].get('color', 'k'))
         ax.axis['right'].major_ticklabels.set_fontsize(axis_fontdict['left'].get('ticklabel_fs', 10))
@@ -346,6 +354,13 @@ def taylor_plot(
 
             - extend : bool, default False, if True, will plot negative correlation
 
+            - corr_alias : str,
+                alias for correlation (text for curved axis label), default is 'Correlation'
+
+            - std_alias : str,
+                alias for standard deviation (text for horizontal and vertical
+                axis label), default is 'Standard Deviation'
+
             - figsize : tuple defining figsize, default is (11,8).
 
             - show : bool whether to show the plot or not
@@ -510,6 +525,8 @@ def taylor_plot(
     sim_marker = kwargs.get("sim_marker", None)
     true_label = kwargs.get("true_label", "Reference")
     show = kwargs.get("show", True)
+    corr_alias = kwargs.get("corr_alias", 'Correlation')
+    std_alias = kwargs.get("std_alias", 'Standard Deviation')
 
     if axis_locs is None:
         axis_locs = {k: v for k, v in zip(scenarios, RECTS[len(scenarios)])}
@@ -587,6 +604,8 @@ def taylor_plot(
                             axis_fontdict=axis_fontdict,
                             extend=extend,
                             name=season,
+                            corr_alias=corr_alias,
+                            std_alias=std_alias,
                             )
 
         dia.samplePoints[0].set_color(ref_color)  # reference point color

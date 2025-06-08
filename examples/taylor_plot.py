@@ -182,3 +182,20 @@ _ = taylor_plot(observations=observations,
                 'fontsize': 14, 'labelspacing': 1.0},
                 marker_kws = {'ms':'20', 'markeredgecolor': 'k', 'lw': 0.0},
                 )
+
+# %%
+# using extended horizontal axis to show the points which have negative correlation.
+#
+# we can also change axis labels
+
+np.random.seed(313)
+observations = np.random.normal(20, 40, 10)
+simus = {"LSTM": np.random.normal(20, 40, 10),
+         "CNN": np.random.normal(20, 40, 10),
+         "TCN": np.random.normal(20, 40, 10),
+         "CNN-LSTM": np.random.normal(20, 40, 10)}
+taylor_plot(observations=observations,
+            simulations=simus,
+            extend=True,
+            corr_alias='Corr.',
+            std_alias='Std. Dev.')
