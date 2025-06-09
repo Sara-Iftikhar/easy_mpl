@@ -1,0 +1,44 @@
+[build-system]
+requires = ["setuptools>=61", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "easy_mpl"
+version = "0.21.5"
+description = "one stop shop for matplotlib plots"
+readme = "readme.md"
+requires-python = ">=3.5"
+license = { file = "LICENSE" }
+authors = [
+    { name="Sara Iftikhar", email="sara.rwpk@gmail.com" },
+]
+urls = { Homepage = "https://github.com/Sara-Iftikhar/easy_mpl" }
+
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Natural Language :: English",
+    "Intended Audience :: Science/Research",
+    "Intended Audience :: Developers",
+    "Operating System :: Microsoft :: Windows",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.5",
+    "Programming Language :: Python :: 3.6",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+]
+
+dependencies = [
+    "matplotlib>=3.3.0, <3.11.0",
+]
+
+[project.optional-dependencies]
+all = [
+    "matplotlib>=3.3.0, <3.11.0",
+    "pandas>=0.23.3, <2.3.0",
+    "scipy",
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
