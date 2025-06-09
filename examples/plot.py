@@ -323,7 +323,7 @@ plot(data.mean(axis=0), ax=ax, color='#0b3363', show=False,
 
 yticklabels = []
 for label in ax.get_yticklabels():
-    yticklabels.append(f"{label.get_text()}?")
+    yticklabels.append(f"{label.get_text()} °C")
 ax.set_yticklabels(yticklabels)
 
 ax.tick_params(axis=u'both', which=u'both',length=0) # Hide ticks but show tick labels
@@ -345,7 +345,7 @@ ts.index = pd.date_range(data.index[0], periods=len(ts), freq="D")
 max_temp = ts.idxmax()
 ax.text(0.5, 1.05,
     f"""The hotest day was {max_temp.day_name()}, 
-{max_temp.day} {max_temp.month_name()} {max_temp.year} with {data.max().max()} ?""",
+{max_temp.day} {max_temp.month_name()} {max_temp.year} with {round(data.max().max(), 2)}°C""",
     fontsize=11, va="center",
         color="red", zorder=10,
         transform=ax.transAxes

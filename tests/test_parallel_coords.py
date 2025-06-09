@@ -1,13 +1,12 @@
 
-
-import random
-import unittest
-
 import os
 import site
+import unittest
 
 package_path = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 site.addsitedir(package_path)
+
+import random
 
 import numpy as np
 import matplotlib.pyplot as plt
