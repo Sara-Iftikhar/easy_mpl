@@ -99,8 +99,7 @@ data = pd.DataFrame(
 data = data.astype(float)
 data1 = pd.concat([data.iloc[i, :] for i in range(data.shape[0])]).dropna()
 data1.index = pd.date_range(data.index[0], periods=len(data1), freq="D")
-mon_data = data1.resample('M').mean()
-mon_data = pd.concat([mon_data, pd.Series([np.nan, np.nan])])
+mon_data = data1.resample('ME').mean()
 
 data_np = np.full(shape=(12, nyrs), fill_value=np.nan)
 for ii, i in enumerate(range(0, len(mon_data), 12)):

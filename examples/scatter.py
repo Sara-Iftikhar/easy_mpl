@@ -208,7 +208,7 @@ legend = fig.legend(handles=handles, bbox_to_anchor=[0.5, 0.9],
 title_fontsize=16,title="Tide Type", loc="center")
 
 leg = plt.legend(bbox_to_anchor=[0.8, 0.85], title="Rainfall", title_fontsize=16)
-for h in leg.legendHandles:
+for h in leg.legend_handles:  # for mpl ver<3.8 it is leg.legendHandles
     h.set_facecolor('white')
     h.set_edgecolor('k')
     h.set_linewidth(2.0)
